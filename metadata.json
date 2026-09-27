@@ -1,0 +1,6 @@
+{
+  "name": "NEXORA - فروشگاه آنلاین تکنولوژی و الکترونیک",
+  "description": "فروشگاه تخصصی نکسورا؛ نسل جدید تجهیزات هوشمند، لپ‌تاپ، موبایل و لوازم صوتی با قابلیت تم دارک/لایت، طراحی کاملا واکنش‌گرا و راست‌چین.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
