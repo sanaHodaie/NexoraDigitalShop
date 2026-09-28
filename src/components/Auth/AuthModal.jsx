@@ -1,28 +1,109 @@
-import React, { useState } from 'react';
+import React, { useLayoutEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
+import { ArrowRight, Eye, EyeOff, X, ShieldCheck } from 'lucide-react';
 import { useShop } from '../../context/ShopContext';
+import { GoogleSignIn } from './GoogleSignIn';
+import headphonesImage from '../../assets/images/auth-headphones.png';
+import earbudsImage from '../../assets/images/auth-earbuds.png';
+import './auth.css';
 
 export function AuthModal() {
-  const { isAuthOpen, setIsAuthOpen, authenticate } = useShop();
-  const [register, setRegister] = useState(false);
+  const { isAuthOpen, setIsAuthOpen, authenticate, authenticateGoogle } = useShop();
+  const dialog = useRef(null);
+  const heading = useRef(null);
+  const [view, setView] = useState('welcome');
+  const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
-  if (!isAuthOpen) return null;
-  const submit = async e => {
-    e.preventDefault(); setError(''); setBusy(true);
-    try { await authenticate(email, password, register); setPassword(''); }
+  const register = view === 'register';
+
+  useLayoutEffect(() => {
+    if (!isAuthOpen) return;
+    setView('welcome'); setError(''); setPassword(''); setShowPassword(false);
+    const previousOverflow = document.body.style.overflow;
+    const previousFocus = document.activeElement;
+    document.body.style.overflow = 'hidden';
+    dialog.current.showModal();
+    return () => { document.body.style.overflow = previousOverflow; previousFocus?.focus({ preventScroll: true }); };
+  }, [isAuthOpen]);
+  useLayoutEffect(() => {
+    if (!isAuthOpen) return;
+    dialog.current.querySelector('.auth-scroll')?.scrollTo(0, 0);
+    heading.current?.focus({ preventScroll: true });
+  }, [view, isAuthOpen]);
+
+  const switchView = next => { setView(next); setError(''); setPassword(''); setShowPassword(false); };
+  const submit = async event => {
+    event.preventDefault(); setError(''); setBusy(true);
+    try { await authenticate(email.trim(), password, register, fullName.trim()); }
     catch (err) { setError(err.message); }
     finally { setBusy(false); }
   };
-  return <div role="dialog" aria-modal="true" aria-label="حساب کاربری" className="fixed inset-0 z-[80] bg-black/60 flex items-center justify-center p-4" dir="rtl">
-    <form onSubmit={submit} className="bg-white dark:bg-slate-900 rounded-2xl p-7 w-full max-w-sm space-y-4 shadow-xl">
-      <div className="flex justify-between items-center"><h2 className="font-bold text-xl">{register ? 'ساخت حساب' : 'ورود به حساب'}</h2><button type="button" onClick={() => setIsAuthOpen(false)} aria-label="بستن">✕</button></div>
-      <label className="block">ایمیل<input className="block w-full border rounded-lg p-2 text-slate-900" type="email" required autoComplete="email" maxLength={254} value={email} onChange={e => setEmail(e.target.value)} /></label>
-      <label className="block">رمز عبور<input className="block w-full border rounded-lg p-2 text-slate-900" type="password" required minLength={register ? 12 : undefined} autoComplete={register ? 'new-password' : 'current-password'} value={password} onChange={e => setPassword(e.target.value)} /></label>
-      {error && <p role="alert" className="text-red-600 text-sm">{error}</p>}
-      <button disabled={busy} className="w-full bg-blue-600 text-white rounded-lg p-3 disabled:opacity-50">{busy ? 'لطفاً صبر کنید…' : register ? 'ثبت‌نام' : 'ورود'}</button>
-      <button type="button" className="text-blue-600 text-sm" onClick={() => { setRegister(!register); setError(''); }}>{register ? 'قبلاً حساب ساخته‌اید؟ ورود' : 'حساب ندارید؟ ثبت‌نام'}</button>
-    </form>
-  </div>;
+  const googleLogin = async credential => {
+    setError(''); setBusy(true);
+    try { await authenticateGoogle(credential); }
+    catch (err) { setError(err.message); }
+    finally { setBusy(false); }
+  };
+  const close = () => setIsAuthOpen(false);
+  if (!isAuthOpen) return null;
+
+  return createPortal(
+    <dialog ref={dialog} className="auth-dialog" dir="rtl" aria-labelledby="auth-title"
+      onCancel={event => { event.preventDefault(); close(); }}
+      onClick={event => { if (event.target === event.currentTarget) close(); }}>
+      <section className={`auth-shell ${view === 'welcome' ? 'auth-welcome' : 'auth-form-shell'}`}>
+        <div className="auth-waves" aria-hidden="true" />
+        <div className="auth-scroll">
+        <div className="auth-handle" aria-hidden="true" />
+        <div className="auth-topbar">
+          {view !== 'welcome' ? <button type="button" className="auth-back" onClick={() => switchView('welcome')} disabled={busy}><ArrowRight size={16} /> بازگشت</button> : <span className="auth-wordmark" dir="ltr">NEXORA<span> / </span>ACCOUNT</span>}
+          <button type="button" className="auth-close" onClick={close} aria-label="بستن پنجره ورود"><X size={18} /></button>
+        </div>
+        {view === 'welcome' ? <div className="auth-welcome-content">
+          <h2 id="auth-title" ref={heading} tabIndex={-1}>به نکسورا خوش اومدی <span className="auth-smile" dir="ltr">:)</span></h2>
+          <p>دنیای تازهٔ تکنولوژی منتظر توست.<br />وارد شو یا حساب خودت رو بساز؛ انتخاب با توست.</p>
+          <div className="auth-gadgets" role="img" aria-label="هدفون و ایرپاد سه‌بعدی شناور">
+            <span className="auth-gadget-halo" aria-hidden="true" />
+            <img className="auth-gadget auth-gadget-headphones" src={headphonesImage} alt="" width="1024" height="1024" />
+            <img className="auth-gadget auth-gadget-earbuds" src={earbudsImage} alt="" width="1024" height="1024" />
+          </div>
+          <div className="auth-welcome-actions">
+            <button type="button" className="auth-primary auth-create" onClick={() => switchView('register')}>ساخت حساب کاربری <ArrowRight size={17} className="rotate-180" /></button>
+            <button type="button" className="auth-secondary" onClick={() => switchView('login')}>ورود به حساب کاربری</button>
+          </div>
+          <span className="auth-welcome-note"><ShieldCheck size={14} /> یک حساب، یک تجربهٔ شخصی‌تر</span>
+        </div> : <div className="auth-form-card">
+          <div className="auth-form-heading">
+            <span className="auth-eyebrow">{register ? 'شروع یک تجربهٔ تازه' : 'خوش برگشتی'}</span>
+            <h2 id="auth-title" ref={heading} tabIndex={-1}>{register ? 'حساب خودت رو بساز' : 'وارد حساب خودت شو'}</h2>
+            <p>{register ? 'به جمع همراهان نکسورا بپیوند.' : 'خریدها و علاقه‌مندی‌هات منتظر تو هستن.'}<br />{register ? 'برای یک انتخاب هوشمندانه آماده‌ای؟' : 'خوشحالیم که دوباره اینجایی.'}</p>
+          </div>
+          <form onSubmit={submit} className="auth-form" aria-busy={busy}>
+            <fieldset disabled={busy}>
+              {register && <label className="auth-field"><span>نام و نام خانوادگی</span><input required maxLength={100} autoComplete="name" placeholder="نام کامل شما" value={fullName} onChange={event => setFullName(event.target.value)} /></label>}
+              <label className="auth-field"><span>ایمیل</span><input type="email" dir="ltr" required maxLength={254} autoComplete="email" placeholder="you@example.com" value={email} onChange={event => setEmail(event.target.value)} /></label>
+              <label className="auth-field"><span>رمز عبور</span>
+                <div className="auth-password">
+                  <input type={showPassword ? 'text' : 'password'} required minLength={register ? 12 : undefined} maxLength={128} autoComplete={register ? 'new-password' : 'current-password'} placeholder={register ? 'حداقل ۱۲ کاراکتر' : 'رمز عبور شما'} value={password} onChange={event => setPassword(event.target.value)} aria-describedby={register ? 'password-help' : undefined} />
+                  <button type="button" onClick={() => setShowPassword(!showPassword)} aria-label={showPassword ? 'پنهان کردن رمز عبور' : 'نمایش رمز عبور'} aria-pressed={showPassword}>{showPassword ? <EyeOff size={18} /> : <Eye size={18} />}</button>
+                </div>
+              </label>
+              {register ? <p id="password-help" className="auth-field-help">رمز عبور باید بین ۱۲ تا ۱۲۸ کاراکتر باشد.</p> : <details className="auth-recovery"><summary>رمز عبورت رو فراموش کردی؟</summary><p>بازیابی خودکار رمز عبور هنوز فعال نیست. برای بازیابی حساب با پشتیبانی نکسورا تماس بگیر.</p></details>}
+              {error && <p role="alert" className="auth-error">{error}</p>}
+              <button disabled={busy} className="auth-primary" type="submit">{busy ? 'در حال بررسی…' : register ? 'ساخت حساب کاربری' : 'ورود به حساب'}</button>
+            </fieldset>
+          </form>
+          <div className="auth-divider"><span>یا ادامه با</span></div>
+          <GoogleSignIn onCredential={googleLogin} disabled={busy} />
+          <p className="auth-switch">{register ? 'قبلاً حساب ساختی؟' : 'هنوز حساب نداری؟'}{' '}<button type="button" disabled={busy} onClick={() => switchView(register ? 'login' : 'register')}>{register ? 'وارد شو' : 'ثبت‌نام کن'}</button></p>
+          <p className="auth-security"><ShieldCheck size={13} /> اطلاعات حسابت نزد نکسورا محفوظ است.</p>
+        </div>}
+        </div>
+      </section>
+    </dialog>, document.body
+  );
 }

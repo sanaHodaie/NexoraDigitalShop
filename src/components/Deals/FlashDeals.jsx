@@ -11,8 +11,10 @@ export const FlashDeals = () => {
       <div className="relative rounded-[36px] sm:rounded-[44px] bg-gradient-to-br from-blue-100/90 via-indigo-50/80 to-sky-100/80 dark:from-[#131d36] dark:via-[#11192e] dark:to-[#1a1c38] border-2 border-blue-300/70 dark:border-blue-500/40 p-6 sm:p-8 lg:p-10 shadow-2xl shadow-blue-500/10">
         
         {/* Decorative ambient glowing lights */}
-        <div className="absolute top-0 right-1/4 w-80 h-80 bg-blue-400/20 dark:bg-blue-500/20 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute -bottom-10 left-10 w-72 h-72 bg-indigo-400/20 dark:bg-indigo-500/20 rounded-full blur-2xl pointer-events-none" />
+        <div className="absolute inset-0 overflow-hidden rounded-[inherit] pointer-events-none">
+          <div className="absolute top-0 right-1/4 w-80 h-80 bg-blue-400/20 dark:bg-blue-500/20 rounded-full blur-3xl" />
+          <div className="absolute -bottom-10 left-10 w-72 h-72 bg-indigo-400/20 dark:bg-indigo-500/20 rounded-full blur-2xl" />
+        </div>
 
         {/* Top Floating Row: Persian Clock & Title on RIGHT, Product Cards on LEFT popping out above */}
         <div className="relative z-20 -mt-16 sm:-mt-20 grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">

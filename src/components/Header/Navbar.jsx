@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Heart, ShoppingBag, Search } from 'lucide-react';
 import { Logo } from './Logo';
@@ -14,6 +14,22 @@ export const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isSearchActive, setIsSearchActive] = useState(false);
   const [desktopSearchOpen, setDesktopSearchOpen] = useState(false);
+  const [hideDesktopHeader, setHideDesktopHeader] = useState(false);
+
+  useEffect(() => {
+    const footer = document.getElementById('footer');
+    if (!footer) return;
+    const desktop = window.matchMedia('(min-width: 1024px)');
+    let footerVisible = false;
+    const update = () => setHideDesktopHeader(desktop.matches && footerVisible);
+    const observer = new IntersectionObserver(([entry]) => {
+      footerVisible = entry.isIntersecting;
+      update();
+    });
+    observer.observe(footer);
+    desktop.addEventListener('change', update);
+    return () => { observer.disconnect(); desktop.removeEventListener('change', update); };
+  }, []);
 
   const {
     totalCartCount,
@@ -21,6 +37,7 @@ export const Navbar = () => {
     setIsCartOpen,
     setIsWishlistModalOpen,
     isLoggedIn,
+    user,
     toggleLogin,
     searchQuery,
     setSearchQuery,
@@ -52,9 +69,10 @@ export const Navbar = () => {
     : [];
 
   return (
-    <div className="sticky top-2 sm:top-4 z-40 px-2 sm:px-6 max-w-7xl mx-auto w-full transition-all">
+    <div className="sticky top-2 sm:top-4 z-40 px-2 sm:px-6 max-w-7xl mx-auto w-full lg:static lg:h-[62px]">
+      <div className="lg:fixed lg:top-4 lg:inset-x-0 lg:max-w-7xl lg:mx-auto lg:px-6">
       {/* Floating Glassmorphic Header */}
-      <header className="rounded-full bg-white/85 dark:bg-slate-900/90 backdrop-blur-xl border border-white/70 dark:border-slate-700/60 shadow-lg shadow-blue-900/5 px-3.5 sm:px-6 py-2 sm:py-2.5 transition-colors duration-300">
+      {!hideDesktopHeader && <header className="rounded-full bg-white/85 dark:bg-slate-900/90 backdrop-blur-xl border border-white/70 dark:border-slate-700/60 shadow-lg shadow-blue-900/5 px-3.5 sm:px-6 py-2 sm:py-2.5 transition-colors duration-300">
         
         {/* DESKTOP HEADER */}
         <div className="hidden lg:flex items-center justify-between gap-4">
@@ -101,7 +119,7 @@ export const Navbar = () => {
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       placeholder="جستجو در محصولات..."
-                      className="w-full bg-transparent text-xs text-slate-800 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none"
+                      className="min-w-0 w-full bg-transparent text-xs text-slate-800 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none"
                     />
                     <button
                       onClick={() => {
@@ -134,7 +152,7 @@ export const Navbar = () => {
               type="button"
               onClick={toggleLogin}
               aria-label={isLoggedIn ? 'خروج از حساب کاربری' : 'ورود به حساب کاربری'}
-              title={isLoggedIn ? 'خروج از حساب کاربری' : 'ورود به حساب کاربری'}
+              title={isLoggedIn ? `${user?.fullName || user?.email || 'حساب کاربری'} — خروج` : 'ورود به حساب کاربری'}
               className="w-8 h-8 rounded-full bg-slate-100/90 dark:bg-slate-800/90 border border-slate-200/60 dark:border-slate-700 flex items-center justify-center hover:scale-105 active:scale-95 transition-all cursor-pointer"
             >
               {isLoggedIn ? (
@@ -206,7 +224,7 @@ export const Navbar = () => {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="جستجوی کالا (مثال: کنسول بازی، هدفون...)"
-                  className="flex-1 bg-slate-100 dark:bg-slate-800 text-xs text-slate-800 dark:text-slate-100 rounded-full px-3.5 py-1.5 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500 text-right font-vazir"
+                  className="min-w-0 flex-1 bg-slate-100 dark:bg-slate-800 text-xs text-slate-800 dark:text-slate-100 rounded-full px-3.5 py-1.5 border border-slate-200 dark:border-slate-700 focus:outline-none focus:ring-1 focus:ring-blue-500 text-right font-vazir"
                 />
 
                 {/* Close Button using uploaded close.svg */}
@@ -245,14 +263,20 @@ export const Navbar = () => {
                     <MenuIcon className="w-4 h-4" />
                   </button>
                   <a href="#" className="flex flex-col text-right">
-                    <span className="text-base font-black tracking-wider bg-gradient-to-l from-blue-700 via-indigo-600 to-slate-900 dark:from-sky-400 dark:via-blue-300 dark:to-white bg-clip-text text-transparent font-sans">
+                    <span className="text-sm sm:text-base font-black sm:tracking-wider bg-gradient-to-l from-blue-700 via-indigo-600 to-slate-900 dark:from-sky-400 dark:via-blue-300 dark:to-white bg-clip-text text-transparent font-sans">
                       NEXORA
                     </span>
                   </a>
                 </div>
 
                 {/* Left: Search Icon placed directly beside Dark Mode, Wishlist & Cart */}
-                <div className="flex items-center gap-1.5 sm:gap-2">
+                <div className="mobile-header-actions flex items-center gap-1 sm:gap-2">
+                  <button type="button" onClick={toggleLogin}
+                    title={isLoggedIn ? user?.fullName || user?.email : 'ورود به حساب کاربری'}
+                    aria-label={isLoggedIn ? 'خروج از حساب کاربری' : 'ورود به حساب کاربری'}
+                    className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center cursor-pointer">
+                    {isLoggedIn ? <LogoutIcon className="w-4 h-4" /> : <AccountIcon className="w-4 h-4" />}
+                  </button>
                   {/* Search Icon right beside other icons */}
                   <button
                     type="button"
@@ -345,7 +369,8 @@ export const Navbar = () => {
             )}
           </div>
         )}
-      </header>
+      </header>}
+      </div>
 
       {/* Mobile Drawer Menu */}
       <MobileMenu

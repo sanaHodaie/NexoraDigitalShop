@@ -51,6 +51,7 @@ app.MapGet("/api/csrf", (HttpContext ctx, IAntiforgery antiforgery) =>
     ctx.Response.Headers.CacheControl = "no-store";
     return Results.Ok(new { token = antiforgery.GetAndStoreTokens(ctx).RequestToken });
 });
+app.MapGoogleAuthentication();
 app.MapGet("/api/products", async (StoreDb db, string? q, string? category, int? limit) =>
 {
     var query = db.Products.AsNoTracking().AsQueryable();
@@ -72,26 +73,31 @@ app.MapGet("/api/products/{id}", async (string id, StoreDb db) =>
 
 app.MapPost("/api/auth/register", async (Credentials input, StoreDb db, IPasswordHasher<User> hasher, HttpContext ctx) =>
 {
-    var email = input.Email.Trim().ToLowerInvariant();
-    if (!ValidEmail(email) || input.Password.Length < 12 || input.Password.Length > 128) return Results.BadRequest(new { error = "Valid email and password of 12–128 characters required" });
-    if (await db.Users.AnyAsync(x => x.Email == email)) return Results.Conflict(new { error = "Account already exists" });
+    var email = (input.Email ?? "").Trim().ToLowerInvariant();
+    if (input.Password is null || (input.FullName is not null && (string.IsNullOrWhiteSpace(input.FullName) || input.FullName.Trim().Length > 100)))
+        return Results.BadRequest(new { error = "نام و رمز عبور معتبر وارد کنید." });
+    if (!ValidEmail(email) || input.Password.Length < 12 || input.Password.Length > 128) return Results.BadRequest(new { error = "ایمیل معتبر و رمز عبور ۱۲ تا ۱۲۸ کاراکتری وارد کنید." });
+    if (await db.Users.AnyAsync(x => x.Email == email)) return Results.Conflict(new { error = "این ایمیل قبلاً ثبت شده است. وارد حساب خود شوید." });
     var user = new User { Email = email };
     user.PasswordHash = hasher.HashPassword(user, input.Password);
     db.Users.Add(user);
-    try { await db.SaveChangesAsync(); } catch (DbUpdateException) { return Results.Conflict(new { error = "Account already exists" }); }
+    db.UserProfiles.Add(new UserProfile { User = user, FullName = input.FullName?.Trim() ?? "" });
+    try { await db.SaveChangesAsync(); } catch (DbUpdateException) { return Results.Conflict(new { error = "این ایمیل قبلاً ثبت شده است. وارد حساب خود شوید." }); }
     await SignIn(ctx, user);
     return Results.Ok(new { user.Email });
 }).RequireRateLimiting("auth");
 app.MapPost("/api/auth/login", async (Credentials input, StoreDb db, IPasswordHasher<User> hasher, HttpContext ctx) =>
 {
+    if (string.IsNullOrWhiteSpace(input.Email) || string.IsNullOrEmpty(input.Password) || input.Password.Length > 128)
+        return Results.Unauthorized();
     var user = await db.Users.SingleOrDefaultAsync(x => x.Email == input.Email.Trim().ToLowerInvariant());
-    if (user is null || hasher.VerifyHashedPassword(user, user.PasswordHash, input.Password) == PasswordVerificationResult.Failed)
+    if (user is null || string.IsNullOrEmpty(user.PasswordHash) || hasher.VerifyHashedPassword(user, user.PasswordHash, input.Password) == PasswordVerificationResult.Failed)
         return Results.Unauthorized();
     await SignIn(ctx, user);
     return Results.Ok(new { user.Email });
 }).RequireRateLimiting("auth");
 app.MapPost("/api/auth/logout", async (HttpContext ctx) => { await ctx.SignOutAsync(); return Results.NoContent(); }).RequireAuthorization();
-app.MapGet("/api/auth/me", (HttpContext ctx) => Results.Ok(new { email = ctx.User.FindFirstValue(ClaimTypes.Email) })).RequireAuthorization();
+app.MapGet("/api/auth/me", (HttpContext ctx) => Results.Ok(new { email = ctx.User.FindFirstValue(ClaimTypes.Email), fullName = ctx.User.FindFirstValue(ClaimTypes.Name) })).RequireAuthorization();
 
 var account = app.MapGroup("/api/account").RequireAuthorization();
 account.MapGet("/cart", async (HttpContext ctx, StoreDb db) =>
@@ -184,6 +190,7 @@ using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<StoreDb>();
     await db.Database.EnsureCreatedAsync(); // For production, replace with versioned EF migrations.
+    await AuthEndpoints.EnsureProfileSchemaAsync(db);
     if (!await db.Products.AnyAsync())
     {
         var json = await File.ReadAllTextAsync(Path.Combine(app.Environment.ContentRootPath, "Data/products.json"));
@@ -208,8 +215,7 @@ static object PublicProduct(Product p)
 }
 static int UserId(HttpContext ctx) => int.Parse(ctx.User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 static bool ValidEmail(string email) => email.Length <= 254 && Regex.IsMatch(email, @"^[^\s@]+@[^\s@]+\.[^\s@]+$", RegexOptions.CultureInvariant);
-static Task SignIn(HttpContext ctx, User user) => ctx.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
-    new ClaimsPrincipal(new ClaimsIdentity([new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()), new Claim(ClaimTypes.Email, user.Email)], CookieAuthenticationDefaults.AuthenticationScheme)));
-public sealed record Credentials(string Email, string Password);
+static Task SignIn(HttpContext ctx, User user) => AuthEndpoints.SignInAsync(ctx, user);
+public sealed record Credentials(string Email, string Password, string? FullName = null);
 public sealed record QuantityInput(int Quantity);
 public sealed record EmailInput(string Email);

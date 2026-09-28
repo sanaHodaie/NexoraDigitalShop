@@ -8,6 +8,7 @@ export const ShopProvider = ({ children }) => {
   const [wishlist, setWishlist] = useState([]);
   const [allProducts, setAllProducts] = useState([]);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState(null);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isWishlistModalOpen, setIsWishlistModalOpen] = useState(false);
@@ -24,22 +25,31 @@ export const ShopProvider = ({ children }) => {
   };
   useEffect(() => {
     api('/products').then(setAllProducts).catch(reportError);
-    api('/auth/me').then(() => { setIsLoggedIn(true); return refreshAccount(); }).catch(() => {});
+    api('/auth/me').then(account => { setUser(account); setIsLoggedIn(true); return refreshAccount(); }).catch(() => {});
   }, []);
 
-  const authenticate = async (email, password, register) => {
-    await api(`/auth/${register ? 'register' : 'login'}`, { method: 'POST', body: JSON.stringify({ email, password }) });
+  const finishAuthentication = async () => {
     resetCsrf();
+    const account = await api('/auth/me');
+    setUser(account);
     setIsLoggedIn(true); setIsAuthOpen(false);
-    await refreshAccount();
-    showCenterMessage('ورود موفق', 'به حساب خود وارد شدید.', 'user');
+    await refreshAccount().catch(reportError);
+    showCenterMessage('ورود موفق', account.fullName ? `${account.fullName}، به نکسورا خوش آمدی.` : 'به حساب خود وارد شدید.', 'user');
+  };
+  const authenticate = async (email, password, register, fullName) => {
+    await api(`/auth/${register ? 'register' : 'login'}`, { method: 'POST', body: JSON.stringify({ email, password, ...(register ? { fullName } : {}) }) });
+    await finishAuthentication();
+  };
+  const authenticateGoogle = async credential => {
+    await api('/auth/google', { method: 'POST', body: JSON.stringify({ credential }) });
+    await finishAuthentication();
   };
   const toggleLogin = async () => {
     if (!isLoggedIn) { setIsAuthOpen(true); return; }
     try {
       await api('/auth/logout', { method: 'POST' });
       resetCsrf();
-      setIsLoggedIn(false); setCart([]); setWishlist([]);
+      setIsLoggedIn(false); setUser(null); setCart([]); setWishlist([]);
       showCenterMessage('خروج', 'از حساب خارج شدید.', 'user');
     } catch (error) { reportError(error); }
   };
@@ -68,7 +78,7 @@ export const ShopProvider = ({ children }) => {
   };
   const toPersianDigits = num => String(num ?? '').replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[Number(d)]);
   const formatPrice = amount => `${toPersianDigits(Math.round((amount || 0) * RIAL_RATE).toLocaleString('en-US'))} ریال`;
-  return <ShopContext.Provider value={{ cart, wishlist, allProducts, isLoggedIn, isAuthOpen, setIsAuthOpen, authenticate, toggleLogin,
+  return <ShopContext.Provider value={{ cart, wishlist, allProducts, user, isLoggedIn, isAuthOpen, setIsAuthOpen, authenticate, authenticateGoogle, toggleLogin,
     addToCart, removeFromCart, updateQuantity, clearCart, toggleWishlist, isInWishlist: id => wishlist.some(x => x.id === id),
     totalCartCount: cart.reduce((sum, x) => sum + x.quantity, 0), totalWishlistCount: wishlist.length,
     cartSubtotal: cart.reduce((sum, x) => sum + x.product.price * x.quantity, 0),

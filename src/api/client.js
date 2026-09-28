@@ -18,7 +18,7 @@ export async function api(path, options = {}) {
   });
   if (!response.ok) {
     const data = await response.json().catch(() => ({}));
-    throw new Error(data.error || (response.status === 401 ? 'ابتدا وارد حساب خود شوید.' : 'درخواست انجام نشد. دوباره تلاش کنید.'));
+    throw new Error(data.error || (response.status === 401 ? (path === '/auth/login' ? 'ایمیل یا رمز عبور نادرست است.' : 'ابتدا وارد حساب خود شوید.') : 'درخواست انجام نشد. دوباره تلاش کنید.'));
   }
   return response.status === 204 || response.status === 202 ? null : response.json();
 }
