@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Trash2, Plus, Minus, ShoppingBag, ArrowLeft, CheckCircle, Truck } from 'lucide-react';
+import { api } from '../../api/client';
 import { useShop } from '../../context/ShopContext';
 
 export const CartDrawer = () => {
@@ -15,36 +16,20 @@ export const CartDrawer = () => {
     clearCart,
   } = useShop();
 
-  const [promoCode, setPromoCode] = useState('');
-  const [promoDiscount, setPromoDiscount] = useState(0);
-  const [promoMessage, setPromoMessage] = useState('');
   const [isCheckingOut, setIsCheckingOut] = useState(false);
-  const [orderComplete, setOrderComplete] = useState(false);
+  const [orderComplete, setOrderComplete] = useState(null);
+  const [checkoutError, setCheckoutError] = useState('');
 
   const freeShippingThreshold = 99;
   const isFreeShipping = cartSubtotal >= freeShippingThreshold;
   const remainingForFreeShipping = Math.max(0, freeShippingThreshold - cartSubtotal);
 
-  const handleApplyPromo = (e) => {
-    e.preventDefault();
-    if (promoCode.trim().toUpperCase() === 'NEXORA20') {
-      setPromoDiscount(0.2); // 20% discount
-      setPromoMessage('کد تخفیف ۲۰٪ با موفقیت اعمال شد!');
-    } else {
-      setPromoMessage('کد وارد شده نامعتبر است (کد تستی: NEXORA20)');
-    }
-  };
-
-  const discountAmount = cartSubtotal * promoDiscount;
-  const finalTotal = Math.max(0, cartSubtotal - discountAmount);
-
-  const handleCheckout = () => {
-    setIsCheckingOut(true);
-    setTimeout(() => {
-      setIsCheckingOut(false);
-      setOrderComplete(true);
-      clearCart();
-    }, 1200);
+  const finalTotal = cartSubtotal;
+  const handleCheckout = async () => {
+    setCheckoutError(''); setIsCheckingOut(true);
+    try { const order = await api('/account/orders', { method: 'POST' }); setOrderComplete(order); await clearCart(); }
+    catch (error) { setCheckoutError(error.message); }
+    finally { setIsCheckingOut(false); }
   };
 
   return (
@@ -118,7 +103,7 @@ export const CartDrawer = () => {
                     سفارش شما با موفقیت ثبت گردید!
                   </h4>
                   <p className="text-xs text-slate-500 max-w-xs mx-auto">
-                    شناسه پیگیری سفارش برای شما ارسال شد. کارشناسان نکسورا در حال پردازش کالاهای شما هستند.
+                    شماره سفارش: {orderComplete.id}. پرداخت هنوز انجام نشده است؛ این سفارش در انتظار پرداخت است.
                   </p>
                   <button
                     onClick={() => {
@@ -214,32 +199,6 @@ export const CartDrawer = () => {
             {!orderComplete && cart.length > 0 && (
               <div className="p-6 border-t border-slate-100 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/90 space-y-4">
                 {/* Promo Code Input */}
-                <form onSubmit={handleApplyPromo} className="flex gap-2">
-                  <input
-                    type="text"
-                    value={promoCode}
-                    onChange={(e) => setPromoCode(e.target.value)}
-                    placeholder="کد تخفیف (مثال: NEXORA20)"
-                    className="flex-1 h-9 px-3 text-xs bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl uppercase font-mono"
-                  />
-                  <button
-                    type="submit"
-                    className="px-3 h-9 rounded-xl bg-slate-800 dark:bg-slate-700 text-white text-xs font-semibold hover:bg-slate-700 transition-colors cursor-pointer"
-                  >
-                    اعمال
-                  </button>
-                </form>
-
-                {promoMessage && (
-                  <div
-                    className={`text-[11px] font-medium ${
-                      promoDiscount > 0 ? 'text-emerald-600' : 'text-rose-500'
-                    }`}
-                  >
-                    {promoMessage}
-                  </div>
-                )}
-
                 {/* Subtotal & Discount rows */}
                 <div className="space-y-1.5 text-xs text-slate-600 dark:text-slate-400">
                   <div className="flex justify-between">
@@ -248,12 +207,6 @@ export const CartDrawer = () => {
                       {formatPrice(cartSubtotal)}
                     </span>
                   </div>
-                  {promoDiscount > 0 && (
-                    <div className="flex justify-between text-emerald-600">
-                      <span>تخفیف شگفت‌انگیز:</span>
-                      <span className="font-mono">-{formatPrice(discountAmount)}</span>
-                    </div>
-                  )}
                   <div className="flex justify-between">
                     <span>هزینه ارسال:</span>
                     <span className="font-medium text-emerald-600">
@@ -268,6 +221,7 @@ export const CartDrawer = () => {
                   </div>
                 </div>
 
+                {checkoutError && <p role="alert" className="text-red-600 text-xs">{checkoutError}</p>}
                 {/* Checkout Button */}
                 <button
                   onClick={handleCheckout}
@@ -275,10 +229,10 @@ export const CartDrawer = () => {
                   className="w-full py-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-98 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-blue-500/25 transition-all cursor-pointer disabled:opacity-50"
                 >
                   {isCheckingOut ? (
-                    <span>در حال اتصال به درگاه ایمن...</span>
+                    <span>در حال ثبت سفارش...</span>
                   ) : (
                     <>
-                      <span>تکمیل فرایند خرید</span>
+                      <span>ثبت سفارش در انتظار پرداخت</span>
                       <ArrowLeft className="w-4 h-4" />
                     </>
                   )}

@@ -1,4 +1,5 @@
 import React from 'react';
+import { AuthModal } from './components/Auth/AuthModal';
 import { ThemeProvider } from './context/ThemeContext';
 import { ShopProvider } from './context/ShopContext';
 import { Navbar } from './components/Header/Navbar';
@@ -70,6 +71,7 @@ export default function App() {
           <WishlistModal />
           <QuickViewModal />
           <ToastContainer />
+          <AuthModal />
         </div>
       </ShopProvider>
     </ThemeProvider>

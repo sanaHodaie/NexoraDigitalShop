@@ -1,10 +1,9 @@
 import React from 'react';
 import { Heart, Plus } from 'lucide-react';
-import { RECOMMENDED_PRODUCTS } from '../../data/mockData';
 import { useShop } from '../../context/ShopContext';
 
 export const RecommendedSection = () => {
-  const { addToCart, toggleWishlist, isInWishlist, setQuickViewProduct, formatPrice } = useShop();
+  const { addToCart, toggleWishlist, isInWishlist, setQuickViewProduct, formatPrice, allProducts } = useShop();
 
   return (
     <section id="recommended" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
@@ -22,7 +21,7 @@ export const RecommendedSection = () => {
 
       {/* Product Cards Grid: Texts strictly on the RIGHT side across all devices (mobile and desktop) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5">
-        {RECOMMENDED_PRODUCTS.map((product) => {
+        {allProducts.filter(p => p.id.startsWith('rec-')).map((product) => {
           const isFavorited = isInWishlist(product.id);
 
           return (
