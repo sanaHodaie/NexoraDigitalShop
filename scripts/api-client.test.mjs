@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { afterEach, beforeEach, test } from 'node:test';
 import { api, resetCsrf } from '../src/api/client.js';
+import backendUnavailable from '../api/backend-unavailable.js';
 
 const originalFetch = globalThis.fetch;
 const registration = {
@@ -49,6 +50,41 @@ test('a registration network failure is readable and does not retry the POST', a
 
   assert.deepEqual(calls.map(call => call.url), ['/api/csrf', '/api/auth/register']);
   assert.equal(calls[1].options.method, 'POST');
+});
+
+test('an unconfigured Vercel backend reports its actual 503 error at CSRF and never posts', async () => {
+  const response = backendUnavailable.fetch();
+  const { error: message } = await response.clone().json();
+  const calls = mockFetch(response);
+
+  await assert.rejects(api('/auth/register', registration), {
+    message, status: 503, code: 'BACKEND_NOT_CONFIGURED',
+  });
+  assert.deepEqual(calls.map(call => call.url), ['/api/csrf']);
+});
+
+test('a CSRF HTTP error preserves the server explanation', async () => {
+  const message = 'سرویس موقتاً در دسترس نیست.';
+  const calls = mockFetch(json({ error: message }, 502));
+  await assert.rejects(api('/auth/register', registration), { message, status: 502 });
+  assert.equal(calls.length, 1);
+});
+
+test('an HTML gateway failure remains a service error, not a TLS error', async () => {
+  const calls = mockFetch(new Response('<h1>Bad gateway</h1>', { status: 502 }));
+  await assert.rejects(api('/auth/register', registration), error => {
+    assert.equal(error.status, 502);
+    assert.doesNotMatch(error.message, /ارتباط امن/);
+    return isReadablePersianError(error);
+  });
+  assert.equal(calls.length, 1);
+});
+
+test('a null JSON error body still preserves the authentication error', async () => {
+  mockFetch(json({ token: 'csrf-one' }), json(null, 401));
+  await assert.rejects(api('/auth/login', registration), {
+    message: 'ایمیل یا رمز عبور نادرست است.', status: 401,
+  });
 });
 
 for (const [description, body] of [

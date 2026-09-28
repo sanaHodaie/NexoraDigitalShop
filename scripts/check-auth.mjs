@@ -68,6 +68,8 @@ try {
   let id = 0;
   const pending = new Map(), errors = [];
   let authenticated = false;
+  let productsFailure = null;
+  let productRequests = 0;
   const products = JSON.parse(await readFile(new URL('../backend/Nexora.Api/Data/products.json', import.meta.url), 'utf8'));
   function command(method, params = {}) {
     return new Promise((resolve, reject) => {
@@ -83,6 +85,21 @@ try {
     if (message.method === 'Runtime.exceptionThrown') errors.push(message.params.exceptionDetails.text);
     if (message.method === 'Fetch.requestPaused') {
       const path = new URL(message.params.request.url).pathname;
+      if (path === '/api/products') {
+        productRequests++;
+        if (productsFailure) {
+          const failure = productsFailure === 'network'
+            ? command('Fetch.failRequest', { requestId: message.params.requestId, errorReason: 'ConnectionFailed' })
+            : command('Fetch.fulfillRequest', {
+              requestId: message.params.requestId,
+              responseCode: productsFailure === 'invalid' ? 200 : productsFailure,
+              responseHeaders: [{ name: 'Content-Type', value: 'application/json' }],
+              body: Buffer.from(JSON.stringify({ error: 'درخواست انجام نشد. دوباره تلاش کنید.' })).toString('base64'),
+            });
+          failure.catch(error => errors.push(error.message));
+          return;
+        }
+      }
       const data = path === '/api/products' ? products : path === '/api/auth/providers' ? { googleClientId: null } : path === '/api/auth/me' ? { email: 'test@example.com', fullName: 'کاربر آزمایشی' } : [];
       command('Fetch.fulfillRequest', { requestId: message.params.requestId, responseCode: path === '/api/auth/me' && !authenticated ? 401 : 200,
         responseHeaders: [{ name: 'Content-Type', value: 'application/json' }], body: Buffer.from(JSON.stringify(data)).toString('base64') }).catch(error => errors.push(error.message));
@@ -108,6 +125,20 @@ try {
   await command('Fetch.enable', { patterns: [{ urlPattern: `${uiUrl}/api/*` }] });
   await command('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] });
   await resize(1440);
+  for (const failure of [404, 503, 'network', 'invalid']) {
+    productsFailure = failure;
+    await command('Page.navigate', { url: uiUrl });
+    await until('document.querySelector("#trending [role=status]")?.textContent.includes("امکان دریافت محصولات نیست")');
+    assert.ok(await evaluate('![...document.querySelectorAll("h4")].some(h => h.textContent.trim() === "خطا")'), 'Page load does not open the global error toast');
+    const beforeRetry = productRequests;
+    await delay(250);
+    assert.equal(productRequests, beforeRetry, 'No automatic retry loop');
+    productsFailure = null;
+    await click('تلاش مجدد برای دریافت محصولات');
+    await until('!!document.querySelector("#trending img") && !document.querySelector("#trending [role=status]")');
+    assert.equal(productRequests, beforeRetry + 1, 'One click issues one retry');
+  }
+  console.log('PASS: startup 404/503/network/invalid responses stay inline, no blocking toast, retry restores catalogue');
   await command('Page.navigate', { url: uiUrl });
   await until('!!document.querySelector("header")');
   await evaluate('document.documentElement.style.scrollBehavior = "auto"; window.scrollTo(0, 650)');

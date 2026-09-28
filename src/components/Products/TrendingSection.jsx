@@ -4,7 +4,7 @@ import { useShop } from '../../context/ShopContext';
 
 export const TrendingSection = () => {
   const [activeCategory, setActiveCategory] = useState('all');
-  const { addToCart, toggleWishlist, isInWishlist, setQuickViewProduct, formatPrice, toPersianDigits, allProducts } = useShop();
+  const { addToCart, toggleWishlist, isInWishlist, setQuickViewProduct, formatPrice, toPersianDigits, allProducts, productsStatus, reloadProducts } = useShop();
 
   const categories = [
     { id: 'all', label: 'همه داغ‌ترین‌ها' },
@@ -53,6 +53,21 @@ export const TrendingSection = () => {
           ))}
         </div>
       </div>
+
+      {productsStatus === 'error' && (
+        <div role="status" className="mb-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 text-sm text-slate-600 dark:text-slate-300">
+          <p>در حال حاضر امکان دریافت محصولات نیست. لطفاً دوباره تلاش کنید.</p>
+          <button type="button" onClick={reloadProducts} className="shrink-0 rounded-xl bg-blue-600 hover:bg-blue-700 px-4 py-2 text-xs font-bold text-white cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500">
+            تلاش مجدد برای دریافت محصولات
+          </button>
+        </div>
+      )}
+      {productsStatus === 'loading' && (
+        <p role="status" className="mb-5 text-sm text-slate-500 dark:text-slate-400">در حال دریافت محصولات…</p>
+      )}
+      {productsStatus === 'ready' && filteredProducts.length === 0 && (
+        <p role="status" className="mb-5 text-sm text-slate-500 dark:text-slate-400">محصولی در این دسته موجود نیست.</p>
+      )}
 
       {/* Product Cards Grid:
           Adjusted to a slightly more square/compact proportion (h-[390px] sm:h-[410px])

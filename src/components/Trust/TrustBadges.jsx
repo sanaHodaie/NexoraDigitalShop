@@ -32,7 +32,7 @@ export const TrustBadges = () => {
 
   return (
     <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-      <div className="rounded-2xl bg-white dark:bg-slate-850/80 border border-slate-200/80 dark:border-slate-800 p-4 sm:p-6 shadow-xs">
+      <div className="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-4 sm:p-6 shadow-xs transition-colors duration-300">
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4 sm:gap-6 divide-y md:divide-y-0 md:divide-x md:divide-x-reverse divide-slate-100 dark:divide-slate-800">
           {features.map((item, idx) => (
             <div

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { api, resetCsrf } from '../api/client';
 
 const ShopContext = createContext();
@@ -7,6 +7,8 @@ export const ShopProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
   const [wishlist, setWishlist] = useState([]);
   const [allProducts, setAllProducts] = useState([]);
+  const [productsStatus, setProductsStatus] = useState('loading');
+  const productsRequest = useRef(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
@@ -23,10 +25,28 @@ export const ShopProvider = ({ children }) => {
     const [newCart, newWishlist] = await Promise.all([api('/account/cart'), api('/account/wishlist')]);
     setCart(newCart); setWishlist(newWishlist);
   };
-  useEffect(() => {
-    api('/products').then(setAllProducts).catch(reportError);
-    api('/auth/me').then(account => { setUser(account); setIsLoggedIn(true); return refreshAccount(); }).catch(() => {});
+  const reloadProducts = useCallback(async () => {
+    productsRequest.current?.abort();
+    const controller = new AbortController();
+    productsRequest.current = controller;
+    setProductsStatus('loading');
+    try {
+      const products = await api('/products', { signal: controller.signal });
+      if (!Array.isArray(products)) throw new Error('Invalid product response');
+      if (controller.signal.aborted) return;
+      setAllProducts(products);
+      setProductsStatus('ready');
+    } catch {
+      // Initial background loading must not open a blocking global error modal.
+      // Keep the failure visible beside the catalogue, where it can be retried.
+      if (!controller.signal.aborted) setProductsStatus('error');
+    }
   }, []);
+  useEffect(() => {
+    reloadProducts();
+    api('/auth/me').then(account => { setUser(account); setIsLoggedIn(true); return refreshAccount(); }).catch(() => {});
+    return () => productsRequest.current?.abort();
+  }, [reloadProducts]);
 
   const finishAuthentication = async () => {
     resetCsrf();
@@ -78,7 +98,7 @@ export const ShopProvider = ({ children }) => {
   };
   const toPersianDigits = num => String(num ?? '').replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[Number(d)]);
   const formatPrice = amount => `${toPersianDigits(Math.round((amount || 0) * RIAL_RATE).toLocaleString('en-US'))} ریال`;
-  return <ShopContext.Provider value={{ cart, wishlist, allProducts, user, isLoggedIn, isAuthOpen, setIsAuthOpen, authenticate, authenticateGoogle, toggleLogin,
+  return <ShopContext.Provider value={{ cart, wishlist, allProducts, productsStatus, reloadProducts, user, isLoggedIn, isAuthOpen, setIsAuthOpen, authenticate, authenticateGoogle, toggleLogin,
     addToCart, removeFromCart, updateQuantity, clearCart, toggleWishlist, isInWishlist: id => wishlist.some(x => x.id === id),
     totalCartCount: cart.reduce((sum, x) => sum + x.quantity, 0), totalWishlistCount: wishlist.length,
     cartSubtotal: cart.reduce((sum, x) => sum + x.product.price * x.quantity, 0),
