@@ -17,7 +17,46 @@ npm ci
 npm run dev
 ```
 
-Open `http://localhost:3000`. Vite proxies `/api` to `https://localhost:7043`. The browser must accept the local development certificate; keep both frontend and API behind HTTPS in deployment with the same origin. Configure `ConnectionStrings:Store` via environment or your secrets manager. Back up the SQLite database and persist ASP.NET Core Data Protection keys across deployments.
+Open `http://localhost:3000`. Vite proxies `/api` to `https://localhost:7043`; the browser talks to Vite, so it does not connect directly to the backend development certificate. For mobile testing over a LAN IP, serve the frontend over trusted HTTPS so the browser can store the Secure authentication and CSRF cookies.
+
+## Deployment
+
+The Vite development proxy is not included in `npm run build`. A static frontend
+deployment alone does not run the ASP.NET API. Configure the public site's server
+to route `/api/*` to the running ASP.NET Core application, before the SPA HTML
+fallback. Both frontend and API must be reachable through the same HTTPS origin;
+do not point the deployed browser at `localhost:7043`.
+
+Verify `https://YOUR_SITE/api/csrf` returns JSON with a token and a Secure CSRF
+cookie, not `index.html`, a 404, or a redirect to an unreachable API address.
+Configure `ConnectionStrings:Store` via environment or your secrets manager.
+Back up the SQLite database and persist ASP.NET Core Data Protection keys across deployments.
+
+### This site's Vercel setup
+
+`vercel.mjs` routes `/api/*` to the HTTPS ASP.NET host configured in
+`NEXORA_API_ORIGIN`. It preserves the `/api` prefix and keeps requests, cookies,
+and CSRF tokens on the storefront's origin. Do not add a browser-side API URL or
+disable CSRF to work around deployment errors.
+
+1. Publish `backend/Nexora.Api` to a host that runs .NET 10 and provides persistent
+   storage for SQLite. Publishing the Vite frontend on Vercel does not run this
+   project. The backend HTTPS `/api/csrf` endpoint must work before proceeding.
+2. In Vercel **Project Settings → Environment Variables**, set `NEXORA_API_ORIGIN`
+   to the real API origin, for example `https://YOUR_API_HOST` (no `/api` suffix).
+   Configure the environments you deploy to. This is a server-side setting, not a
+   `VITE_` variable; do not include credentials in the URL.
+3. Redeploy after changing the variable because routing is generated at build time.
+4. Verify `https://nexora-digital-shop.vercel.app/api/csrf` returns JSON, then test
+   registration, `/api/auth/me`, and logout in a real browser. No redirect to the
+   backend hostname should occur.
+
+Without a backend origin, API requests intentionally return a JSON 503 response
+instead of the SPA's HTML or a nonexistent API endpoint. This fallback does not
+provide authentication: a deployed ASP.NET backend is still required.
+
+See [Vercel external rewrites](https://vercel.com/docs/routing/rewrites) and
+[Vercel configuration](https://vercel.com/docs/project-configuration/vercel-ts).
 
 ## API
 
