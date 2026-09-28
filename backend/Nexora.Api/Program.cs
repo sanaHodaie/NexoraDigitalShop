@@ -6,8 +6,10 @@ using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
 using Nexora.Api;
+
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<StoreDb>(o => o.UseSqlite(builder.Configuration.GetConnectionString("Store") ?? "Data Source=nexora.db"));
@@ -94,7 +96,8 @@ app.MapGet("/api/auth/me", (HttpContext ctx) => Results.Ok(new { email = ctx.Use
 var account = app.MapGroup("/api/account").RequireAuthorization();
 account.MapGet("/cart", async (HttpContext ctx, StoreDb db) =>
 {
-    var items = await db.CartItems.Where(x => x.UserId == UserId(ctx)).ToListAsync();
+    var userId = UserId(ctx);
+    var items = await db.CartItems.Where(x => x.UserId == userId).ToListAsync();
     var ids = items.Select(x => x.ProductId).ToArray();
     var products = await db.Products.Where(p => ids.Contains(p.Id)).ToDictionaryAsync(p => p.Id);
     return Results.Ok(items.Where(x => products.ContainsKey(x.ProductId)).Select(x => new { product = PublicProduct(products[x.ProductId]), x.Quantity }));
@@ -117,12 +120,14 @@ account.MapPut("/cart/{id}", async (string id, QuantityInput input, HttpContext 
 });
 account.MapDelete("/cart", async (HttpContext ctx, StoreDb db) =>
 {
-    await db.CartItems.Where(x => x.UserId == UserId(ctx)).ExecuteDeleteAsync();
+    var userId = UserId(ctx);
+    await db.CartItems.Where(x => x.UserId == userId).ExecuteDeleteAsync();
     return Results.NoContent();
 });
 account.MapGet("/wishlist", async (HttpContext ctx, StoreDb db) =>
 {
-    var ids = await db.WishlistItems.Where(x => x.UserId == UserId(ctx)).Select(x => x.ProductId).ToArrayAsync();
+    var userId = UserId(ctx);
+    var ids = await db.WishlistItems.Where(x => x.UserId == userId).Select(x => x.ProductId).ToArrayAsync();
     return Results.Ok((await db.Products.Where(x => ids.Contains(x.Id)).ToListAsync()).Select(PublicProduct));
 });
 account.MapPut("/wishlist/{id}", async (string id, HttpContext ctx, StoreDb db) =>
@@ -134,13 +139,15 @@ account.MapPut("/wishlist/{id}", async (string id, HttpContext ctx, StoreDb db) 
 });
 account.MapDelete("/wishlist/{id}", async (string id, HttpContext ctx, StoreDb db) =>
 {
-    await db.WishlistItems.Where(x => x.UserId == UserId(ctx) && x.ProductId == id).ExecuteDeleteAsync();
+    var userId = UserId(ctx);
+    await db.WishlistItems.Where(x => x.UserId == userId && x.ProductId == id).ExecuteDeleteAsync();
     return Results.NoContent();
 });
 account.MapPost("/orders", async (HttpContext ctx, StoreDb db) =>
 {
     await using var transaction = await db.Database.BeginTransactionAsync();
-    var items = await db.CartItems.Where(x => x.UserId == UserId(ctx)).ToListAsync();
+    var userId = UserId(ctx);
+    var items = await db.CartItems.Where(x => x.UserId == userId).ToListAsync();
     if (items.Count == 0) return Results.BadRequest(new { error = "Cart is empty" });
     var ids = items.Select(x => x.ProductId).ToArray();
     var products = await db.Products.Where(x => ids.Contains(x.Id)).ToDictionaryAsync(x => x.Id);
@@ -159,7 +166,10 @@ account.MapPost("/orders", async (HttpContext ctx, StoreDb db) =>
     return Results.Ok(new { order.Id, order.Total, order.Status });
 });
 account.MapGet("/orders", async (HttpContext ctx, StoreDb db) =>
-    Results.Ok(await db.Orders.AsNoTracking().Where(x => x.UserId == UserId(ctx)).OrderByDescending(x => x.Id).Select(x => new { x.Id, x.Total, x.Status, x.CreatedAt }).ToListAsync()));
+{
+    var userId = UserId(ctx);
+    return Results.Ok(await db.Orders.AsNoTracking().Where(x => x.UserId == userId).OrderByDescending(x => x.Id).Select(x => new { x.Id, x.Total, x.Status, x.CreatedAt }).ToListAsync());
+});
 
 app.MapPost("/api/newsletter", async (EmailInput input, StoreDb db) =>
 {
