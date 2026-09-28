@@ -1,15 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Search, X, ArrowUpLeft, Sparkles } from 'lucide-react';
 import { useShop } from '../../context/ShopContext';
-import { TRENDING_PRODUCTS, FLASH_DEALS, RECOMMENDED_PRODUCTS } from '../../data/mockData';
 
 export const SearchBar = ({ className = '', isCompact = false }) => {
-  const { searchQuery, setSearchQuery, setQuickViewProduct } = useShop();
+  const { searchQuery, setSearchQuery, setQuickViewProduct, allProducts } = useShop();
   const [isOpen, setIsOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const containerRef = useRef(null);
 
-  const allProducts = [...TRENDING_PRODUCTS, ...FLASH_DEALS, ...RECOMMENDED_PRODUCTS];
 
   const filteredProducts = searchQuery.trim()
     ? allProducts.filter(

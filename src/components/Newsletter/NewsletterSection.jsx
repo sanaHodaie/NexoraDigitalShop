@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Mail, Send, CheckCircle2 } from 'lucide-react';
+import { api } from '../../api/client';
 import { useShop } from '../../context/ShopContext';
 
 export const NewsletterSection = () => {
@@ -7,11 +8,14 @@ export const NewsletterSection = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const { addToast } = useShop();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!email || !email.includes('@')) return;
-    setIsSubmitted(true);
-    addToast('ایمیل شما با موفقیت در خبرنامه نکسورا ثبت شد!', 'success');
+    try {
+      await api('/newsletter', { method: 'POST', body: JSON.stringify({ email }) });
+      setIsSubmitted(true);
+      addToast('ایمیل شما در خبرنامه ثبت شد.');
+    } catch (error) { addToast(error.message); }
   };
 
   return (
@@ -39,7 +43,7 @@ export const NewsletterSection = () => {
             {isSubmitted ? (
               <div className="flex items-center gap-2 p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 text-xs font-semibold">
                 <CheckCircle2 className="w-4 h-4 shrink-0" />
-                <span>عضویت شما تایید شد. کد تخفیف ۱۰ درصدی به ایمیل شما ارسال گشت!</span>
+                <span>عضویت شما در خبرنامه ثبت شد.</span>
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="flex items-center gap-2">

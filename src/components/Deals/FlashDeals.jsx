@@ -1,36 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Zap, Mail, Star, Heart, ShieldCheck } from 'lucide-react';
-import { FLASH_DEALS } from '../../data/mockData';
 import { useShop } from '../../context/ShopContext';
 
 export const FlashDeals = () => {
-  const { addToCart, setQuickViewProduct, formatPrice, toPersianDigits, toggleWishlist, isInWishlist } = useShop();
-
-  const [timeLeft, setTimeLeft] = useState({
-    days: 2,
-    hours: 8,
-    minutes: 34,
-    seconds: 59,
-  });
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev.seconds > 0) {
-          return { ...prev, seconds: prev.seconds - 1 };
-        } else if (prev.minutes > 0) {
-          return { ...prev, minutes: prev.minutes - 1, seconds: 59 };
-        } else if (prev.hours > 0) {
-          return { ...prev, hours: prev.hours - 1, minutes: 59, seconds: 59 };
-        } else if (prev.days > 0) {
-          return { ...prev, days: prev.days - 1, hours: 23, minutes: 59, seconds: 59 };
-        }
-        return prev;
-      });
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, []);
+  const { addToCart, setQuickViewProduct, formatPrice, toPersianDigits, toggleWishlist, isInWishlist, allProducts } = useShop();
 
   return (
     <section id="deals" className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 pt-20 sm:pt-24 pb-12">
@@ -49,56 +22,19 @@ export const FlashDeals = () => {
             <div>
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-900/40 text-blue-600 dark:text-blue-300 font-bold text-xs mb-3 border border-blue-200 dark:border-blue-700/50">
                 <Zap className="w-4 h-4 fill-blue-500 text-blue-500 animate-pulse" />
-                <span>فرصت محدود</span>
+                <span>پیشنهاد منتخب</span>
               </div>
               <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white leading-tight">
                 پیشنهادهای شگفت‌انگیز نکسورا
               </h3>
               <p className="text-xs text-slate-600 dark:text-slate-300 mt-2 leading-relaxed">
-                تخفیف‌های ویژه روی کالاهای اصیل و دیجیتال منتخب. زمان باقی‌مانده:
+                محصولات منتخب با قیمت درج‌شده در فروشگاه.
               </p>
-            </div>
-
-            {/* Persian Timer Box */}
-            <div className="my-6 pt-4 border-t border-slate-100 dark:border-slate-800">
-              <div className="grid grid-cols-4 gap-2 text-center">
-                {/* Days */}
-                <div className="p-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700/70 shadow-sm">
-                  <span className="block text-lg sm:text-xl font-black text-slate-900 dark:text-white font-vazir">
-                    {toPersianDigits(timeLeft.days)}
-                  </span>
-                  <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400">روز</span>
-                </div>
-
-                {/* Hours */}
-                <div className="p-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700/70 shadow-sm">
-                  <span className="block text-lg sm:text-xl font-black text-slate-900 dark:text-white font-vazir">
-                    {toPersianDigits(timeLeft.hours)}
-                  </span>
-                  <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400">ساعت</span>
-                </div>
-
-                {/* Minutes */}
-                <div className="p-2.5 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700/70 shadow-sm">
-                  <span className="block text-lg sm:text-xl font-black text-slate-900 dark:text-white font-vazir">
-                    {toPersianDigits(timeLeft.minutes)}
-                  </span>
-                  <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400">دقیقه</span>
-                </div>
-
-                {/* Seconds */}
-                <div className="p-2.5 rounded-2xl bg-gradient-to-tr from-blue-600 to-sky-500 text-white shadow-md shadow-blue-500/30">
-                  <span className="block text-lg sm:text-xl font-black font-vazir">
-                    {toPersianDigits(timeLeft.seconds)}
-                  </span>
-                  <span className="text-[10px] font-bold text-blue-100">ثانیه</span>
-                </div>
-              </div>
             </div>
 
             <div className="text-[11px] text-slate-600 dark:text-slate-300 text-center bg-blue-50/70 dark:bg-slate-800/80 py-2.5 px-3 rounded-xl border border-blue-200/60 dark:border-slate-700 flex items-center justify-center gap-1.5">
               <ShieldCheck className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />
-              <span>ارسال اکسپرس رایگان برای تمامی سفارش‌های شگفت‌انگیز</span>
+              <span>شرایط ارسال در سبد خرید محاسبه می‌شود</span>
             </div>
           </div>
 
@@ -110,7 +46,7 @@ export const FlashDeals = () => {
               - All texts, verified badge, stats and action pill button intact
           */}
           <div className="lg:col-span-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4.5">
-            {FLASH_DEALS.slice(0, 3).map((deal) => {
+            {allProducts.filter(p => p.id.startsWith('flash-')).slice(0, 3).map((deal) => {
               const isFavorited = isInWishlist(deal.id);
 
               return (

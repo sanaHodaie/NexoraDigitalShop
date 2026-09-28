@@ -1,11 +1,10 @@
 import React, { useState } from 'react';
 import { Heart, Plus, Users, Award, Flame } from 'lucide-react';
-import { TRENDING_PRODUCTS } from '../../data/mockData';
 import { useShop } from '../../context/ShopContext';
 
 export const TrendingSection = () => {
   const [activeCategory, setActiveCategory] = useState('all');
-  const { addToCart, toggleWishlist, isInWishlist, setQuickViewProduct, formatPrice, toPersianDigits } = useShop();
+  const { addToCart, toggleWishlist, isInWishlist, setQuickViewProduct, formatPrice, toPersianDigits, allProducts } = useShop();
 
   const categories = [
     { id: 'all', label: 'همه داغ‌ترین‌ها' },
@@ -17,8 +16,8 @@ export const TrendingSection = () => {
 
   const filteredProducts =
     activeCategory === 'all'
-      ? TRENDING_PRODUCTS
-      : TRENDING_PRODUCTS.filter((p) => p.category === activeCategory);
+      ? allProducts.filter(p => p.id.startsWith('trend-'))
+      : allProducts.filter(p => p.id.startsWith('trend-')).filter((p) => p.category === activeCategory);
 
   return (
     <section id="trending" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">

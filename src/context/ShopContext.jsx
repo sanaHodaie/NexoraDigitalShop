@@ -1,172 +1,81 @@
-import React, { createContext, useContext, useState } from 'react';
-import { TRENDING_PRODUCTS, FLASH_DEALS, RECOMMENDED_PRODUCTS } from '../data/mockData';
+import React, { createContext, useContext, useEffect, useState } from 'react';
+import { api, resetCsrf } from '../api/client';
 
 const ShopContext = createContext();
-
-// 1 USD = approx 600,000 Rials for realistic tech pricing conversion
 const RIAL_RATE = 600000;
-
 export const ShopProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
   const [wishlist, setWishlist] = useState([]);
+  const [allProducts, setAllProducts] = useState([]);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isWishlistModalOpen, setIsWishlistModalOpen] = useState(false);
   const [quickViewProduct, setQuickViewProduct] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [centerToast, setCenterToast] = useState(null);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  const allProducts = [...TRENDING_PRODUCTS, ...FLASH_DEALS, ...RECOMMENDED_PRODUCTS];
-
-  // Persian numbers converter
-  const toPersianDigits = (num) => {
-    if (num === null || num === undefined) return '';
-    const str = String(num);
-    const persianMap = ['۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'];
-    return str.replace(/\d/g, (d) => persianMap[d]);
+  const showCenterMessage = (title, message, iconType = 'info') => setCenterToast({ id: Date.now(), title, message, iconType });
+  const reportError = (error) => showCenterMessage('خطا', error.message, 'info');
+  const refreshAccount = async () => {
+    const [newCart, newWishlist] = await Promise.all([api('/account/cart'), api('/account/wishlist')]);
+    setCart(newCart); setWishlist(newWishlist);
   };
+  useEffect(() => {
+    api('/products').then(setAllProducts).catch(reportError);
+    api('/auth/me').then(() => { setIsLoggedIn(true); return refreshAccount(); }).catch(() => {});
+  }, []);
 
-  // Convert and format all prices in Rial (ریال)
-  const formatPrice = (amountInUsd) => {
-    if (!amountInUsd) return '۰ ریال';
-    const rialAmount = Math.round(amountInUsd * RIAL_RATE);
-    return `${toPersianDigits(rialAmount.toLocaleString('en-US'))} ریال`;
+  const authenticate = async (email, password, register) => {
+    await api(`/auth/${register ? 'register' : 'login'}`, { method: 'POST', body: JSON.stringify({ email, password }) });
+    resetCsrf();
+    setIsLoggedIn(true); setIsAuthOpen(false);
+    await refreshAccount();
+    showCenterMessage('ورود موفق', 'به حساب خود وارد شدید.', 'user');
   };
-
-  const showCenterMessage = (title, message, iconType = 'heart') => {
-    setCenterToast({ id: Date.now(), title, message, iconType });
+  const toggleLogin = async () => {
+    if (!isLoggedIn) { setIsAuthOpen(true); return; }
+    try {
+      await api('/auth/logout', { method: 'POST' });
+      resetCsrf();
+      setIsLoggedIn(false); setCart([]); setWishlist([]);
+      showCenterMessage('خروج', 'از حساب خارج شدید.', 'user');
+    } catch (error) { reportError(error); }
   };
-
-  const closeCenterMessage = () => {
-    setCenterToast(null);
+  const requireLogin = () => { if (!isLoggedIn) { setIsAuthOpen(true); return false; } return true; };
+  const addToCart = async (product, quantity = 1) => {
+    if (!requireLogin()) return;
+    try {
+      const existing = cart.find(x => x.product.id === product.id);
+      await api(`/account/cart/${encodeURIComponent(product.id)}`, { method: 'PUT', body: JSON.stringify({ quantity: (existing?.quantity || 0) + quantity }) });
+      await refreshAccount(); showCenterMessage('به سبد خرید اضافه شد', `«${product.name}» به سبد اضافه شد.`, 'cart');
+    } catch (error) { reportError(error); }
   };
-
-  const toggleLogin = () => {
-    setIsLoggedIn((prev) => {
-      const next = !prev;
-      showCenterMessage(
-        next ? 'ورود موفقیت‌آمیز' : 'خروج از حساب',
-        next ? 'شما با موفقیت به حساب کاربری نکسورا وارد شدید.' : 'شما از حساب کاربری خارج شدید.',
-        'user'
-      );
-      return next;
-    });
+  const updateQuantity = async (productId, quantity) => {
+    try { await api(`/account/cart/${encodeURIComponent(productId)}`, { method: 'PUT', body: JSON.stringify({ quantity }) }); await refreshAccount(); }
+    catch (error) { reportError(error); }
   };
-
-  const addToCart = (product, quantity = 1) => {
-    setCart((prev) => {
-      const existing = prev.find((item) => item.product.id === product.id);
-      if (existing) {
-        return prev.map((item) =>
-          item.product.id === product.id
-            ? { ...item, quantity: item.quantity + quantity }
-            : item
-        );
-      }
-      return [...prev, { product, quantity }];
-    });
-    showCenterMessage(
-      'به سبد خرید اضافه شد',
-      `«${product.name}» با موفقیت در سبد خرید شما قرار گرفت.`,
-      'cart'
-    );
+  const removeFromCart = (id) => updateQuantity(id, 0);
+  const clearCart = async () => { try { await api('/account/cart', { method: 'DELETE' }); setCart([]); } catch (error) { reportError(error); } };
+  const toggleWishlist = async (product) => {
+    if (!requireLogin()) return;
+    try {
+      const exists = wishlist.some(x => x.id === product.id);
+      await api(`/account/wishlist/${encodeURIComponent(product.id)}`, { method: exists ? 'DELETE' : 'PUT' });
+      await refreshAccount(); showCenterMessage(exists ? 'حذف از علاقه‌مندی‌ها' : 'به علاقه‌مندی‌ها اضافه شد', product.name, 'heart');
+    } catch (error) { reportError(error); }
   };
-
-  const removeFromCart = (productId) => {
-    setCart((prev) => prev.filter((item) => item.product.id !== productId));
-  };
-
-  const updateQuantity = (productId, quantity) => {
-    if (quantity <= 0) {
-      removeFromCart(productId);
-      return;
-    }
-    setCart((prev) =>
-      prev.map((item) =>
-        item.product.id === productId ? { ...item, quantity } : item
-      )
-    );
-  };
-
-  const clearCart = () => {
-    setCart([]);
-  };
-
-  // Toggle wishlist with elegant blue-themed center toast notification
-  const toggleWishlist = (product) => {
-    setWishlist((prev) => {
-      const exists = prev.some((item) => item.id === product.id);
-      if (exists) {
-        showCenterMessage(
-          'حذف از علاقه‌مندی‌ها',
-          `«${product.name}» از لیست نشان‌شده‌های شما برداشته شد.`,
-          'info'
-        );
-        return prev.filter((item) => item.id !== product.id);
-      } else {
-        showCenterMessage(
-          'به علاقه‌مندی‌ها اضافه شد',
-          `«${product.name}» با موفقیت به لیست نشان‌شده‌های شما پیوست.`,
-          'heart'
-        );
-        return [...prev, product];
-      }
-    });
-  };
-
-  const isInWishlist = (productId) => wishlist.some((item) => item.id === productId);
-
-  const totalCartCount = cart.reduce((acc, item) => acc + item.quantity, 0);
-  const totalWishlistCount = wishlist.length;
-
-  const cartSubtotal = cart.reduce(
-    (acc, item) => acc + item.product.price * item.quantity,
-    0
-  );
-
-  return (
-    <ShopContext.Provider
-      value={{
-        cart,
-        addToCart,
-        removeFromCart,
-        updateQuantity,
-        clearCart,
-        totalCartCount,
-        cartSubtotal,
-        isCartOpen,
-        setIsCartOpen,
-        wishlist,
-        totalWishlistCount,
-        toggleWishlist,
-        isInWishlist,
-        isWishlistModalOpen,
-        setIsWishlistModalOpen,
-        quickViewProduct,
-        setQuickViewProduct,
-        searchQuery,
-        setSearchQuery,
-        isSearchOpen,
-        setIsSearchOpen,
-        centerToast,
-        closeCenterMessage,
-        formatPrice,
-        toPersianDigits,
-        isLoggedIn,
-        toggleLogin,
-        allProducts,
-      }}
-    >
-      {children}
-    </ShopContext.Provider>
-  );
+  const toPersianDigits = num => String(num ?? '').replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[Number(d)]);
+  const formatPrice = amount => `${toPersianDigits(Math.round((amount || 0) * RIAL_RATE).toLocaleString('en-US'))} ریال`;
+  return <ShopContext.Provider value={{ cart, wishlist, allProducts, isLoggedIn, isAuthOpen, setIsAuthOpen, authenticate, toggleLogin,
+    addToCart, removeFromCart, updateQuantity, clearCart, toggleWishlist, isInWishlist: id => wishlist.some(x => x.id === id),
+    totalCartCount: cart.reduce((sum, x) => sum + x.quantity, 0), totalWishlistCount: wishlist.length,
+    cartSubtotal: cart.reduce((sum, x) => sum + x.product.price * x.quantity, 0),
+    isCartOpen, setIsCartOpen, isWishlistModalOpen, setIsWishlistModalOpen, quickViewProduct, setQuickViewProduct,
+    searchQuery, setSearchQuery, isSearchOpen, setIsSearchOpen, centerToast, closeCenterMessage: () => setCenterToast(null),
+    showCenterMessage, addToast: message => showCenterMessage('خبرنامه', message), formatPrice, toPersianDigits }}>
+    {children}
+  </ShopContext.Provider>;
 };
-
-export const useShop = () => {
-  const context = useContext(ShopContext);
-  if (!context) {
-    throw new Error('useShop must be used within a ShopProvider');
-  }
-  return context;
-};
+export const useShop = () => { const value = useContext(ShopContext); if (!value) throw new Error('ShopProvider missing'); return value; };
