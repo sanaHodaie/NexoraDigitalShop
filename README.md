@@ -1,77 +1,157 @@
 # Nexora Digital Shop
 
-React/Vite storefront connected to an ASP.NET Core Web API. Product catalog and search, registration/login, account cart and wishlist, order creation, and newsletter subscriptions use the API. The database is SQLite; the catalog is seeded from `backend/Nexora.Api/Data/products.json` on first run.
+Persian/RTL React + Vite storefront with **Python, FastAPI, Pydantic 2,
+SQLAlchemy 2, PostgreSQL and Alembic**.
+
+## Structure
+
+```text
+src/                         React storefront
+public/                      Public images and favicons
+backend/
+  app/
+    main.py                  FastAPI app, middleware, errors
+    config.py                Pydantic environment settings
+    db.py                    SQLAlchemy engine and request sessions
+    models.py                Database models
+    schemas.py               Pydantic request/response contracts
+    security.py              Passwords, sessions, CSRF, rate limiting
+    routers/                 Authentication, catalogue, account endpoints
+    seed.py                  Idempotent catalogue seeding
+  alembic/                   Versioned schema migrations
+  data/products.json         Initial catalogue
+  tests/                     API, security and migration checks
+  legacy/Nexora.Api/          Archived ASP.NET source and local data
+  pyproject.toml / uv.lock    Python dependencies
+  start.py                   Migrate, seed, then start Uvicorn
+compose.yaml                 Local PostgreSQL + API
+render.yaml                  Optional free Render API deployment
+vercel.mjs                   Vite hosting and same-origin API proxy
+```
+
+The ASP.NET source is archived and no longer used. Existing SQLite files are
+preserved under `backend/legacy/Nexora.Api`; they are **not automatically imported**.
+Use a new, empty PostgreSQL database. The new Argon2 password hashes and session
+format are not interchangeable with ASP.NET hashes/cookies. A populated legacy
+store needs a separate data migration/password-reset plan before switching.
 
 ## Run locally
 
-Install Node.js and the .NET 10 SDK, then in separate terminals:
+Install Python 3.13, [uv](https://docs.astral.sh/uv/), Node.js and PostgreSQL.
+With Docker installed, start both the API and a persistent local database:
 
-```bash
-cd backend/Nexora.Api
-dotnet dev-certs https --trust
-dotnet run --launch-profile Nexora.Api
+```sh
+docker compose up --build
 ```
 
-```bash
+Or start only PostgreSQL with `docker compose up -d db` (or install PostgreSQL
+directly), then run the API outside Docker:
+
+```sh
+cd backend
+uv sync --frozen
+# Copy .env.example to .env (PowerShell: Copy-Item .env.example .env).
+uv run python start.py
+```
+
+Set `DATABASE_URL` in `backend/.env` for your PostgreSQL instance. `start.py`
+applies Alembic migrations, inserts missing catalogue products without resetting
+stock/prices, and starts `http://127.0.0.1:8000`. Migration failures stop startup.
+
+In another terminal at the repository root:
+
+```sh
 npm ci
 npm run dev
 ```
 
-Open `http://localhost:3000`. Vite proxies `/api` to `https://localhost:7043`; the browser talks to Vite, so it does not connect directly to the backend development certificate. For mobile testing over a LAN IP, serve the frontend over trusted HTTPS so the browser can store the Secure authentication and CSRF cookies.
+Open `http://localhost:3000`. Vite proxies `/api/*` to port 8000. Interactive
+backend documentation is at `http://127.0.0.1:8000/docs`.
 
 ## Deployment
 
-The Vite development proxy is not included in `npm run build`. A static frontend
-deployment alone does not run the ASP.NET API. Configure the public site's server
-to route `/api/*` to the running ASP.NET Core application, before the SPA HTML
-fallback. Both frontend and API must be reachable through the same HTTPS origin;
-do not point the deployed browser at `localhost:7043`.
+Publishing the Vite frontend alone does **not** start the Python API. See the
+Persian walkthrough: [استقرار رایگان](backend/DEPLOYMENT.fa.md).
 
-Verify `https://YOUR_SITE/api/csrf` returns JSON with a token and a Secure CSRF
-cookie, not `index.html`, a 404, or a redirect to an unreachable API address.
-Configure `ConnectionStrings:Store` via environment or your secrets manager.
-Back up the SQLite database and persist ASP.NET Core Data Protection keys across deployments.
+Set these variables on the **backend**, never in public `VITE_` settings:
 
-### This site's Vercel setup
+| Name | Purpose |
+| --- | --- |
+| `ENVIRONMENT` | `development` locally; `production` on the host |
+| `DATABASE_URL` | PostgreSQL URL (`postgresql://` or `postgresql+psycopg://`) |
+| `SECRET_KEY` | Persistent random secret, at least 32 characters in production |
+| `GOOGLE_CLIENT_ID` | Optional Google OAuth Web Client ID |
+| `PORT` | Listen port; default 8000, automatically supplied by Render |
 
-`vercel.mjs` routes `/api/*` to the HTTPS ASP.NET host configured in
-`NEXORA_API_ORIGIN`. It preserves the `/api` prefix and keeps requests, cookies,
-and CSRF tokens on the storefront's origin. Do not add a browser-side API URL or
-disable CSRF to work around deployment errors.
+Generate a secret with `python -c "import secrets; print(secrets.token_urlsafe(48))"`.
+Production cookies are Secure, HttpOnly, SameSite=Strict with `__Host-` names;
+the public hosting ingress must provide HTTPS. Development uses different,
+non-Secure cookie names for local HTTP. Untrusted forwarded headers are not used.
 
-1. Publish `backend/Nexora.Api` to a host that runs .NET 10 and provides persistent
-   storage for SQLite. Publishing the Vite frontend on Vercel does not run this
-   project. The backend HTTPS `/api/csrf` endpoint must work before proceeding.
-2. In Vercel **Project Settings → Environment Variables**, set `NEXORA_API_ORIGIN`
-   to the real API origin, for example `https://YOUR_API_HOST` (no `/api` suffix).
-   Configure the environments you deploy to. This is a server-side setting, not a
-   `VITE_` variable; do not include credentials in the URL.
-3. Redeploy after changing the variable because routing is generated at build time.
-4. Verify `https://nexora-digital-shop.vercel.app/api/csrf` returns JSON, then test
-   registration, `/api/auth/me`, and logout in a real browser. No redirect to the
-   backend hostname should occur.
+The Render blueprint requests the Free service plan and external PostgreSQL.
+It does not provision a paid database/disk. Hosting accounts, database credentials
+and actual remote deployment are still needed; configuration files alone do not
+make the online API work.
 
-Without a backend origin, API requests intentionally return a JSON 503 response
-instead of the SPA's HTML or a nonexistent API endpoint. This fallback does not
-provide authentication: a deployed ASP.NET backend is still required.
+On **Vercel**, set `NEXORA_API_ORIGIN=https://YOUR_BACKEND_HOST` (without `/api`),
+then deploy the latest commit. Root Directory: repository root; framework: Vite;
+build: `npm run build`; output: `dist`. The proxy preserves `/api`, cookies and
+same-origin CSRF; do not point the browser directly to the backend hostname.
 
-See [Vercel external rewrites](https://vercel.com/docs/routing/rewrites) and
-[Vercel configuration](https://vercel.com/docs/project-configuration/vercel-ts).
+`/api/products` should return a JSON array; `/api/csrf` a token. `/api/auth/me`
+returns 401 when logged out. Without an API origin, the configured fallback
+returns JSON 503 `BACKEND_NOT_CONFIGURED`. Vercel plain-text 404, even on
+`/api/backend-unavailable`, indicates an outdated or incorrectly rooted
+deployment. Deploy the repository, not just `dist` or an older release.
 
-## API
+### Google sign-in
 
-- `GET /api/products?q=...&category=...`, `GET /api/products/{id}`
-- `GET /api/csrf` (required before writes; send `X-CSRF-TOKEN`)
-- `POST /api/auth/register`, `POST /api/auth/login`, `POST /api/auth/logout`, `GET /api/auth/me`
-- `GET /api/account/cart`, `PUT /api/account/cart/{id}` with `{ "quantity": 1 }`, `DELETE /api/account/cart`
-- `GET /api/account/wishlist`, `PUT /api/account/wishlist/{id}`, `DELETE /api/account/wishlist/{id}`
-- `POST /api/account/orders`, `GET /api/account/orders`
-- `POST /api/newsletter` with `{ "email": "..." }`
+Create a Google OAuth Web application client and authorize the frontend origin
+(for example `https://nexora-digital-shop.vercel.app`). Set `GOOGLE_CLIENT_ID` on
+the API. The official library verifies signature, issuer, audience, expiry and
+verified email. Returning users are identified by Google's immutable subject;
+password accounts are not automatically linked by email. No Google client secret
+or access/refresh token is shipped to the browser.
 
-The server derives product prices and stock from its database, never from browser inputs. Authentication uses an HttpOnly, Secure, SameSite cookie and CSRF tokens; write endpoints require a token. Cart and wishlist are private per account. Registration requires a password of at least 12 characters. Auth and newsletter endpoints are rate limited.
+## API and behavior
 
-**Order status is `pending_payment`**: no payment gateway is configured. Creating an order reserves stock and records the order, but does not collect money or finalize fulfillment. Before production use, integrate a real provider with a verified server-side callback, cancellation/refund flows, reservation expiry and release, an address and shipping workflow, email delivery, administrator catalog and stock management, database migrations, and a durable database suitable for your traffic. The old decorative testimonials and article content are static editorial content. Prices are currently seeded in USD and converted to rials at a fixed display rate in the frontend; choose a single authoritative rial pricing model before accepting payments. Do not advertise checkout as paid until those steps are complete.
+- `GET /api/products?q=...&category=...&limit=...`, `GET /api/products/{id}`
+- `GET /api/csrf`; mutations require its token in `X-CSRF-TOKEN`
+- `POST /api/auth/register`, `/api/auth/login`, `/api/auth/google`, `/api/auth/logout`
+- `GET /api/auth/me`, `/api/auth/providers`
+- `GET /api/account/cart`, `PUT /api/account/cart/{id}`, `DELETE /api/account/cart`
+- `GET /api/account/wishlist`, `PUT`/`DELETE /api/account/wishlist/{id}`
+- `GET`/`POST /api/account/orders`, `POST /api/newsletter`, `GET /health`
 
-## Checks
+React contracts remain camelCase with `{ "error": "..." }` failures. Passwords
+use Argon2. Login cookies contain random tokens; only token hashes and expiration
+dates are stored in PostgreSQL. Logout revokes the session. Signed CSRF tokens
+are bound to the browser cookie and current session. API responses are `no-store`.
+Authentication shares a global limit of 10 requests/minute; newsletter allows 5.
+Run one Uvicorn worker; multiple workers require a shared limiter store.
 
-`npm run build` and `npm run lint`. With .NET installed, run `dotnet build backend/Nexora.Api/Nexora.Api.csproj` and exercise registration, cart, and order endpoints against a fresh database.
+Cart/wishlist/orders are account scoped. Checkout uses server prices and atomic
+stock reservations in one transaction, with $9.99 shipping below $99. Orders stay
+`pending_payment`; there is no real payment integration. Existing fixed rial
+conversion in the frontend is unchanged.
+
+## Migrations and checks
+
+```sh
+cd backend
+uv run alembic upgrade head
+uv run alembic revision --autogenerate -m "describe schema change"
+# Review generated revisions before applying them.
+uv run pytest
+uv run ruff check app tests alembic start.py
+```
+
+Quick tests use isolated SQLite databases **only as test doubles**. Set
+`TEST_DATABASE_URL` to a dedicated PostgreSQL test database to run the same suite
+against PostgreSQL, including competing-order inventory checks. Tests create and
+drop unique `nexora_test_*` schemas; never supply production credentials.
+
+At the repository root: `npm run build`, `npm run lint`, and
+`node --test scripts/api-client.test.mjs scripts/vercel-config.test.mjs`.
+`scripts/check-auth.mjs` defaults to API port 8000 and UI port 3001;
+`NEXORA_SKIP_API=1` runs only its mocked browser tests, not live API validation.

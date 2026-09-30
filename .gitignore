@@ -11,3 +11,8 @@ backend/**/obj/
 backend/**/*.db
 backend/**/*.db-shm
 backend/**/*.db-wal
+backend/.venv/
+**/__pycache__/
+**/.pytest_cache/
+**/.ruff_cache/
+*.pyc

@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Antiforgery;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.EntityFrameworkCore;
@@ -12,7 +13,25 @@ using Nexora.Api;
 
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddDbContext<StoreDb>(o => o.UseSqlite(builder.Configuration.GetConnectionString("Store") ?? "Data Source=nexora.db"));
+var databaseProvider = builder.Configuration["Database:Provider"] ?? "Sqlite";
+var connectionString = builder.Configuration.GetConnectionString("Store");
+if (databaseProvider.Equals("Postgres", StringComparison.OrdinalIgnoreCase))
+{
+    if (string.IsNullOrWhiteSpace(connectionString))
+        throw new InvalidOperationException("ConnectionStrings__Store is required when Database__Provider is Postgres.");
+    builder.Services.AddDbContext<StoreDb>(o => o.UseNpgsql(connectionString));
+    // Free container hosts discard local files on restart. Keep cookie/CSRF keys
+    // with the accounts in PostgreSQL so sessions survive a redeployment.
+    builder.Services.AddDataProtection().SetApplicationName("Nexora.Api").PersistKeysToDbContext<StoreDb>();
+}
+else if (databaseProvider.Equals("Sqlite", StringComparison.OrdinalIgnoreCase))
+{
+    builder.Services.AddDbContext<StoreDb>(o => o.UseSqlite(connectionString ?? "Data Source=nexora.db"));
+}
+else
+{
+    throw new InvalidOperationException("Database__Provider must be Sqlite or Postgres.");
+}
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme).AddCookie(o =>
 {
     o.Cookie.Name = "__Host-Nexora";
@@ -32,6 +51,16 @@ builder.Services.AddRateLimiter(o =>
     o.AddFixedWindowLimiter("newsletter", x => { x.PermitLimit = 5; x.Window = TimeSpan.FromMinutes(1); x.QueueLimit = 0; });
 });
 var app = builder.Build();
+// Enable only behind a managed ingress that redirects HTTP to HTTPS and keeps
+// the container port private (e.g. Render). Do not trust arbitrary client headers.
+if (builder.Configuration.GetValue<bool>("Hosting:HttpsOnlyProxy"))
+{
+    app.Use((context, next) =>
+    {
+        context.Request.Scheme = "https";
+        return next(context);
+    });
+}
 app.UseHttpsRedirection();
 app.UseRateLimiter();
 app.UseAuthentication();
@@ -46,6 +75,7 @@ app.Use(async (ctx, next) =>
     await next();
 });
 
+app.MapGet("/health", () => Results.Ok(new { status = "ok" }));
 app.MapGet("/api/csrf", (HttpContext ctx, IAntiforgery antiforgery) =>
 {
     ctx.Response.Headers.CacheControl = "no-store";

@@ -2,19 +2,21 @@
 // NEXORA_API_URL, NEXORA_UI_URL or NEXORA_CHROME when using other ports/platforms.
 import assert from 'node:assert/strict';
 import https from 'node:https';
+import http from 'node:http';
 import { spawn } from 'node:child_process';
 import { readFile, writeFile, mkdtemp } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
-const apiUrl = process.env.NEXORA_API_URL || 'https://localhost:7143';
+const apiUrl = process.env.NEXORA_API_URL || 'http://127.0.0.1:8000';
 const uiUrl = process.env.NEXORA_UI_URL || 'http://127.0.0.1:3001';
 assert.ok(['localhost', '127.0.0.1'].includes(new URL(apiUrl).hostname), 'Use a local test API, never production');
 const cookies = new Map();
 function api(path, data, headers = {}) {
   return new Promise((resolve, reject) => {
     const body = data === undefined ? undefined : JSON.stringify(data);
-    const req = https.request(new URL(path, apiUrl), {
+    const transport = new URL(apiUrl).protocol === 'https:' ? https : http;
+    const req = transport.request(new URL(path, apiUrl), {
       // Only this local development test accepts the self-signed certificate.
       rejectUnauthorized: false, method: body ? 'POST' : 'GET',
       headers: { Cookie: [...cookies].map(([k, v]) => `${k}=${v}`).join('; '), ...(body ? { 'Content-Type': 'application/json' } : {}), ...headers },
@@ -70,7 +72,7 @@ try {
   let authenticated = false;
   let productsFailure = null;
   let productRequests = 0;
-  const products = JSON.parse(await readFile(new URL('../backend/Nexora.Api/Data/products.json', import.meta.url), 'utf8'));
+  const products = JSON.parse(await readFile(new URL('../backend/data/products.json', import.meta.url), 'utf8'));
   function command(method, params = {}) {
     return new Promise((resolve, reject) => {
       const call = ++id;

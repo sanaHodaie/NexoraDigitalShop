@@ -1,9 +1,11 @@
+using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace Nexora.Api;
 
-public sealed class StoreDb(DbContextOptions<StoreDb> options) : DbContext(options)
+public sealed class StoreDb(DbContextOptions<StoreDb> options) : DbContext(options), IDataProtectionKeyContext
 {
+    public DbSet<DataProtectionKey> DataProtectionKeys => Set<DataProtectionKey>();
     public DbSet<User> Users => Set<User>();
     public DbSet<UserProfile> UserProfiles => Set<UserProfile>();
     public DbSet<Product> Products => Set<Product>();

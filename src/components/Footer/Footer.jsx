@@ -4,12 +4,12 @@ import { Instagram, Youtube, Twitter, Facebook, Globe, Smartphone, Download } fr
 
 export const Footer = () => {
   const setupThumbnails = [
-    '/src/assets/images/article_productivity_setup_1790528034532.jpg',
-    '/src/assets/images/collection_audio_headphones_1790528002919.jpg',
-    '/src/assets/images/collection_gaming_gear_1790528013982.jpg',
-    '/src/assets/images/collection_smart_home_1790528023441.jpg',
-    '/src/assets/images/collection_laptop_pc_1790528088687.jpg',
-    '/src/assets/images/collection_wearables_watch_1790528102322.jpg',
+    '/assets/article_productivity_setup_1790528034532.jpg',
+    '/assets/collection_audio_headphones_1790528002919.jpg',
+    '/assets/collection_gaming_gear_1790528013982.jpg',
+    '/assets/collection_smart_home_1790528023441.jpg',
+    '/assets/collection_laptop_pc_1790528088687.jpg',
+    '/assets/collection_wearables_watch_1790528102322.jpg',
   ];
 
   return (
