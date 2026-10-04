@@ -7,10 +7,44 @@ from sqlalchemy.orm import Session, joinedload
 from app.db import get_db
 from app.models import CartItem, Order, OrderLine, Product, User, WishlistItem
 from app.routers.catalog import public_product
-from app.schemas import OrderHistoryOutput, OrderOutput, QuantityInput
+from app.schemas import AccountOutput, OrderHistoryOutput, OrderOutput, ProfileUpdate, QuantityInput
 from app.security import current_user
 
 router = APIRouter(prefix="/api/account", tags=["account"])
+
+
+@router.patch("/profile", response_model=AccountOutput)
+def update_profile(data: ProfileUpdate, db: Session = Depends(get_db), user: User = Depends(current_user)):
+    user.full_name = data.full_name
+    db.commit()
+    return user
+
+
+@router.get("/orders/{order_id}")
+def order_detail(order_id: int, db: Session = Depends(get_db), user: User = Depends(current_user)):
+    order = db.scalar(select(Order).where(Order.id == order_id, Order.user_id == user.id))
+    if order is None:
+        raise HTTPException(404, "Order not found")
+    rows = db.execute(
+        select(OrderLine, Product.name).join(Product).where(OrderLine.order_id == order.id)
+    ).all()
+    subtotal = sum((line.unit_price * line.quantity for line, name in rows), Decimal("0"))
+    return {
+        "id": order.id,
+        "total": float(order.total),
+        "status": order.status,
+        "createdAt": order.created_at,
+        "shipping": float(order.total - subtotal),
+        "lines": [
+            {
+                "productId": line.product_id,
+                "name": name,
+                "quantity": line.quantity,
+                "unitPrice": float(line.unit_price),
+            }
+            for line, name in rows
+        ],
+    }
 
 
 def lock_account(db: Session, user: User):

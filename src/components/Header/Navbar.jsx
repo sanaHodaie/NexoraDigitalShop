@@ -6,7 +6,6 @@ import { ThemeToggle } from '../Common/ThemeToggle';
 import { MobileMenu } from './MobileMenu';
 import { useShop } from '../../context/ShopContext';
 import { AccountIcon } from '../../assets/icons/AccountIcon';
-import { LogoutIcon } from '../../assets/icons/LogoutIcon';
 import { MenuIcon } from '../../assets/icons/MenuIcon';
 import { CloseIcon } from '../../assets/icons/CloseIcon';
 
@@ -49,13 +48,13 @@ export const Navbar = () => {
 
   // Desktop Navigation links - enriched with more items
   const desktopNavLinks = [
-    { label: 'خانه', href: '#' },
-    { label: 'فروشگاه', href: '#trending' },
-    { label: 'برندها', href: '#collections' },
-    { label: 'تخفیف‌ها', href: '#deals', isDeal: true },
-    { label: 'پرفروش‌ترین‌ها', href: '#trending' },
-    { label: 'مجله فناوری', href: '#articles' },
-    { label: 'پشتیبانی', href: '#footer' },
+    { label: 'خانه', href: '/' },
+    { label: 'فروشگاه', href: '/#trending' },
+    { label: 'برندها', href: '/#collections' },
+    { label: 'تخفیف‌ها', href: '/#deals', isDeal: true },
+    { label: 'پرفروش‌ترین‌ها', href: '/#trending' },
+    { label: 'مجله فناوری', href: '/#articles' },
+    { label: 'پشتیبانی', href: '/#footer' },
   ];
 
   // Filtered products for live search (especially on mobile)
@@ -151,12 +150,12 @@ export const Navbar = () => {
             <button
               type="button"
               onClick={toggleLogin}
-              aria-label={isLoggedIn ? 'خروج از حساب کاربری' : 'ورود به حساب کاربری'}
-              title={isLoggedIn ? `${user?.fullName || user?.email || 'حساب کاربری'} — خروج` : 'ورود به حساب کاربری'}
+              aria-label={isLoggedIn ? 'حساب کاربری' : 'ورود به حساب کاربری'}
+              title={isLoggedIn ? `${user?.fullName || user?.email || 'حساب کاربری'}` : 'ورود به حساب کاربری'}
               className="w-8 h-8 rounded-full bg-slate-100/90 dark:bg-slate-800/90 border border-slate-200/60 dark:border-slate-700 flex items-center justify-center hover:scale-105 active:scale-95 transition-all cursor-pointer"
             >
               {isLoggedIn ? (
-                <LogoutIcon className="w-4 h-4" />
+                <AccountIcon className="w-4 h-4" />
               ) : (
                 <AccountIcon className="w-4 h-4" />
               )}
@@ -262,7 +261,7 @@ export const Navbar = () => {
                   >
                     <MenuIcon className="w-4 h-4" />
                   </button>
-                  <a href="#" className="flex flex-col text-right">
+                  <a href="/" className="flex flex-col text-right">
                     <span className="text-sm sm:text-base font-black sm:tracking-wider bg-gradient-to-l from-blue-700 via-indigo-600 to-slate-900 dark:from-sky-400 dark:via-blue-300 dark:to-white bg-clip-text text-transparent font-sans">
                       NEXORA
                     </span>
@@ -273,9 +272,9 @@ export const Navbar = () => {
                 <div className="mobile-header-actions flex items-center gap-1 sm:gap-2">
                   <button type="button" onClick={toggleLogin}
                     title={isLoggedIn ? user?.fullName || user?.email : 'ورود به حساب کاربری'}
-                    aria-label={isLoggedIn ? 'خروج از حساب کاربری' : 'ورود به حساب کاربری'}
+                    aria-label={isLoggedIn ? 'حساب کاربری' : 'ورود به حساب کاربری'}
                     className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center cursor-pointer">
-                    {isLoggedIn ? <LogoutIcon className="w-4 h-4" /> : <AccountIcon className="w-4 h-4" />}
+                    {isLoggedIn ? <AccountIcon className="w-4 h-4" /> : <AccountIcon className="w-4 h-4" />}
                   </button>
                   {/* Search Icon right beside other icons */}
                   <button

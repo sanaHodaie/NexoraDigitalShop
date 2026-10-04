@@ -3,7 +3,7 @@ import React from 'react';
 export const Logo = ({ className = '' }) => {
   return (
     <a
-      href="#"
+      href="/"
       className={`inline-flex items-center gap-2.5 group select-none ${className}`}
     >
       {/* Geometric Modern Tech Symbol */}

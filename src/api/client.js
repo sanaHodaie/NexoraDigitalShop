@@ -54,6 +54,10 @@ export async function api(path, options = {}) {
     },
   });
   if (!response.ok) {
+    if (response.status === 401 && path.startsWith('/account/') && typeof window !== 'undefined') {
+      resetCsrf();
+      window.dispatchEvent(new Event('nexora:session-expired'));
+    }
     throw await responseError(response, response.status === 401
       ? (path === '/auth/login' ? 'ایمیل یا رمز عبور نادرست است.' : 'ابتدا وارد حساب خود شوید.')
       : 'درخواست انجام نشد. دوباره تلاش کنید.');

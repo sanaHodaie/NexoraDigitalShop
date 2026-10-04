@@ -126,10 +126,10 @@ export const Footer = () => {
               فروشگاه
             </h5>
             <ul className="space-y-2.5 text-xs text-center md:text-right">
-              <li><a href="#trending" className="hover:text-blue-400 transition-colors">همه کالاها</a></li>
-              <li><a href="#recommended" className="hover:text-blue-400 transition-colors">تازه‌ترین‌ها</a></li>
-              <li><a href="#trending" className="hover:text-blue-400 transition-colors">پرفروش‌ترین‌ها</a></li>
-              <li><a href="#deals" className="hover:text-blue-400 transition-colors">تخفیف‌های ویژه</a></li>
+              <li><a href="/#trending" className="hover:text-blue-400 transition-colors">همه کالاها</a></li>
+              <li><a href="/#recommended" className="hover:text-blue-400 transition-colors">تازه‌ترین‌ها</a></li>
+              <li><a href="/#trending" className="hover:text-blue-400 transition-colors">پرفروش‌ترین‌ها</a></li>
+              <li><a href="/#deals" className="hover:text-blue-400 transition-colors">تخفیف‌های ویژه</a></li>
               <li><a href="#" className="hover:text-blue-400 transition-colors">کارت هدیه نکسورا</a></li>
             </ul>
           </div>
@@ -140,12 +140,12 @@ export const Footer = () => {
               دسته‌بندی‌ها
             </h5>
             <ul className="space-y-2.5 text-xs text-center md:text-right">
-              <li><a href="#smartphones" className="hover:text-blue-400 transition-colors">گوشی‌های هوشمند</a></li>
-              <li><a href="#laptops" className="hover:text-blue-400 transition-colors">لپ‌تاپ و رایانه</a></li>
-              <li><a href="#audio" className="hover:text-blue-400 transition-colors">تجهیزات صوتی</a></li>
-              <li><a href="#gaming" className="hover:text-blue-400 transition-colors">گیمینگ و کنسول</a></li>
-              <li><a href="#smart-home" className="hover:text-blue-400 transition-colors">خانه هوشمند</a></li>
-              <li><a href="#wearables" className="hover:text-blue-400 transition-colors">ساعت و پوشیدنی</a></li>
+              <li><a href="/#smartphones" className="hover:text-blue-400 transition-colors">گوشی‌های هوشمند</a></li>
+              <li><a href="/#laptops" className="hover:text-blue-400 transition-colors">لپ‌تاپ و رایانه</a></li>
+              <li><a href="/#audio" className="hover:text-blue-400 transition-colors">تجهیزات صوتی</a></li>
+              <li><a href="/#gaming" className="hover:text-blue-400 transition-colors">گیمینگ و کنسول</a></li>
+              <li><a href="/#smart-home" className="hover:text-blue-400 transition-colors">خانه هوشمند</a></li>
+              <li><a href="/#wearables" className="hover:text-blue-400 transition-colors">ساعت و پوشیدنی</a></li>
             </ul>
           </div>
 
@@ -173,7 +173,7 @@ export const Footer = () => {
               <li><a href="#" className="hover:text-blue-400 transition-colors">داستان ما</a></li>
               <li><a href="#" className="hover:text-blue-400 transition-colors">فرصت‌های شغلی</a></li>
               <li><a href="#" className="hover:text-blue-400 transition-colors">روابط عمومی و اخبار</a></li>
-              <li><a href="#articles" className="hover:text-blue-400 transition-colors">مجله تخصصی</a></li>
+              <li><a href="/#articles" className="hover:text-blue-400 transition-colors">مجله تخصصی</a></li>
             </ul>
 
             <div className="pt-1 flex flex-col items-center md:items-start">

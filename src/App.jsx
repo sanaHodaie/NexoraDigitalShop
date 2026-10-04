@@ -1,79 +1,45 @@
-import React from 'react';
-import { AuthModal } from './components/Auth/AuthModal';
+import React, { lazy, Suspense, useEffect } from 'react';
 import { ThemeProvider } from './context/ThemeContext';
-import { ShopProvider } from './context/ShopContext';
+import { ShopProvider, useShop } from './context/ShopContext';
 import { Navbar } from './components/Header/Navbar';
-import { HeroSection } from './components/Hero/HeroSection';
-import { CategoryStrip } from './components/Categories/CategoryStrip';
-import { FeaturedCollections } from './components/Collections/FeaturedCollections';
-import { TrendingSection } from './components/Products/TrendingSection';
-import { FlashDeals } from './components/Deals/FlashDeals';
-import { InspirationSection } from './components/Articles/InspirationSection';
-import { RecommendedSection } from './components/Products/RecommendedSection';
-import { CustomerReviews } from './components/Reviews/CustomerReviews';
-import { TrustBadges } from './components/Trust/TrustBadges';
-import { NewsletterSection } from './components/Newsletter/NewsletterSection';
 import { Footer } from './components/Footer/Footer';
 import { CartDrawer } from './components/Modals/CartDrawer';
 import { WishlistModal } from './components/Modals/WishlistModal';
 import { QuickViewModal } from './components/Modals/QuickViewModal';
 import { ToastContainer } from './components/Modals/ToastContainer';
+import { usePathname } from './navigation';
+
+const HomePage = lazy(() => import('./pages/HomePage'));
+const AccountPage = lazy(() => import('./pages/AccountPage'));
+const AuthModal = lazy(() => import('./components/Auth/AuthModal').then(module => ({ default: module.AuthModal })));
+
+function Storefront() {
+  const pathname = usePathname();
+  const account = pathname === '/account' || pathname === '/account/';
+  const { isAuthOpen } = useShop();
+  useEffect(() => {
+    if (!account) return;
+    const title = document.title;
+    const robots = document.createElement('meta');
+    robots.name = 'robots'; robots.content = 'noindex, nofollow';
+    document.head.appendChild(robots);
+    document.title = 'حساب کاربری | نکسورا';
+    return () => { robots.remove(); document.title = title; };
+  }, [account]);
+  return <div className="min-h-screen bg-[#f8fafc] dark:bg-[#0b0f19] text-slate-900 dark:text-slate-100 flex flex-col transition-colors duration-300 font-vazir selection:bg-blue-600 selection:text-white">
+    <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:right-2 focus:z-[100] focus:bg-white focus:p-3">رفتن به محتوای اصلی</a>
+    <Navbar />
+    <main id="main-content" className="flex-1 min-w-0">
+      <Suspense fallback={<div role="status" className="min-h-[65vh] grid place-items-center text-slate-500">در حال آماده‌سازی صفحه…</div>}>
+        {account ? <AccountPage /> : <HomePage />}
+      </Suspense>
+    </main>
+    <Footer />
+    <CartDrawer /><WishlistModal /><QuickViewModal /><ToastContainer />
+    {isAuthOpen && <Suspense fallback={<div role="status" className="fixed bottom-6 inset-x-4 z-50 rounded-2xl bg-white dark:bg-slate-900 p-4 text-center shadow-xl">در حال باز کردن فرم ورود…</div>}><AuthModal /></Suspense>}
+  </div>;
+}
 
 export default function App() {
-  return (
-    <ThemeProvider>
-      <ShopProvider>
-        <div className="min-h-screen bg-[#f8fafc] dark:bg-[#0b0f19] text-slate-900 dark:text-slate-100 flex flex-col transition-colors duration-300 font-vazir selection:bg-blue-600 selection:text-white">
-          {/* Main Floating Glassmorphic Navbar containing Brand, Nav links, Compact Search & Icons */}
-          <Navbar />
-
-          {/* Main Body Content: Hero section attached directly under floating navbar without space/gap */}
-          <main className="flex-1">
-            {/* Full-bleed Hero Section (Pure image backdrop with right-aligned text) */}
-            <HeroSection />
-
-            {/* Overlapping Delicate Category Box: Half inside Hero section, half outside */}
-            <CategoryStrip />
-
-            {/* Subsequent sections with standard spacing */}
-            <div className="space-y-4 sm:space-y-6">
-              {/* Featured Collections Grid */}
-              <FeaturedCollections />
-
-              {/* Trending Right Now Products */}
-              <TrendingSection />
-
-              {/* Flash Deals Section */}
-              <FlashDeals />
-
-              {/* Inspiration & Innovation Articles */}
-              <InspirationSection />
-
-              {/* Recommended For You Section */}
-              <RecommendedSection />
-
-              {/* Customer Testimonials & Reviews */}
-              <CustomerReviews />
-
-              {/* Trust & Guarantee Badges */}
-              <TrustBadges />
-
-              {/* Newsletter Subscription */}
-              <NewsletterSection />
-            </div>
-          </main>
-
-          {/* Comprehensive Footer */}
-          <Footer />
-
-          {/* Interactive Modals & Drawers */}
-          <CartDrawer />
-          <WishlistModal />
-          <QuickViewModal />
-          <ToastContainer />
-          <AuthModal />
-        </div>
-      </ShopProvider>
-    </ThemeProvider>
-  );
+  return <ThemeProvider><ShopProvider><Storefront /></ShopProvider></ThemeProvider>;
 }

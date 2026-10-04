@@ -1,5 +1,6 @@
 import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { api, resetCsrf } from '../api/client';
+import { navigate, usePathname } from '../navigation';
 
 const ShopContext = createContext();
 const RIAL_RATE = 600000;
@@ -11,6 +12,11 @@ export const ShopProvider = ({ children }) => {
   const productsRequest = useRef(null);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
+  const [authStatus, setAuthStatus] = useState('loading');
+  const [accountStatus, setAccountStatus] = useState('loading');
+  const accountEpoch = useRef(0);
+  const sessionBootstrap = useRef(null);
+  const pathname = usePathname();
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isWishlistModalOpen, setIsWishlistModalOpen] = useState(false);
@@ -21,10 +27,19 @@ export const ShopProvider = ({ children }) => {
 
   const showCenterMessage = (title, message, iconType = 'info') => setCenterToast({ id: Date.now(), title, message, iconType });
   const reportError = (error) => showCenterMessage('خطا', error.message, 'info');
-  const refreshAccount = async () => {
-    const [newCart, newWishlist] = await Promise.all([api('/account/cart'), api('/account/wishlist')]);
-    setCart(newCart); setWishlist(newWishlist);
-  };
+  const refreshAccount = useCallback(async () => {
+    const epoch = ++accountEpoch.current;
+    setAccountStatus('loading');
+    try {
+      const [newCart, newWishlist] = await Promise.all([api('/account/cart'), api('/account/wishlist')]);
+      if (!Array.isArray(newCart) || !Array.isArray(newWishlist)) throw new Error('Invalid account response');
+      if (epoch !== accountEpoch.current) return;
+      setCart(newCart); setWishlist(newWishlist); setAccountStatus('ready');
+    } catch (error) {
+      if (epoch === accountEpoch.current) setAccountStatus('error');
+      throw error;
+    }
+  }, []);
   const reloadProducts = useCallback(async () => {
     productsRequest.current?.abort();
     const controller = new AbortController();
@@ -43,15 +58,36 @@ export const ShopProvider = ({ children }) => {
     }
   }, []);
   useEffect(() => {
-    reloadProducts();
-    api('/auth/me').then(account => { setUser(account); setIsLoggedIn(true); return refreshAccount(); }).catch(() => {});
+    if (!pathname.startsWith('/account')) reloadProducts();
     return () => productsRequest.current?.abort();
-  }, [reloadProducts]);
+  }, [reloadProducts, pathname]);
+  useEffect(() => {
+    const controller = new AbortController();
+    sessionBootstrap.current = controller;
+    api('/auth/me', { signal: controller.signal }).then(account => {
+      if (controller.signal.aborted) return;
+      setUser(account); setIsLoggedIn(true); setAuthStatus('ready');
+      refreshAccount().catch(() => {});
+    }).catch(error => { if (!controller.signal.aborted) setAuthStatus(error.status === 401 ? 'guest' : 'error'); });
+    return () => { controller.abort(); accountEpoch.current++; };
+  }, [refreshAccount]);
+  useEffect(() => {
+    const expired = () => {
+      sessionBootstrap.current?.abort(); accountEpoch.current++;
+      setUser(null); setIsLoggedIn(false); setAuthStatus('guest');
+      setCart([]); setWishlist([]); setAccountStatus('loading');
+      setIsCartOpen(false); setIsWishlistModalOpen(false);
+    };
+    window.addEventListener('nexora:session-expired', expired);
+    return () => window.removeEventListener('nexora:session-expired', expired);
+  }, []);
 
   const finishAuthentication = async () => {
+    sessionBootstrap.current?.abort();
     resetCsrf();
     const account = await api('/auth/me');
     setUser(account);
+    setAuthStatus('ready');
     setIsLoggedIn(true); setIsAuthOpen(false);
     await refreshAccount().catch(reportError);
     showCenterMessage('ورود موفق', account.fullName ? `${account.fullName}، به نکسورا خوش آمدی.` : 'به حساب خود وارد شدید.', 'user');
@@ -64,14 +100,22 @@ export const ShopProvider = ({ children }) => {
     await api('/auth/google', { method: 'POST', body: JSON.stringify({ credential }) });
     await finishAuthentication();
   };
-  const toggleLogin = async () => {
+  const toggleLogin = () => {
     if (!isLoggedIn) { setIsAuthOpen(true); return; }
+    navigate('/account');
+  };
+  const logout = async () => {
     try {
       await api('/auth/logout', { method: 'POST' });
       resetCsrf();
+      sessionBootstrap.current?.abort();
+      accountEpoch.current++;
+      setAuthStatus('guest'); setAccountStatus('loading');
       setIsLoggedIn(false); setUser(null); setCart([]); setWishlist([]);
+      setIsCartOpen(false); setIsWishlistModalOpen(false);
+      navigate('/');
       showCenterMessage('خروج', 'از حساب خارج شدید.', 'user');
-    } catch (error) { reportError(error); }
+    } catch (error) { reportError(error); throw error; }
   };
   const requireLogin = () => { if (!isLoggedIn) { setIsAuthOpen(true); return false; } return true; };
   const addToCart = async (product, quantity = 1) => {
@@ -98,7 +142,7 @@ export const ShopProvider = ({ children }) => {
   };
   const toPersianDigits = num => String(num ?? '').replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[Number(d)]);
   const formatPrice = amount => `${toPersianDigits(Math.round((amount || 0) * RIAL_RATE).toLocaleString('en-US'))} ریال`;
-  return <ShopContext.Provider value={{ cart, wishlist, allProducts, productsStatus, reloadProducts, user, isLoggedIn, isAuthOpen, setIsAuthOpen, authenticate, authenticateGoogle, toggleLogin,
+  return <ShopContext.Provider value={{ cart, wishlist, allProducts, productsStatus, reloadProducts, user, setUser, authStatus, accountStatus, refreshAccount, logout, isLoggedIn, isAuthOpen, setIsAuthOpen, authenticate, authenticateGoogle, toggleLogin,
     addToCart, removeFromCart, updateQuantity, clearCart, toggleWishlist, isInWishlist: id => wishlist.some(x => x.id === id),
     totalCartCount: cart.reduce((sum, x) => sum + x.quantity, 0), totalWishlistCount: wishlist.length,
     cartSubtotal: cart.reduce((sum, x) => sum + x.product.price * x.quantity, 0),

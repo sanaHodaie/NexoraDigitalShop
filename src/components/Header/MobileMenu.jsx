@@ -5,7 +5,6 @@ import { Logo } from './Logo';
 import { CATEGORIES } from '../../data/mockData';
 import { useShop } from '../../context/ShopContext';
 import { AccountIcon } from '../../assets/icons/AccountIcon';
-import { LogoutIcon } from '../../assets/icons/LogoutIcon';
 
 const iconMap = {
   Smartphone: <Smartphone className="w-4 h-4 text-blue-500" />,
@@ -70,7 +69,7 @@ export const MobileMenu = ({ isOpen, onClose }) => {
             <div className="flex-1 overflow-y-auto px-5 py-5 space-y-4 no-scrollbar">
               <nav className="space-y-1">
                 <a
-                  href="#"
+                  href="/"
                   onClick={onClose}
                   className="flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-semibold text-slate-800 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800/60 transition-colors"
                 >
@@ -79,7 +78,7 @@ export const MobileMenu = ({ isOpen, onClose }) => {
                 </a>
 
                 <a
-                  href="#trending"
+                  href="/#trending"
                   onClick={onClose}
                   className="flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-semibold text-slate-800 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800/60 transition-colors"
                 >
@@ -116,7 +115,7 @@ export const MobileMenu = ({ isOpen, onClose }) => {
                         {CATEGORIES.map((cat) => (
                           <a
                             key={cat.id}
-                            href={`#${cat.id}`}
+                            href={`/#${cat.id}`}
                             onClick={onClose}
                             className="flex items-center justify-between px-3 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 rounded-xl hover:bg-white dark:hover:bg-slate-800 transition-colors"
                           >
@@ -162,21 +161,21 @@ export const MobileMenu = ({ isOpen, onClose }) => {
                         className="bg-slate-50/70 dark:bg-slate-900/50 border-t border-slate-100 dark:border-slate-800 px-3 py-2 space-y-1"
                       >
                         <a
-                          href="#deals"
+                          href="/#deals"
                           onClick={onClose}
                           className="block px-3 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 hover:text-rose-500 rounded-xl"
                         >
                           ⚡ تخفیف‌های شگفت‌انگیز (Flash Deals)
                         </a>
                         <a
-                          href="#collections"
+                          href="/#collections"
                           onClick={onClose}
                           className="block px-3 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 hover:text-blue-500 rounded-xl"
                         >
                           💎 کالکشن‌های اختصاصی سال ۲۰۲۵
                         </a>
                         <a
-                          href="#recommended"
+                          href="/#recommended"
                           onClick={onClose}
                           className="block px-3 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 hover:text-blue-500 rounded-xl"
                         >
@@ -189,7 +188,7 @@ export const MobileMenu = ({ isOpen, onClose }) => {
 
                 {/* Additional synced links as requested */}
                 <a
-                  href="#trending"
+                  href="/#trending"
                   onClick={onClose}
                   className="flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-semibold text-slate-800 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800/60 transition-colors"
                 >
@@ -200,7 +199,7 @@ export const MobileMenu = ({ isOpen, onClose }) => {
                 </a>
 
                 <a
-                  href="#articles"
+                  href="/#articles"
                   onClick={onClose}
                   className="flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-semibold text-slate-800 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800/60 transition-colors"
                 >
@@ -208,7 +207,7 @@ export const MobileMenu = ({ isOpen, onClose }) => {
                 </a>
 
                 <a
-                  href="#footer"
+                  href="/#footer"
                   onClick={onClose}
                   className="flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-semibold text-slate-800 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800/60 transition-colors"
                 >
@@ -242,8 +241,8 @@ export const MobileMenu = ({ isOpen, onClose }) => {
               >
                 {isLoggedIn ? (
                   <>
-                    <LogoutIcon className="w-4 h-4" />
-                    <span>خروج از حساب</span>
+                    <AccountIcon className="w-4 h-4" />
+                    <span>حساب کاربری</span>
                   </>
                 ) : (
                   <>

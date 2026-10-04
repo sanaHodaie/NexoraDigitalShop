@@ -72,6 +72,9 @@ try {
   let authenticated = false;
   let productsFailure = null;
   let productRequests = 0;
+  let accountFixtures = false;
+  let ordersFailure = false;
+  let profileName = 'کاربر آزمایشی';
   const products = JSON.parse(await readFile(new URL('../backend/data/products.json', import.meta.url), 'utf8'));
   function command(method, params = {}) {
     return new Promise((resolve, reject) => {
@@ -80,6 +83,12 @@ try {
       pending.set(call, message => { clearTimeout(timeout); message.error ? reject(new Error(JSON.stringify(message.error))) : resolve(message.result); });
       socket.send(JSON.stringify({ id: call, method, params }));
     });
+  }
+  function interceptionFailure(error) {
+    // Navigation and React cleanup can cancel an intercepted request before
+    // Chrome receives its mock response. This is not a page runtime exception.
+    if (error.message === '{"code":-32602,"message":"Invalid InterceptionId."}') return;
+    errors.push(error.message);
   }
   socket.onmessage = event => {
     const message = JSON.parse(event.data);
@@ -98,13 +107,20 @@ try {
               responseHeaders: [{ name: 'Content-Type', value: 'application/json' }],
               body: Buffer.from(JSON.stringify({ error: 'درخواست انجام نشد. دوباره تلاش کنید.' })).toString('base64'),
             });
-          failure.catch(error => errors.push(error.message));
+          failure.catch(interceptionFailure);
           return;
         }
       }
-      const data = path === '/api/products' ? products : path === '/api/auth/providers' ? { googleClientId: null } : path === '/api/auth/me' ? { email: 'test@example.com', fullName: 'کاربر آزمایشی' } : [];
-      command('Fetch.fulfillRequest', { requestId: message.params.requestId, responseCode: path === '/api/auth/me' && !authenticated ? 401 : 200,
-        responseHeaders: [{ name: 'Content-Type', value: 'application/json' }], body: Buffer.from(JSON.stringify(data)).toString('base64') }).catch(error => errors.push(error.message));
+      if (path === '/api/auth/logout') authenticated = false;
+      if (path === '/api/account/profile') profileName = JSON.parse(message.params.request.postData).fullName;
+      const fixtureOrder = { id: 42, total: products[0].price, status: 'pending_payment', createdAt: '2026-10-01T10:00:00Z' };
+      const data = path === '/api/products' ? products : path === '/api/csrf' ? { token: 'test-csrf' } : path === '/api/auth/providers' ? { googleClientId: null } : ['/api/auth/me', '/api/account/profile'].includes(path) ? { email: 'test@example.com', fullName: profileName }
+        : accountFixtures && path === '/api/account/orders' ? [fixtureOrder]
+        : accountFixtures && path === '/api/account/orders/42' ? { ...fixtureOrder, shipping: 0, lines: [{ productId: products[0].id, name: products[0].name, quantity: 1, unitPrice: products[0].price }] }
+        : accountFixtures && path === '/api/account/cart' ? [{ product: products[0], quantity: 2 }]
+        : accountFixtures && path === '/api/account/wishlist' ? products.slice(0, 2) : [];
+      command('Fetch.fulfillRequest', { requestId: message.params.requestId, responseCode: path === '/api/auth/logout' ? 204 : path === '/api/auth/me' && !authenticated ? 401 : ordersFailure && path === '/api/account/orders' ? 503 : 200,
+        responseHeaders: [{ name: 'Content-Type', value: 'application/json' }], body: Buffer.from(JSON.stringify(data)).toString('base64') }).catch(interceptionFailure);
     }
   };
   async function evaluate(expression) {
@@ -199,7 +215,7 @@ try {
   for (const loggedIn of [false, true]) {
     authenticated = loggedIn;
     await command('Page.navigate', { url: uiUrl });
-    const label = loggedIn ? 'خروج از حساب کاربری' : 'ورود به حساب کاربری';
+    const label = loggedIn ? 'حساب کاربری' : 'ورود به حساب کاربری';
     await until(`!!document.querySelector('.mobile-header-actions button[aria-label="${label}"]')`);
     for (const dark of [false, true]) {
       await evaluate(`document.documentElement.classList.toggle('dark', ${dark})`);
@@ -207,6 +223,51 @@ try {
     }
   }
   console.log('PASS: contained scroll, gentle sheet entry/reopen, gadget assets, login/logout icon visibility in both themes');
+  await click('حساب کاربری');
+  await until('location.pathname === "/account" && !!document.querySelector(".account-page")');
+  accountFixtures = true; authenticated = true;
+  await resize(1440);
+  await command('Page.navigate', { url: `${uiUrl}/account` });
+  await until('!!document.querySelector(".account-order")');
+  assert.ok(await evaluate('!!document.querySelector(\'meta[name="robots"][content*="noindex"]\')'));
+  assert.ok(await evaluate('!performance.getEntriesByType("resource").some(r => /HomePage-|AuthModal-|auth-headphones/.test(r.name))'), 'Account does not load home or login chunks');
+  for (const width of [320, 390, 768, 1024, 1440]) {
+    await resize(width);
+    for (const dark of [false, true]) {
+      await evaluate(`document.documentElement.classList.toggle('dark', ${dark})`);
+      await delay(100);
+      assert.ok(await evaluate('document.documentElement.scrollWidth <= innerWidth'), `No horizontal overflow: ${width}, dark=${dark}`);
+    }
+  }
+  await screenshot('account-desktop-dark');
+  await resize(390); await evaluate('document.documentElement.classList.remove("dark")');
+  await delay(400);
+  await screenshot('account-mobile');
+  await click('سفارش‌های من'); await click('جزئیات سفارش');
+  await until('!!document.querySelector(".account-order-line")');
+  await click('اطلاعات شخصی');
+  await evaluate(`(() => { const input = document.querySelector('.account-form input'); Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set.call(input, 'Updated Account'); input.dispatchEvent(new Event('input', { bubbles: true })); })()`);
+  await click('ذخیرهٔ تغییرات');
+  await until('document.querySelector(".account-success")?.textContent.includes("ذخیره شد")');
+  assert.equal(profileName, 'Updated Account');
+  await click('علاقه‌مندی‌ها');
+  assert.equal(await evaluate('document.querySelectorAll(".account-product").length'), 2);
+  await click('سبد خرید');
+  assert.equal(await evaluate('document.querySelectorAll(".account-product").length'), 1);
+  await click('امنیت حساب'); await click('خروج از حساب کاربری');
+  await until('location.pathname === "/"');
+  assert.ok(await evaluate('!document.querySelector(\'meta[name="robots"][content*="noindex"]\')'));
+  await command('Page.navigate', { url: `${uiUrl}/account` });
+  await until('!!document.querySelector(".account-gate")');
+  assert.ok(await evaluate('!document.body.innerText.includes("test@example.com")'));
+  authenticated = true; ordersFailure = true;
+  await command('Page.navigate', { url: `${uiUrl}/account` });
+  await until('!!document.querySelector(".account-notice")');
+  ordersFailure = false; await click('تلاش مجدد');
+  await until('!!document.querySelector(".account-order")');
+  await evaluate('window.dispatchEvent(new Event("nexora:session-expired"))');
+  await until('!!document.querySelector(".account-gate")');
+  console.log('PASS: responsive account, split loading, profile edit, private orders, cart/wishlist, logout, retry and session expiry');
   assert.deepEqual(errors, []);
   console.log(`PASS: RTL forms, 320/390/768/1440px, bottom sheet, password toggle, Escape. Screenshots: ${output}`);
 } finally { socket?.close(); chrome.kill(); }

@@ -135,6 +135,18 @@ stock reservations in one transaction, with $9.99 shipping below $99. Orders sta
 `pending_payment`; there is no real payment integration. Existing fixed rial
 conversion in the frontend is unchanged.
 
+## Account area
+
+Signed-in users open `/account` from the header user icon. The responsive Persian
+dashboard includes order history and details, wishlist, cart, profile editing,
+and logout. Profile updates use `PATCH /api/account/profile`; order details use
+`GET /api/account/orders/{id}` and are restricted to the order owner. Deploy the
+backend together with the frontend to enable these endpoints.
+
+Account and login UI are loaded on demand. The private account route uses
+`noindex, nofollow` metadata and Vercel response headers; API authentication
+protects its data. Browser checks cover 320–1440px layouts in both themes.
+
 ## Migrations and checks
 
 ```sh

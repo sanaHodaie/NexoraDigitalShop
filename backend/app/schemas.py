@@ -49,6 +49,18 @@ class AccountOutput(BaseModel):
     full_name: str = Field(alias="fullName")
 
 
+class ProfileUpdate(BaseModel):
+    full_name: str = Field(alias="fullName", min_length=1, max_length=100)
+
+    @field_validator("full_name")
+    @classmethod
+    def clean_name(cls, value):
+        value = value.strip()
+        if not value:
+            raise ValueError("نام معتبر وارد کنید.")
+        return value
+
+
 class OrderOutput(BaseModel):
     model_config = ConfigDict(populate_by_name=True, from_attributes=True)
     id: int

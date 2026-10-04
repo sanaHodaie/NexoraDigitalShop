@@ -258,6 +258,40 @@ def test_production_settings_fail_closed():
     assert Settings(environment="production", secret_key="x" * 48).secure_cookies is True
 
 
+def test_account_profile_and_order_details_are_private(client, app, engine):
+    assert write(client, "PATCH", "/api/account/profile", json={"fullName": "New name"}).status_code == 401
+    register(client)
+    assert client.patch("/api/account/profile", json={"fullName": "New name"}).status_code == 400
+    assert write(client, "PATCH", "/api/account/profile", json={"fullName": "   "}).status_code == 400
+    assert write(client, "PATCH", "/api/account/profile", json={"fullName": "x" * 101}).status_code == 400
+    response = write(
+        client,
+        "PATCH",
+        "/api/account/profile",
+        json={"fullName": " Updated Name ", "email": "attacker@example.com"},
+    )
+    assert response.json() == {"email": "user@example.com", "fullName": "Updated Name"}
+    assert client.get("/api/auth/me").json()["fullName"] == "Updated Name"
+    product = client.get("/api/products?limit=1").json()[0]
+    write(client, "PUT", f"/api/account/cart/{product['id']}", json={"quantity": 1})
+    order = write(client, "POST", "/api/account/orders").json()
+    detail = client.get(f"/api/account/orders/{order['id']}")
+    assert detail.status_code == 200
+    assert detail.headers["cache-control"] == "no-store"
+    assert detail.json()["lines"][0] == {
+        "productId": product["id"],
+        "name": product["name"],
+        "quantity": 1,
+        "unitPrice": product["price"],
+    }
+    assert detail.json()["shipping"] == (0 if product["price"] >= 99 else 9.99)
+    with TestClient(app, base_url="https://shop.test") as other:
+        assert other.get(f"/api/account/orders/{order['id']}").status_code == 401
+        register(other, "other@example.com")
+        assert other.get(f"/api/account/orders/{order['id']}").status_code == 404
+        assert other.get("/api/auth/me").json()["fullName"] != "Updated Name"
+
+
 def test_authentication_rate_limit_is_shared(client, app):
     app.state.settings.auth_rate_limit = 1
     register(client)
