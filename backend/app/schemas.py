@@ -55,7 +55,6 @@ class AccountOutput(BaseModel):
 
 
 class PasswordChange(BaseModel):
-    current_password: str = Field(alias="currentPassword", min_length=1, max_length=128)
     new_password: str = Field(alias="newPassword", min_length=12, max_length=128)
 
 

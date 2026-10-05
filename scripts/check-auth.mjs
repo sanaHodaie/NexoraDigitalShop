@@ -260,8 +260,10 @@ try {
   assert.equal(await evaluate('document.querySelectorAll(".account-product").length'), 1);
   for (const width of [390, 1024, 1440]) {
     await resize(width);
-    assert.ok(await evaluate(`(() => { const card = document.querySelector('.account-product'), frame = card.querySelector('.account-product-image'), img = frame.querySelector('img'); const c = card.getBoundingClientRect(), f = frame.getBoundingClientRect(), i = img.getBoundingClientRect(); return f.left >= c.left && f.right <= c.right && i.height <= f.height && i.width <= f.width && getComputedStyle(img).objectFit === 'contain' && document.documentElement.scrollWidth <= innerWidth; })()`));
+    assert.ok(await evaluate(`(() => { const card = document.querySelector('.account-product'), frame = card.querySelector('.account-product-image'), img = frame.querySelector('img'); const c = card.getBoundingClientRect(), f = frame.getBoundingClientRect(), i = img.getBoundingClientRect(); return f.left >= c.left && f.right <= c.right && i.height <= f.height && i.width <= f.width && getComputedStyle(img).objectFit === (card.classList.contains('user-cart-card') ? 'cover' : 'contain') && document.documentElement.scrollWidth <= innerWidth; })()`));
   }
+  await evaluate('document.querySelector(".account-products").scrollIntoView({block:"center",behavior:"instant"})');
+  await delay(400);
   await screenshot('cart-account-desktop');
   await resize(390);
   await click('امنیت حساب'); await click('خروج از حساب کاربری');

@@ -111,7 +111,7 @@ def test_email_failure_does_not_leave_active_token(client, app, engine, monkeypa
 
 
 def test_authenticated_password_change(client, app, engine, monkeypatch):
-    payload = {"currentPassword": "test-password-12345", "newPassword": "changed-password-12345"}
+    payload = {"newPassword": "changed-password-12345"}
     assert write(client, "POST", "/api/account/password", json=payload).status_code == 401
     sent = enable_email(app, monkeypatch)
     register(client)
@@ -119,12 +119,6 @@ def test_authenticated_password_change(client, app, engine, monkeypatch):
     write(client, "POST", "/api/auth/forgot-password", json={"email": "user@example.com"})
     assert sent
     assert client.post("/api/account/password", json=payload).status_code == 400
-    assert (
-        write(
-            client, "POST", "/api/account/password", json={**payload, "currentPassword": "wrong"}
-        ).status_code
-        == 400
-    )
     assert (
         write(client, "POST", "/api/account/password", json={**payload, "newPassword": "short"}).status_code
         == 400
@@ -134,7 +128,7 @@ def test_authenticated_password_change(client, app, engine, monkeypatch):
             client,
             "POST",
             "/api/account/password",
-            json={**payload, "newPassword": payload["currentPassword"]},
+            json={**payload, "newPassword": "test-password-12345"},
         ).status_code
         == 400
     )
@@ -149,7 +143,7 @@ def test_authenticated_password_change(client, app, engine, monkeypatch):
             client,
             "POST",
             "/api/auth/login",
-            json={"email": "user@example.com", "password": payload["currentPassword"]},
+            json={"email": "user@example.com", "password": "test-password-12345"},
         ).status_code
         == 401
     )
