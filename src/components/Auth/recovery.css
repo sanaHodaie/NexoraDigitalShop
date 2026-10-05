@@ -1,0 +1,9 @@
+.recovery-link,.recovery-back{color:#315ccf;font-size:13px;min-height:44px;cursor:pointer}
+.recovery-link{display:block;margin-inline-start:auto}.recovery-back{display:block;margin:18px auto 0}
+.recovery-icon{display:grid;place-items:center;width:60px;height:60px;border-radius:20px;margin:0 auto 18px;background:#edf0ff;color:#4566cc}
+.recovery-success{display:grid;justify-items:center;gap:12px;padding:20px;border-radius:16px;background:#effaf6;color:#176a51;font-size:14px;line-height:2}
+.reset-page{width:min(100%,520px);margin:40px auto;padding:16px;min-height:65vh}
+.reset-page .auth-form-card{border-radius:28px;padding:32px 24px;box-shadow:0 14px 50px #20377d14}
+.reset-page h1{font-size:23px;font-weight:800}.reset-page p{line-height:2}.reset-page .auth-primary{margin-top:18px}
+.dark .recovery-link,.dark .recovery-back{color:#a4bcff}.dark .recovery-icon{background:#273452;color:#adc0ff}.dark .recovery-success{background:#153a33;color:#a4e3ca}
+@media(max-width:480px){.reset-page{margin:18px auto;padding:12px}.reset-page .auth-form-card{padding:26px 18px}}

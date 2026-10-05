@@ -3,6 +3,8 @@ import { ArrowUpLeft, Check, ChevronDown, Headphones, Heart, LayoutDashboard, Lo
 import { api } from '../api/client';
 import { useShop } from '../context/ShopContext';
 import './account.css';
+import phoneImage from '../assets/images/account-phone.png';
+import { ChangePassword } from '../components/Auth/ChangePassword';
 
 const sections = [
   ['overview', 'نمای کلی', LayoutDashboard], ['orders', 'سفارش‌های من', Package],
@@ -109,7 +111,7 @@ export default function AccountPage() {
   const renderOrders = (limit) => ordersState === 'loading' ? <Loading /> : ordersState === 'error' ? <Failure retry={() => setReload(reload + 1)} /> : orders.length ? <div className="account-orders">{orders.slice(0, limit).map(order => <OrderCard key={order.id} order={order} />)}</div> : <Empty title="هنوز سفارشی ثبت نکرده‌اید">اولین انتخاب هوشمندانهٔ شما از اینجا شروع می‌شود.</Empty>;
   return <div className="account-page" dir="rtl">
     <div className="account-breadcrumb"><a href="/">نکسورا</a><span>/</span><span>حساب کاربری</span><a href="/#trending" className="account-back">بازگشت به فروشگاه <ArrowUpLeft size={15} /></a></div>
-    <section className="account-hero"><div className="account-hero-copy"><span className="account-eyebrow">فضای شخصی شما در نکسورا</span><h1>{user.fullName || 'همراه نکسورا'}، خوش آمدید<span className="account-greeting-dot">.</span></h1><p>انتخاب‌های شما، خریدهای شما، دنیای شما.</p><span className="account-private"><ShieldCheck size={15} />حساب شخصی و امن</span></div><div className="account-hero-art" aria-hidden="true"><div className="account-orbit" /><Headphones size={90} strokeWidth={1.1} /><span className="account-art-spark">✦</span></div></section>
+    <section className="account-hero"><div className="account-hero-copy"><span className="account-eyebrow">فضای شخصی شما در نکسورا</span><h1>{user.fullName || 'همراه نکسورا'}، خوش آمدید</h1><p>انتخاب‌های شما، خریدهای شما، دنیای شما.</p><span className="account-private"><ShieldCheck size={15} />حساب شخصی و امن</span></div><div className="account-hero-art account-phone-art" aria-hidden="true"><img src={phoneImage} alt="" width="1280" height="1280" decoding="async" /></div></section>
     <div className="account-layout">
       <aside className="account-sidebar"><div className="account-identity"><span className="account-avatar">{(user.fullName || user.email).trim().slice(0, 1)}</span><div><strong>{user.fullName || 'حساب نکسورا'}</strong><span dir="ltr">{user.email}</span></div></div>
         <nav aria-label="بخش‌های حساب کاربری">{sections.map(([key, label, Icon]) => <button key={key} aria-label={label} onClick={() => selectSection(key)} aria-current={section === key ? 'page' : undefined} className={section === key ? 'active' : ''}><Icon size={19} /><span>{label}</span>{key === 'wishlist' && ready && wishlist.length > 0 && <small>{toPersianDigits(wishlist.length)}</small>}</button>)}</nav>
@@ -127,7 +129,7 @@ export default function AccountPage() {
           {!ready ? accountStatus === 'error' ? <Failure retry={() => refreshAccount().catch(() => {})} /> : <Loading /> : !(section === 'wishlist' ? wishlist.length : cart.length) ? <Empty icon={section === 'wishlist' ? Heart : ShoppingBag} title={section === 'wishlist' ? 'لیست علاقه‌مندی‌های شما خالی است' : 'سبد خرید شما خالی است'}>کالاهایی که دوست دارید را در فروشگاه پیدا کنید.</Empty> : <div className="account-products">{(section === 'wishlist' ? wishlist.map(product => ({ product })) : cart).map(({ product, quantity }) => <article key={product.id} className="account-product"><button className="account-product-image" onClick={() => setQuickViewProduct(product)} aria-label={`مشاهدهٔ ${product.name}`}><img src={product.image} alt="" width="160" height="160" loading="lazy" decoding="async" /></button><h3>{product.name}</h3><strong>{formatPrice(product.price)}</strong>{quantity && <small>{toPersianDigits(quantity)} عدد در سبد خرید</small>}<div>{section === 'wishlist' ? <button onClick={() => toggleWishlist(product)} aria-label={`حذف ${product.name} از علاقه‌مندی‌ها`}><Heart size={16} />حذف از لیست</button> : <button onClick={() => setIsCartOpen(true)}>ویرایش تعداد</button>}<button onClick={() => setQuickViewProduct(product)}>مشاهده <ArrowUpLeft size={15} /></button></div></article>)}</div>}
           {section === 'cart' && ready && cart.length > 0 && <div className="account-cart-total"><span>جمع کالاها (بدون ارسال)</span><strong>{formatPrice(shop.cartSubtotal)}</strong><button className="account-button" onClick={() => setIsCartOpen(true)}>ادامهٔ سفارش <ArrowUpLeft size={17} /></button></div>}
         </section>}
-        {section === 'profile' && <Profile />}
+        {section === 'profile' && <><Profile /><ChangePassword /></>}
         {section === 'security' && <Security onLogout={leave} busy={busy} />}
       </div>
     </div><p className="account-footnote"><ShieldCheck size={14} />اطلاعات این صفحه فقط برای حساب شما نمایش داده می‌شود.</p>

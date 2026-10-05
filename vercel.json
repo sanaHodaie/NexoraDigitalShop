@@ -4,6 +4,14 @@
   "outputDirectory": "dist",
   "headers": [
     {
+      "source": "/reset-password/:path*",
+      "headers": [
+        { "key": "X-Robots-Tag", "value": "noindex, nofollow" },
+        { "key": "Cache-Control", "value": "private, no-store" },
+        { "key": "Referrer-Policy", "value": "no-referrer" }
+      ]
+    },
+    {
       "source": "/account/:path*",
       "headers": [
         { "key": "X-Robots-Tag", "value": "noindex, nofollow" },

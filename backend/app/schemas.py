@@ -30,6 +30,11 @@ class Registration(EmailInput):
         return value
 
 
+class ResetPassword(BaseModel):
+    token: str = Field(min_length=43, max_length=128, pattern=r"^[A-Za-z0-9_-]+$")
+    password: str = Field(min_length=12, max_length=128)
+
+
 class Login(BaseModel):
     email: str = Field(max_length=254)
     password: str = Field(min_length=1, max_length=128)
@@ -47,6 +52,11 @@ class AccountOutput(BaseModel):
     model_config = ConfigDict(populate_by_name=True, from_attributes=True)
     email: str
     full_name: str = Field(alias="fullName")
+
+
+class PasswordChange(BaseModel):
+    current_password: str = Field(alias="currentPassword", min_length=1, max_length=128)
+    new_password: str = Field(alias="newPassword", min_length=12, max_length=128)
 
 
 class ProfileUpdate(BaseModel):

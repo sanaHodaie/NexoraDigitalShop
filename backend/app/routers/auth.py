@@ -1,6 +1,6 @@
 import secrets
 
-from fastapi import APIRouter, Depends, HTTPException, Request, Response
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request, Response
 from google.auth.exceptions import TransportError
 from google.auth.transport.requests import Request as GoogleRequest
 from google.oauth2 import id_token
@@ -9,11 +9,61 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.db import get_db
-from app.models import AuthSession, User
-from app.schemas import AccountOutput, GoogleCredential, Login, Registration, normalize_email
+from app.models import AuthSession, PasswordReset, User, utcnow
+from app.recovery import deliver_recovery
+from app.schemas import (
+    AccountOutput,
+    EmailInput,
+    GoogleCredential,
+    Login,
+    Registration,
+    ResetPassword,
+    normalize_email,
+)
 from app.security import csrf_token, current_user, password_hasher, sign_in, token_hash, verify_password
 
 router = APIRouter(prefix="/api", tags=["authentication"])
+
+
+@router.post("/auth/forgot-password", status_code=202)
+def forgot_password(data: EmailInput, request: Request, tasks: BackgroundTasks):
+    settings = request.app.state.settings
+    if (
+        not settings.resend_api_key
+        or not settings.resend_api_key.get_secret_value()
+        or not settings.mail_from
+    ):
+        raise HTTPException(503, "ارسال ایمیل بازیابی هنوز فعال نشده است. لطفاً کمی بعد تلاش کنید.")
+    tasks.add_task(deliver_recovery, request.app.state.engine, settings, data.email)
+    return {
+        "message": "اگر این ایمیل حسابی با رمز عبور داشته باشد، لینک بازیابی ارسال می‌شود. پوشهٔ اسپم را هم بررسی کنید."
+    }
+
+
+@router.post("/auth/reset-password", status_code=204)
+def reset_password(data: ResetPassword, request: Request, db: Session = Depends(get_db)):
+    digest = token_hash(data.token)
+    user_id = db.scalar(select(PasswordReset.user_id).where(PasswordReset.token_hash == digest))
+    if user_id is not None:
+        db.scalar(select(User).where(User.id == user_id).with_for_update())
+    claimed = db.execute(
+        delete(PasswordReset)
+        .where(PasswordReset.token_hash == digest, PasswordReset.expires_at > utcnow())
+        .returning(PasswordReset.user_id)
+    ).scalar_one_or_none()
+    if claimed is None:
+        raise HTTPException(400, "لینک بازیابی نامعتبر یا منقضی شده است. دوباره درخواست بازیابی بدهید.")
+    user = db.get(User, claimed)
+    user.password_hash = password_hasher.hash(data.password)
+    db.execute(delete(PasswordReset).where(PasswordReset.user_id == claimed))
+    db.execute(delete(AuthSession).where(AuthSession.user_id == claimed))
+    db.commit()
+    response = Response(status_code=204)
+    settings = request.app.state.settings
+    response.delete_cookie(
+        settings.session_cookie, secure=settings.secure_cookies, httponly=True, samesite="strict", path="/"
+    )
+    return response
 
 
 @router.get("/csrf")

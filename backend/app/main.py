@@ -33,7 +33,15 @@ def create_app(settings: Settings | None = None, engine=None) -> FastAPI:
         if path == "/api" or path.startswith("/api/"):
             group = (
                 "auth"
-                if path in {"/api/auth/register", "/api/auth/login", "/api/auth/google"}
+                if path
+                in {
+                    "/api/auth/register",
+                    "/api/auth/login",
+                    "/api/auth/google",
+                    "/api/auth/forgot-password",
+                    "/api/auth/reset-password",
+                    "/api/account/password",
+                }
                 else ("newsletter" if path == "/api/newsletter" else None)
             )
             if group and request.method == "POST":

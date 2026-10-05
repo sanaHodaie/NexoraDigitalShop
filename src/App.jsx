@@ -11,27 +11,29 @@ import { usePathname } from './navigation';
 
 const HomePage = lazy(() => import('./pages/HomePage'));
 const AccountPage = lazy(() => import('./pages/AccountPage'));
+const ResetPasswordPage = lazy(() => import('./pages/ResetPasswordPage'));
 const AuthModal = lazy(() => import('./components/Auth/AuthModal').then(module => ({ default: module.AuthModal })));
 
 function Storefront() {
   const pathname = usePathname();
   const account = pathname === '/account' || pathname === '/account/';
+  const recovery = pathname === '/reset-password' || pathname === '/reset-password/';
   const { isAuthOpen } = useShop();
   useEffect(() => {
-    if (!account) return;
+    if (!account && !recovery) return;
     const title = document.title;
     const robots = document.createElement('meta');
     robots.name = 'robots'; robots.content = 'noindex, nofollow';
     document.head.appendChild(robots);
-    document.title = 'حساب کاربری | نکسورا';
+    document.title = recovery ? 'بازیابی رمز عبور | نکسورا' : 'حساب کاربری | نکسورا';
     return () => { robots.remove(); document.title = title; };
-  }, [account]);
+  }, [account, recovery]);
   return <div className="min-h-screen bg-[#f8fafc] dark:bg-[#0b0f19] text-slate-900 dark:text-slate-100 flex flex-col transition-colors duration-300 font-vazir selection:bg-blue-600 selection:text-white">
     <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:right-2 focus:z-[100] focus:bg-white focus:p-3">رفتن به محتوای اصلی</a>
     <Navbar />
     <main id="main-content" className="flex-1 min-w-0">
       <Suspense fallback={<div role="status" className="min-h-[65vh] grid place-items-center text-slate-500">در حال آماده‌سازی صفحه…</div>}>
-        {account ? <AccountPage /> : <HomePage />}
+        {recovery ? <ResetPasswordPage /> : account ? <AccountPage /> : <HomePage />}
       </Suspense>
     </main>
     <Footer />

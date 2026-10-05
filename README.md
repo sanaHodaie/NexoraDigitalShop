@@ -137,6 +137,21 @@ conversion in the frontend is unchanged.
 
 ## Account area
 
+Password recovery uses `POST /api/auth/forgot-password` and
+`POST /api/auth/reset-password`. Configure `RESEND_API_KEY`, a verified sender
+in `MAIL_FROM`, and `FRONTEND_URL` (the storefront origin, HTTPS in production)
+on the backend. See [Resend email API](https://resend.com/docs/api-reference/emails/send-email).
+Never put the key in a `VITE_` variable. Without email configuration the UI
+reports that delivery is unavailable. Google-only users should continue with Google.
+
+Startup applies migration `0002`. Reset links open `/reset-password` with a token
+in the URL fragment, removed from history after loading. Only token hashes are
+stored; links expire after 30 minutes, are single-use, and reset revokes existing
+sessions. Requests share the authentication rate limit and a one-minute resend
+cooldown per account. Background delivery errors are logged without credentials;
+check the provider dashboard for delivery failures. Tests mock email delivery;
+real delivery requires configuring and deploying the backend.
+
 Signed-in users open `/account` from the header user icon. The responsive Persian
 dashboard includes order history and details, wishlist, cart, profile editing,
 and logout. Profile updates use `PATCH /api/account/profile`; order details use

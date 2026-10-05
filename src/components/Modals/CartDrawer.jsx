@@ -137,10 +137,10 @@ export const CartDrawer = () => {
                 cart.map((item) => (
                   <div
                     key={item.product.id}
-                    className="flex items-center gap-3 p-3 rounded-2xl bg-slate-50 dark:bg-slate-850 border border-slate-100 dark:border-slate-800 relative group"
+                    className="cart-drawer-item flex items-start min-w-0 gap-3 p-3 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-800 relative group"
                   >
                     {/* Thumbnail */}
-                    <div className="w-16 h-16 rounded-xl bg-white dark:bg-slate-800 p-1 shrink-0 overflow-hidden border border-slate-200/50 dark:border-slate-700/50">
+                    <div className="w-20 h-24 sm:w-24 sm:h-28 rounded-xl bg-white dark:bg-slate-800 p-2 shrink-0 overflow-hidden border border-slate-200/50 dark:border-slate-700/50">
                       <img
                         src={item.product.image}
                         alt={item.product.name}
@@ -150,11 +150,11 @@ export const CartDrawer = () => {
                     </div>
 
                     {/* Details */}
-                    <div className="flex-1 text-right">
-                      <h4 className="text-xs font-bold text-slate-900 dark:text-white line-clamp-1">
+                    <div className="flex-1 min-w-0 text-right">
+                      <h4 className="text-xs font-bold text-slate-900 dark:text-white break-words leading-6">
                         {item.product.name}
                       </h4>
-                      <div className="text-xs font-extrabold text-blue-600 dark:text-blue-400 font-mono mt-0.5">
+                      <div className="text-xs break-words font-extrabold text-blue-600 dark:text-blue-400 font-mono mt-0.5">
                         {formatPrice(item.product.price)}
                       </div>
 

@@ -1,0 +1,3 @@
+Generated with the built-in image_gen tool, 2026-10-05.
+
+Use case: stylized-concept. Asset type: transparent website account welcome illustration. Create one premium 3D smartphone floating diagonally in three-quarter perspective, screen facing viewer, slim silver frame, blue and lavender abstract glass waves on screen. Soft studio lighting, clean crisp edges, entire phone visible, centered with generous transparent padding. Harmonize with a royal blue, cyan and lavender electronics store UI in both light and dark modes. Actual transparent background with alpha. No text, no logos, no watermark, no extra objects. Square composition.

@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { ArrowRight, Eye, EyeOff, X, ShieldCheck } from 'lucide-react';
 import { useShop } from '../../context/ShopContext';
 import { GoogleSignIn } from './GoogleSignIn';
+import { PasswordRecovery } from './PasswordRecovery';
 import headphonesImage from '../../assets/images/auth-headphones.png';
 import earbudsImage from '../../assets/images/auth-earbuds.png';
 import './auth.css';
@@ -76,7 +77,7 @@ export function AuthModal() {
             <button type="button" className="auth-secondary" onClick={() => switchView('login')}>ورود به حساب کاربری</button>
           </div>
           <span className="auth-welcome-note"><ShieldCheck size={14} /> یک حساب، یک تجربهٔ شخصی‌تر</span>
-        </div> : <div className="auth-form-card">
+        </div> : view === 'forgot' ? <div className="auth-form-card"><PasswordRecovery initialEmail={email} onLogin={() => switchView('login')} /></div> : <div className="auth-form-card">
           <div className="auth-form-heading">
             <span className="auth-eyebrow">{register ? 'شروع یک تجربهٔ تازه' : 'خوش برگشتی'}</span>
             <h2 id="auth-title" ref={heading} tabIndex={-1}>{register ? 'حساب خودت رو بساز' : 'وارد حساب خودت شو'}</h2>
@@ -92,7 +93,7 @@ export function AuthModal() {
                   <button type="button" onClick={() => setShowPassword(!showPassword)} aria-label={showPassword ? 'پنهان کردن رمز عبور' : 'نمایش رمز عبور'} aria-pressed={showPassword}>{showPassword ? <EyeOff size={18} /> : <Eye size={18} />}</button>
                 </div>
               </label>
-              {register ? <p id="password-help" className="auth-field-help">رمز عبور باید بین ۱۲ تا ۱۲۸ کاراکتر باشد.</p> : <details className="auth-recovery"><summary>رمز عبورت رو فراموش کردی؟</summary><p>بازیابی خودکار رمز عبور هنوز فعال نیست. برای بازیابی حساب با پشتیبانی نکسورا تماس بگیر.</p></details>}
+              {register ? <p id="password-help" className="auth-field-help">رمز عبور باید بین ۱۲ تا ۱۲۸ کاراکتر باشد.</p> : <button type="button" className="recovery-link" onClick={() => switchView('forgot')}>رمز عبورت رو فراموش کردی؟</button>}
               {error && <p role="alert" className="auth-error">{error}</p>}
               <button disabled={busy} className="auth-primary" type="submit">{busy ? 'در حال بررسی…' : register ? 'ساخت حساب کاربری' : 'ورود به حساب'}</button>
             </fieldset>

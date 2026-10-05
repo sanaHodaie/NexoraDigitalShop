@@ -58,7 +58,7 @@ export const ShopProvider = ({ children }) => {
     }
   }, []);
   useEffect(() => {
-    if (!pathname.startsWith('/account')) reloadProducts();
+    if (!pathname.startsWith('/account') && !pathname.startsWith('/reset-password')) reloadProducts();
     return () => productsRequest.current?.abort();
   }, [reloadProducts, pathname]);
   useEffect(() => {

@@ -34,3 +34,17 @@
 @media(prefers-reduced-motion:reduce){.account-page *{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 
 .account-content{scroll-margin-top:96px}
+.account-content{align-content:start}
+.account-products{align-items:start}
+.account-product{min-width:0;background:var(--ac-bg)}
+.account-product-image{display:block;flex:none;box-sizing:border-box;height:190px;padding:16px}
+.account-product-image img{display:block;width:100%;height:100%;max-width:100%;max-height:100%;object-fit:contain}
+.account-product h3,.account-product>strong{overflow-wrap:anywhere}
+.account-password-panel h2,.account-password-visibility{display:flex;align-items:center;gap:8px}
+.account-password-visibility{justify-self:start;color:var(--ac-blue);font-size:12px;min-height:44px}
+.account-phone-art{width:230px;height:210px;transform:none;perspective:900px}
+.account-phone-art img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 16px 14px #2746aa30);animation:account-phone-float 6s ease-in-out infinite}
+@keyframes account-phone-float{0%,100%{transform:translateY(3px) rotate(-3deg) rotateY(-5deg)}50%{transform:translateY(-7px) rotate(2deg) rotateY(5deg)}}
+@media(max-width:767px){.account-phone-art{width:140px;height:155px}.account-hero-copy{flex:1}}
+@media(max-width:480px){.account-hero{flex-direction:column;gap:8px}.account-phone-art{display:grid;width:145px;height:140px;margin:0}.account-hero-copy{width:100%}}
+@media(prefers-reduced-motion:reduce){.account-phone-art img{animation:none}}

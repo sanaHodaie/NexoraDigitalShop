@@ -21,7 +21,8 @@ const iconMap = {
 export const MobileMenu = ({ isOpen, onClose }) => {
   const [categoriesExpanded, setCategoriesExpanded] = useState(false);
   const [brandsExpanded, setBrandsExpanded] = useState(false);
-  const { isLoggedIn, toggleLogin } = useShop();
+  const { isLoggedIn, user, toggleLogin } = useShop();
+  const accountName = user?.fullName?.trim() || user?.email || 'حساب کاربری';
 
   return (
     <AnimatePresence>
@@ -230,19 +231,21 @@ export const MobileMenu = ({ isOpen, onClose }) => {
             </div>
 
             {/* Drawer Bottom Footer (User Account status) */}
-            <div className="p-4 border-t border-slate-100 dark:border-slate-800/80 bg-slate-50/90 dark:bg-slate-900/80 flex items-center justify-between rounded-b-[36px]">
-              <span className="text-xs text-slate-500">حساب کاربری:</span>
+            <div className="p-4 border-t border-slate-100 dark:border-slate-800/80 bg-slate-50/90 dark:bg-slate-900/80 flex items-center justify-between gap-3 rounded-b-[36px]">
+              <span className="shrink-0 text-xs text-slate-500 dark:text-slate-400">حساب کاربری:</span>
               <button
+                aria-label={isLoggedIn ? `حساب کاربری ${accountName}` : 'ورود به حساب'}
+                title={isLoggedIn ? accountName : undefined}
                 onClick={() => {
                   toggleLogin();
                   onClose();
                 }}
-                className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50 dark:bg-slate-800 text-xs font-semibold text-blue-700 dark:text-blue-300 hover:bg-blue-100 transition-colors cursor-pointer border border-blue-200/60 dark:border-slate-700"
+                className="flex min-w-0 items-center gap-2 px-3.5 py-1.5 rounded-full bg-blue-50 dark:bg-slate-800 text-xs font-semibold text-blue-700 dark:text-blue-300 hover:bg-blue-100 transition-colors cursor-pointer border border-blue-200/60 dark:border-slate-700"
               >
                 {isLoggedIn ? (
                   <>
-                    <AccountIcon className="w-4 h-4" />
-                    <span>حساب کاربری</span>
+                    <AccountIcon className="w-4 h-4 shrink-0" />
+                    <span className="truncate" dir="auto">{accountName}</span>
                   </>
                 ) : (
                   <>

@@ -114,7 +114,7 @@ try {
       if (path === '/api/auth/logout') authenticated = false;
       if (path === '/api/account/profile') profileName = JSON.parse(message.params.request.postData).fullName;
       const fixtureOrder = { id: 42, total: products[0].price, status: 'pending_payment', createdAt: '2026-10-01T10:00:00Z' };
-      const data = path === '/api/products' ? products : path === '/api/csrf' ? { token: 'test-csrf' } : path === '/api/auth/providers' ? { googleClientId: null } : ['/api/auth/me', '/api/account/profile'].includes(path) ? { email: 'test@example.com', fullName: profileName }
+      const data = path === '/api/auth/forgot-password' ? { message: 'اگر این ایمیل حسابی با رمز عبور داشته باشد، لینک بازیابی ارسال می‌شود.' } : path === '/api/products' ? products : path === '/api/csrf' ? { token: 'test-csrf' } : path === '/api/auth/providers' ? { googleClientId: null } : ['/api/auth/me', '/api/account/profile'].includes(path) ? { email: 'test@example.com', fullName: profileName }
         : accountFixtures && path === '/api/account/orders' ? [fixtureOrder]
         : accountFixtures && path === '/api/account/orders/42' ? { ...fixtureOrder, shipping: 0, lines: [{ productId: products[0].id, name: products[0].name, quantity: 1, unitPrice: products[0].price }] }
         : accountFixtures && path === '/api/account/cart' ? [{ product: products[0], quantity: 2 }]
@@ -250,10 +250,20 @@ try {
   await click('ذخیرهٔ تغییرات');
   await until('document.querySelector(".account-success")?.textContent.includes("ذخیره شد")');
   assert.equal(profileName, 'Updated Account');
+  await evaluate(`document.querySelectorAll('.account-password-panel input').forEach(input => { const value = input.name === 'currentPassword' ? 'old-password-12345' : 'changed-password-12345'; Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set.call(input, value); input.dispatchEvent(new Event('input', { bubbles: true })); })`);
+  await click('تغییر رمز عبور');
+  await until('!!document.querySelector(".account-password-panel .account-success")');
+  assert.ok(await evaluate('[...document.querySelectorAll(".account-password-panel input")].every(input => input.value === "")'));
   await click('علاقه‌مندی‌ها');
   assert.equal(await evaluate('document.querySelectorAll(".account-product").length'), 2);
   await click('سبد خرید');
   assert.equal(await evaluate('document.querySelectorAll(".account-product").length'), 1);
+  for (const width of [390, 1024, 1440]) {
+    await resize(width);
+    assert.ok(await evaluate(`(() => { const card = document.querySelector('.account-product'), frame = card.querySelector('.account-product-image'), img = frame.querySelector('img'); const c = card.getBoundingClientRect(), f = frame.getBoundingClientRect(), i = img.getBoundingClientRect(); return f.left >= c.left && f.right <= c.right && i.height <= f.height && i.width <= f.width && getComputedStyle(img).objectFit === 'contain' && document.documentElement.scrollWidth <= innerWidth; })()`));
+  }
+  await screenshot('cart-account-desktop');
+  await resize(390);
   await click('امنیت حساب'); await click('خروج از حساب کاربری');
   await until('location.pathname === "/"');
   assert.ok(await evaluate('!document.querySelector(\'meta[name="robots"][content*="noindex"]\')'));
@@ -268,6 +278,30 @@ try {
   await evaluate('window.dispatchEvent(new Event("nexora:session-expired"))');
   await until('!!document.querySelector(".account-gate")');
   console.log('PASS: responsive account, split loading, profile edit, private orders, cart/wishlist, logout, retry and session expiry');
+  await click('ورود یا ساخت حساب');
+  await until('!!document.querySelector("dialog[open]")');
+  await evaluate('document.querySelector("dialog .auth-secondary").click()');
+  await until('!!document.querySelector(".recovery-link")');
+  await click('رمز عبورت رو فراموش کردی؟');
+  await until('!!document.querySelector(".auth-recovery-content")');
+  await evaluate(`(() => { const input = document.querySelector('.auth-recovery-content input'); Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set.call(input, 'test@example.com'); input.dispatchEvent(new Event('input', { bubbles: true })); })()`);
+  await click('ارسال لینک بازیابی');
+  await until('!!document.querySelector(".recovery-success")');
+  await screenshot('recovery-email-mobile');
+  await click('بستن پنجره ورود');
+  await command('Page.navigate', { url: `${uiUrl}/reset-password#token=${'a'.repeat(43)}` });
+  await until('document.querySelectorAll(".reset-page input").length === 2');
+  assert.equal(await evaluate('location.hash'), '');
+  for (const width of [320, 390, 768, 1440]) {
+    await resize(width);
+    assert.ok(await evaluate('document.documentElement.scrollWidth <= innerWidth'));
+  }
+  await resize(390);
+  await evaluate(`document.querySelectorAll('.reset-page input').forEach(input => { Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set.call(input, 'fresh-password-12345'); input.dispatchEvent(new Event('input', { bubbles: true })); })`);
+  await screenshot('recovery-password-mobile');
+  await click('ذخیرهٔ رمز جدید');
+  await until('!!document.querySelector(".recovery-success")');
+  console.log('PASS: password recovery forms, fragment removal, responsive reset page and successful reset');
   assert.deepEqual(errors, []);
   console.log(`PASS: RTL forms, 320/390/768/1440px, bottom sheet, password toggle, Escape. Screenshots: ${output}`);
 } finally { socket?.close(); chrome.kill(); }

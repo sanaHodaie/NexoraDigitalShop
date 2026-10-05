@@ -1,16 +1,45 @@
 from decimal import Decimal
 
-from fastapi import APIRouter, Depends, HTTPException, Response
+from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from sqlalchemy import delete, select, update
 from sqlalchemy.orm import Session, joinedload
 
 from app.db import get_db
-from app.models import CartItem, Order, OrderLine, Product, User, WishlistItem
+from app.models import AuthSession, CartItem, Order, OrderLine, PasswordReset, Product, User, WishlistItem
 from app.routers.catalog import public_product
-from app.schemas import AccountOutput, OrderHistoryOutput, OrderOutput, ProfileUpdate, QuantityInput
-from app.security import current_user
+from app.schemas import (
+    AccountOutput,
+    OrderHistoryOutput,
+    OrderOutput,
+    PasswordChange,
+    ProfileUpdate,
+    QuantityInput,
+)
+from app.security import current_user, password_hasher, sign_in, verify_password
 
 router = APIRouter(prefix="/api/account", tags=["account"])
+
+
+@router.post("/password", status_code=204)
+def change_password(
+    data: PasswordChange, request: Request, db: Session = Depends(get_db), user: User = Depends(current_user)
+):
+    # Reload under a lock so two password changes cannot verify a stale hash.
+    user = db.scalar(
+        select(User).where(User.id == user.id).with_for_update().execution_options(populate_existing=True)
+    )
+    if not user.password_hash:
+        raise HTTPException(400, "این حساب با گوگل ساخته شده است؛ برای ورود از گوگل استفاده کنید.")
+    if not verify_password(data.current_password, user.password_hash):
+        raise HTTPException(400, "رمز عبور فعلی درست نیست.")
+    if data.current_password == data.new_password:
+        raise HTTPException(400, "رمز جدید باید با رمز فعلی متفاوت باشد.")
+    user.password_hash = password_hasher.hash(data.new_password)
+    db.execute(delete(PasswordReset).where(PasswordReset.user_id == user.id))
+    db.execute(delete(AuthSession).where(AuthSession.user_id == user.id))
+    response = Response(status_code=204)
+    sign_in(request, response, db, user)
+    return response
 
 
 @router.patch("/profile", response_model=AccountOutput)
