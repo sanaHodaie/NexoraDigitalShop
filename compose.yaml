@@ -9,6 +9,7 @@ services:
       - "127.0.0.1:5432:5432"
     volumes:
       - nexora-postgres:/var/lib/postgresql/data
+      - ./backend/scripts/init-local.sql:/docker-entrypoint-initdb.d/10-nexora.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U nexora -d nexora"]
       interval: 5s
@@ -18,12 +19,41 @@ services:
     build: ./backend
     environment:
       ENVIRONMENT: development
-      DATABASE_URL: postgresql+psycopg://nexora:nexora@db:5432/nexora
+      DATABASE_URL: postgresql+psycopg://nexora_app:local-app-only@db:5432/nexora
+      MIGRATION_DATABASE_URL: postgresql+psycopg://nexora_migrator:local-migration-only@db:5432/nexora
+      REDIS_URL: redis://redis:6379/0
+      REQUIRE_VERIFIED_EMAIL: "false" # Local demo without email; production defaults to true.
       SECRET_KEY: local-development-only-change-before-deploying
     ports:
       - "127.0.0.1:8000:8000"
     depends_on:
       db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health', timeout=3)"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+  redis:
+    image: redis:7-alpine
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    environment:
+      API_PROXY_TARGET: http://api:8000
+    ports:
+      - "127.0.0.1:3000:3000"
+    depends_on:
+      api:
         condition: service_healthy
 volumes:
   nexora-postgres:

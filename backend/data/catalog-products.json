@@ -1,0 +1,422 @@
+[
+  {
+    "id": "phone-01",
+    "name": "اپل آیفون ۱۵",
+    "nameEn": "Apple iPhone 15",
+    "brand": "Apple",
+    "category": "smartphones",
+    "categoryFa": "گوشی هوشمند",
+    "kindLabel": "گوشی هوشمند",
+    "price": 799,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/phone-01.svg",
+    "specs": [
+      "۱۲۸ گیگابایت",
+      "تراشه A16 Bionic",
+      "دوربین ۴۸ مگاپیکسل"
+    ],
+    "description": "اپل آیفون ۱۵؛ ۱۲۸ گیگابایت، تراشه A16 Bionic و دوربین ۴۸ مگاپیکسل. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "phone-02",
+    "name": "اپل آیفون ۱۵ پلاس",
+    "nameEn": "Apple iPhone 15 Plus",
+    "brand": "Apple",
+    "category": "smartphones",
+    "categoryFa": "گوشی هوشمند",
+    "kindLabel": "گوشی هوشمند",
+    "price": 899,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/phone-02.svg",
+    "specs": [
+      "۲۵۶ گیگابایت",
+      "نمایشگر ۶٫۷ اینچ",
+      "دوربین ۴۸ مگاپیکسل"
+    ],
+    "description": "اپل آیفون ۱۵ پلاس؛ ۲۵۶ گیگابایت، نمایشگر ۶٫۷ اینچ و دوربین ۴۸ مگاپیکسل. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "phone-03",
+    "name": "اپل آیفون ۱۴",
+    "nameEn": "Apple iPhone 14",
+    "brand": "Apple",
+    "category": "smartphones",
+    "categoryFa": "گوشی هوشمند",
+    "kindLabel": "گوشی هوشمند",
+    "price": 649,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/phone-03.svg",
+    "specs": [
+      "۱۲۸ گیگابایت",
+      "تراشه A15 Bionic",
+      "دوربین ۱۲ مگاپیکسل"
+    ],
+    "description": "اپل آیفون ۱۴؛ ۱۲۸ گیگابایت، تراشه A15 Bionic و دوربین ۱۲ مگاپیکسل. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "phone-04",
+    "name": "اپل آیفون ۱۴ پلاس",
+    "nameEn": "Apple iPhone 14 Plus",
+    "brand": "Apple",
+    "category": "smartphones",
+    "categoryFa": "گوشی هوشمند",
+    "kindLabel": "گوشی هوشمند",
+    "price": 749,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/phone-04.svg",
+    "specs": [
+      "۲۵۶ گیگابایت",
+      "نمایشگر ۶٫۷ اینچ",
+      "دوربین ۱۲ مگاپیکسل"
+    ],
+    "description": "اپل آیفون ۱۴ پلاس؛ ۲۵۶ گیگابایت، نمایشگر ۶٫۷ اینچ و دوربین ۱۲ مگاپیکسل. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "phone-05",
+    "name": "اپل آیفون ۱۳",
+    "nameEn": "Apple iPhone 13",
+    "brand": "Apple",
+    "category": "smartphones",
+    "categoryFa": "گوشی هوشمند",
+    "kindLabel": "گوشی هوشمند",
+    "price": 549,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/phone-05.svg",
+    "specs": [
+      "۱۲۸ گیگابایت",
+      "تراشه A15 Bionic",
+      "دوربین ۱۲ مگاپیکسل"
+    ],
+    "description": "اپل آیفون ۱۳؛ ۱۲۸ گیگابایت، تراشه A15 Bionic و دوربین ۱۲ مگاپیکسل. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "phone-06",
+    "name": "سامسونگ گلکسی S24",
+    "nameEn": "Samsung Galaxy S24",
+    "brand": "Samsung",
+    "category": "smartphones",
+    "categoryFa": "گوشی هوشمند",
+    "kindLabel": "گوشی هوشمند",
+    "price": 799,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/phone-06.svg",
+    "specs": [
+      "۲۵۶ گیگابایت",
+      "رم ۸ گیگابایت",
+      "دوربین ۵۰ مگاپیکسل"
+    ],
+    "description": "سامسونگ گلکسی S24؛ ۲۵۶ گیگابایت، رم ۸ گیگابایت و دوربین ۵۰ مگاپیکسل. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "phone-07",
+    "name": "سامسونگ گلکسی S24 اولترا",
+    "nameEn": "Samsung Galaxy S24 Ultra",
+    "brand": "Samsung",
+    "category": "smartphones",
+    "categoryFa": "گوشی هوشمند",
+    "kindLabel": "گوشی هوشمند",
+    "price": 1199,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/phone-07.svg",
+    "specs": [
+      "۲۵۶ گیگابایت",
+      "رم ۱۲ گیگابایت",
+      "دوربین ۲۰۰ مگاپیکسل"
+    ],
+    "description": "سامسونگ گلکسی S24 اولترا؛ ۲۵۶ گیگابایت، رم ۱۲ گیگابایت و دوربین ۲۰۰ مگاپیکسل. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "phone-08",
+    "name": "سامسونگ گلکسی A55",
+    "nameEn": "Samsung Galaxy A55 5G",
+    "brand": "Samsung",
+    "category": "smartphones",
+    "categoryFa": "گوشی هوشمند",
+    "kindLabel": "گوشی هوشمند",
+    "price": 449,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/phone-08.svg",
+    "specs": [
+      "۲۵۶ گیگابایت",
+      "رم ۸ گیگابایت",
+      "دوربین ۵۰ مگاپیکسل"
+    ],
+    "description": "سامسونگ گلکسی A55؛ ۲۵۶ گیگابایت، رم ۸ گیگابایت و دوربین ۵۰ مگاپیکسل. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "phone-09",
+    "name": "سامسونگ گلکسی A35",
+    "nameEn": "Samsung Galaxy A35 5G",
+    "brand": "Samsung",
+    "category": "smartphones",
+    "categoryFa": "گوشی هوشمند",
+    "kindLabel": "گوشی هوشمند",
+    "price": 349,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/phone-09.svg",
+    "specs": [
+      "۱۲۸ گیگابایت",
+      "رم ۶ گیگابایت",
+      "دوربین ۵۰ مگاپیکسل"
+    ],
+    "description": "سامسونگ گلکسی A35؛ ۱۲۸ گیگابایت، رم ۶ گیگابایت و دوربین ۵۰ مگاپیکسل. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "phone-10",
+    "name": "سامسونگ گلکسی S23 FE",
+    "nameEn": "Samsung Galaxy S23 FE",
+    "brand": "Samsung",
+    "category": "smartphones",
+    "categoryFa": "گوشی هوشمند",
+    "kindLabel": "گوشی هوشمند",
+    "price": 599,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/phone-10.svg",
+    "specs": [
+      "۲۵۶ گیگابایت",
+      "رم ۸ گیگابایت",
+      "دوربین ۵۰ مگاپیکسل"
+    ],
+    "description": "سامسونگ گلکسی S23 FE؛ ۲۵۶ گیگابایت، رم ۸ گیگابایت و دوربین ۵۰ مگاپیکسل. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "computer-01",
+    "name": "اپل مک‌بوک ایر M3",
+    "nameEn": "Apple MacBook Air M3 13-inch",
+    "brand": "Apple",
+    "category": "laptops",
+    "categoryFa": "لپ‌تاپ و پی‌سی",
+    "kindLabel": "لپ‌تاپ",
+    "price": 1099,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/computer-01.svg",
+    "specs": [
+      "رم ۱۶ گیگابایت",
+      "SSD ۲۵۶ گیگابایت",
+      "تراشه Apple M3"
+    ],
+    "description": "اپل مک‌بوک ایر M3؛ رم ۱۶ گیگابایت، SSD ۲۵۶ گیگابایت و تراشه Apple M3. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "computer-02",
+    "name": "اپل مک‌بوک پرو M3",
+    "nameEn": "Apple MacBook Pro M3 14-inch",
+    "brand": "Apple",
+    "category": "laptops",
+    "categoryFa": "لپ‌تاپ و پی‌سی",
+    "kindLabel": "لپ‌تاپ",
+    "price": 1599,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/computer-02.svg",
+    "specs": [
+      "رم ۱۶ گیگابایت",
+      "SSD ۵۱۲ گیگابایت",
+      "تراشه Apple M3"
+    ],
+    "description": "اپل مک‌بوک پرو M3؛ رم ۱۶ گیگابایت، SSD ۵۱۲ گیگابایت و تراشه Apple M3. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "computer-03",
+    "name": "ایسوس ویووبوک ۱۵",
+    "nameEn": "ASUS Vivobook 15 X1504",
+    "brand": "ASUS",
+    "category": "laptops",
+    "categoryFa": "لپ‌تاپ و پی‌سی",
+    "kindLabel": "لپ‌تاپ",
+    "price": 649,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/computer-03.svg",
+    "specs": [
+      "رم ۱۶ گیگابایت",
+      "SSD ۵۱۲ گیگابایت",
+      "Intel Core i5-1335U"
+    ],
+    "description": "ایسوس ویووبوک ۱۵؛ رم ۱۶ گیگابایت، SSD ۵۱۲ گیگابایت و Intel Core i5-1335U. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "computer-04",
+    "name": "لنوو آیدیاپد اسلیم ۳",
+    "nameEn": "Lenovo IdeaPad Slim 3 15IRU8",
+    "brand": "Lenovo",
+    "category": "laptops",
+    "categoryFa": "لپ‌تاپ و پی‌سی",
+    "kindLabel": "لپ‌تاپ",
+    "price": 599,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/computer-04.svg",
+    "specs": [
+      "رم ۱۶ گیگابایت",
+      "SSD ۵۱۲ گیگابایت",
+      "Intel Core i5-1335U"
+    ],
+    "description": "لنوو آیدیاپد اسلیم ۳؛ رم ۱۶ گیگابایت، SSD ۵۱۲ گیگابایت و Intel Core i5-1335U. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "computer-05",
+    "name": "ایسر اسپایر ۵",
+    "nameEn": "Acer Aspire 5 A515-58M",
+    "brand": "Acer",
+    "category": "laptops",
+    "categoryFa": "لپ‌تاپ و پی‌سی",
+    "kindLabel": "لپ‌تاپ",
+    "price": 699,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/computer-05.svg",
+    "specs": [
+      "رم ۱۶ گیگابایت",
+      "SSD ۵۱۲ گیگابایت",
+      "Intel Core i5-1335U"
+    ],
+    "description": "ایسر اسپایر ۵؛ رم ۱۶ گیگابایت، SSD ۵۱۲ گیگابایت و Intel Core i5-1335U. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "computer-06",
+    "name": "اچ‌پی ویکتوس ۱۵",
+    "nameEn": "HP Victus 15-fa",
+    "brand": "HP",
+    "category": "laptops",
+    "categoryFa": "لپ‌تاپ و پی‌سی",
+    "kindLabel": "لپ‌تاپ",
+    "price": 999,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/computer-06.svg",
+    "specs": [
+      "رم ۱۶ گیگابایت",
+      "SSD ۵۱۲ گیگابایت",
+      "گرافیک RTX 4050"
+    ],
+    "description": "اچ‌پی ویکتوس ۱۵؛ رم ۱۶ گیگابایت، SSD ۵۱۲ گیگابایت و گرافیک RTX 4050. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "computer-07",
+    "name": "دل اینسپایرون ۱۵",
+    "nameEn": "Dell Inspiron 15 3530",
+    "brand": "Dell",
+    "category": "laptops",
+    "categoryFa": "لپ‌تاپ و پی‌سی",
+    "kindLabel": "لپ‌تاپ",
+    "price": 729,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/computer-07.svg",
+    "specs": [
+      "رم ۱۶ گیگابایت",
+      "SSD ۵۱۲ گیگابایت",
+      "Intel Core i5-1334U"
+    ],
+    "description": "دل اینسپایرون ۱۵؛ رم ۱۶ گیگابایت، SSD ۵۱۲ گیگابایت و Intel Core i5-1334U. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "computer-08",
+    "name": "لنوو LOQ گیمینگ",
+    "nameEn": "Lenovo LOQ 15IRX9",
+    "brand": "Lenovo",
+    "category": "laptops",
+    "categoryFa": "لپ‌تاپ و پی‌سی",
+    "kindLabel": "لپ‌تاپ",
+    "price": 1199,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/computer-08.svg",
+    "specs": [
+      "رم ۱۶ گیگابایت",
+      "SSD ۱ ترابایت",
+      "گرافیک RTX 4060"
+    ],
+    "description": "لنوو LOQ گیمینگ؛ رم ۱۶ گیگابایت، SSD ۱ ترابایت و گرافیک RTX 4060. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "computer-09",
+    "name": "اپل مک مینی M2",
+    "nameEn": "Apple Mac mini M2",
+    "brand": "Apple",
+    "category": "laptops",
+    "categoryFa": "لپ‌تاپ و پی‌سی",
+    "kindLabel": "مینی پی‌سی",
+    "price": 599,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/computer-09.svg",
+    "specs": [
+      "رم ۸ گیگابایت",
+      "SSD ۲۵۶ گیگابایت",
+      "تراشه Apple M2"
+    ],
+    "description": "اپل مک مینی M2؛ رم ۸ گیگابایت، SSD ۲۵۶ گیگابایت و تراشه Apple M2. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "computer-10",
+    "name": "اپل آی‌مک M3",
+    "nameEn": "Apple iMac M3 24-inch",
+    "brand": "Apple",
+    "category": "laptops",
+    "categoryFa": "لپ‌تاپ و پی‌سی",
+    "kindLabel": "آل‌این‌وان",
+    "price": 1299,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/computer-10.svg",
+    "specs": [
+      "رم ۸ گیگابایت",
+      "SSD ۲۵۶ گیگابایت",
+      "نمایشگر ۲۴ اینچ 4.5K"
+    ],
+    "description": "اپل آی‌مک M3؛ رم ۸ گیگابایت، SSD ۲۵۶ گیگابایت و نمایشگر ۲۴ اینچ 4.5K. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  }
+]

@@ -8,6 +8,7 @@ import { useShop } from '../../context/ShopContext';
 import { AccountIcon } from '../../assets/icons/AccountIcon';
 import { MenuIcon } from '../../assets/icons/MenuIcon';
 import { CloseIcon } from '../../assets/icons/CloseIcon';
+import { Link } from 'react-router-dom';
 
 export const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -83,9 +84,9 @@ export const Navbar = () => {
           {/* Center: Navigation Links */}
           <nav className="flex items-center gap-4 xl:gap-6">
             {desktopNavLinks.map((item, idx) => (
-              <a
+              <Link
                 key={idx}
-                href={item.href}
+                to={item.href}
                 className="relative text-xs xl:text-sm font-bold text-slate-700 dark:text-slate-200 hover:text-blue-600 dark:hover:text-blue-400 transition-colors py-1 flex items-center gap-1"
               >
                 <span>{item.label}</span>
@@ -94,7 +95,7 @@ export const Navbar = () => {
                     ویژه
                   </span>
                 )}
-              </a>
+              </Link>
             ))}
           </nav>
 
@@ -261,11 +262,11 @@ export const Navbar = () => {
                   >
                     <MenuIcon className="w-4 h-4" />
                   </button>
-                  <a href="/" className="flex flex-col text-right">
+                  <Link to="/" className="flex flex-col text-right">
                     <span className="text-sm sm:text-base font-black sm:tracking-wider bg-gradient-to-l from-blue-700 via-indigo-600 to-slate-900 dark:from-sky-400 dark:via-blue-300 dark:to-white bg-clip-text text-transparent font-sans">
                       NEXORA
                     </span>
-                  </a>
+                  </Link>
                 </div>
 
                 {/* Left: Search Icon placed directly beside Dark Mode, Wishlist & Cart */}

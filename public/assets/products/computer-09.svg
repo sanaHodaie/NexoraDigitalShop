@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="360" viewBox="0 0 480 360"><title>Demo mini illustration</title><defs>
+    <linearGradient id="metal" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f8fafc"/><stop offset=".45" stop-color="#bcc5d3"/><stop offset="1" stop-color="#64748b"/></linearGradient>
+    <linearGradient id="screen" x1="0" y1="1" x2="1" y2="0"><stop stop-color="#0b1835"/><stop offset=".48" stop-color="#2563eb"/><stop offset="1" stop-color="#bcc5d3"/></linearGradient>
+    <radialGradient id="orb"><stop stop-color="#eff6ff" stop-opacity=".9"/><stop offset="1" stop-color="#60a5fa" stop-opacity="0"/></radialGradient>
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="9"/></filter>
+    <clipPath id="display"><rect x="186" y="50" width="130" height="254" rx="18"/></clipPath>
+    <clipPath id="computer-display"><rect x="100" y="70" width="280" height="172" rx="4"/></clipPath>
+  </defs><ellipse cx="240" cy="285" rx="137" ry="16" fill="#0f172a" opacity=".2" filter="url(#shadow)"/><path d="M105 167 Q103 153 124 151 L353 151 Q375 152 375 167 L375 246 Q375 261 354 263 L124 263 Q105 262 105 246Z" fill="url(#metal)" stroke="#94a3b8"/><rect x="105" y="119" width="270" height="111" rx="28" fill="#dce3eb" stroke="#f8fafc" stroke-width="2"/><rect x="128" y="238" width="42" height="8" rx="3" fill="#1e293b"/><circle cx="351" cy="246" r="3" fill="#f8fafc"/><path d="M225 163 L240 149 L255 163 L240 178Z" fill="#9baabd"/></svg>

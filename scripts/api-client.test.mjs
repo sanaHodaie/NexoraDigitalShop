@@ -188,3 +188,12 @@ for (const status of [204, 202]) {
     }), null);
   });
 }
+
+test('registration and recovery preserve the generic message in JSON 202 responses', async () => {
+  const message = 'اگر حساب واجد شرایطی وجود داشته باشد، ایمیل راهنما ارسال می‌شود.';
+  for (const path of ['/auth/register', '/auth/forgot-password', '/auth/request-verification']) {
+    resetCsrf();
+    mockFetch(json({ token: 'csrf-one' }), json({ message }, 202));
+    assert.deepEqual(await api(path, registration), { message });
+  }
+});

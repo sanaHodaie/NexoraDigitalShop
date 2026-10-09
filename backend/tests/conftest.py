@@ -55,11 +55,16 @@ def engine(tmp_path):
 @pytest.fixture
 def settings():
     return Settings(
+        _env_file=None,  # Local developer credentials/configuration must not affect fixtures.
         environment="test",
         database_url="sqlite://",
         secret_key="test-secret-" * 5,
         auth_rate_limit=100,
         newsletter_rate_limit=100,
+        email_account_limit=100,
+        login_account_limit=100,
+        login_ip_limit=100,
+        require_verified_email=False,
     )
 
 
@@ -86,6 +91,10 @@ def register(client, email="user@example.com"):
         "POST",
         "/api/auth/register",
         json={"email": email, "password": "test-password-12345", "fullName": "کاربر آزمایشی"},
+    )
+    assert response.status_code == 202, response.text
+    response = write(
+        client, "POST", "/api/auth/login", json={"email": email, "password": "test-password-12345"}
     )
     assert response.status_code == 200, response.text
     return response

@@ -38,9 +38,10 @@ async function post(path, data = {}) {
 if (!process.env.NEXORA_SKIP_API) {
 const account = { email: `smoke-${Date.now()}@example.com`, password: 'Nexora-test-98765', fullName: 'کاربر آزمایشی' };
 assert.equal((await api('/api/auth/register', account)).status, 400);
-assert.equal((await post('register', account)).status, 200);
+assert.equal((await post('register', account)).status, 202);
+assert.equal((await post('login', account)).status, 200);
 assert.equal((await api('/api/auth/me')).data.fullName, account.fullName);
-assert.equal((await post('register', account)).status, 409);
+assert.equal((await post('register', account)).status, 202);
 assert.equal((await post('logout')).status, 204);
 assert.equal((await api('/api/auth/me')).status, 401);
 assert.equal((await post('login', { ...account, password: 'wrong-password' })).status, 401);
@@ -140,6 +141,10 @@ try {
   const resize = width => command('Emulation.setDeviceMetricsOverride', { width, height: 900, deviceScaleFactor: 1, mobile: false });
   const screenshot = async name => { const { data } = await command('Page.captureScreenshot'); await writeFile(join(output, name + '.png'), Buffer.from(data, 'base64')); };
   await command('Runtime.enable');
+  // External fonts/images are unrelated to these local UI checks and can hang
+  // parsing when the test machine has no access to their CDNs.
+  await command('Network.enable');
+  await command('Network.setBlockedURLs', { urls: ['https://fonts.googleapis.com/*', 'https://fonts.gstatic.com/*', 'https://images.unsplash.com/*'] });
   await command('Fetch.enable', { patterns: [{ urlPattern: `${uiUrl}/api/*` }] });
   await command('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] });
   await resize(1440);

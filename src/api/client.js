@@ -62,5 +62,8 @@ export async function api(path, options = {}) {
       ? (path === '/auth/login' ? 'ایمیل یا رمز عبور نادرست است.' : 'ابتدا وارد حساب خود شوید.')
       : 'درخواست انجام نشد. دوباره تلاش کنید.');
   }
-  return response.status === 204 || response.status === 202 ? null : readJson(response);
+  if (response.status === 204) return null;
+  // Newsletter returns an empty 202; registration/recovery return a JSON message.
+  if (response.status === 202 && !response.headers.get('content-type')) return null;
+  return readJson(response);
 }

@@ -1,5 +1,7 @@
 import React from 'react';
 import { CATEGORIES } from '../../data/mockData';
+import { Link } from 'react-router-dom';
+import { categoryHref } from '../../data/catalog';
 
 export const CategoryStrip = () => {
   return (
@@ -8,9 +10,9 @@ export const CategoryStrip = () => {
       <div className="rounded-3xl bg-white/85 dark:bg-slate-900/90 backdrop-blur-xl border border-white/60 dark:border-slate-800 shadow-xl shadow-blue-950/5 p-3 sm:p-5">
         <div className="grid grid-cols-5 md:grid-cols-10 gap-2 sm:gap-3 items-center justify-items-center">
           {CATEGORIES.map((category) => (
-            <a
+            <Link
               key={category.id}
-              href={`#${category.id}`}
+              to={categoryHref(category.id)}
               className="min-w-0 max-w-full flex flex-col items-center justify-center group select-none cursor-pointer py-1"
             >
               {/* Circular Category Photo */}
@@ -27,7 +29,7 @@ export const CategoryStrip = () => {
               <span className="text-[10px] sm:text-[11px] font-bold text-slate-700 dark:text-slate-300 group-hover:text-blue-600 dark:group-hover:text-blue-400 mt-1.5 text-center leading-tight transition-colors line-clamp-1">
                 {category.name}
               </span>
-            </a>
+            </Link>
           ))}
         </div>
       </div>

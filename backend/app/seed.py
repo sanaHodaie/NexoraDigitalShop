@@ -11,9 +11,10 @@ from app.models import Product
 
 
 def seed(engine):
-    products = json.loads(
-        (Path(__file__).resolve().parents[1] / "data/products.json").read_text(encoding="utf-8")
-    )
+    data_dir = Path(__file__).resolve().parents[1] / "data"
+    products = []
+    for filename in ("products.json", "catalog-products.json"):
+        products.extend(json.loads((data_dir / filename).read_text(encoding="utf-8")))
     with Session(engine) as db, db.begin():
         for product in products:
             # Re-running deployments must not reset edited prices or inventory.
@@ -33,7 +34,8 @@ def seed(engine):
 
 
 if __name__ == "__main__":
-    engine = make_engine(Settings().database_url.get_secret_value())
+    settings = Settings()
+    engine = make_engine((settings.migration_database_url or settings.database_url).get_secret_value())
     try:
         seed(engine)
     finally:

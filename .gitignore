@@ -12,6 +12,10 @@ backend/**/*.db
 backend/**/*.db-shm
 backend/**/*.db-wal
 backend/.venv/
+backend/.venv-audit/
+backend/.venv-local/
+**/.uv-cache/
+**/.npm-cache/
 **/__pycache__/
 **/.pytest_cache/
 **/.ruff_cache/

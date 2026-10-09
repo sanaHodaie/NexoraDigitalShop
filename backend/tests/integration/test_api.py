@@ -42,13 +42,16 @@ def test_registration_cookies_validation_and_revocation(client, app, engine):
     bad = write(client, "POST", "/api/auth/register", json={"email": "bad", "password": "secret"})
     assert bad.status_code == 400 and "secret" not in bad.text and "error" in bad.json()
     response = register(client, " USER@Example.COM ")
-    assert response.json() == {"email": "user@example.com"}
+    assert response.json()["email"] == "user@example.com"
     cookie = response.headers["set-cookie"]
     assert all(
         flag in cookie for flag in ["__Host-Nexora=", "HttpOnly", "Secure", "SameSite=strict", "Path=/"]
     )
     me = client.get("/api/auth/me")
-    assert me.json() == {"email": "user@example.com", "fullName": "کاربر آزمایشی"}
+    assert {k: v for k, v in me.json().items() if k != "emailVerifiedAt"} == {
+        "email": "user@example.com",
+        "fullName": "کاربر آزمایشی",
+    }
     assert me.headers["cache-control"] == "no-store"
     duplicate = write(
         client,
@@ -56,7 +59,7 @@ def test_registration_cookies_validation_and_revocation(client, app, engine):
         "/api/auth/register",
         json={"email": "user@example.com", "password": "test-password-12345"},
     )
-    assert duplicate.status_code == 409
+    assert duplicate.status_code == 202
     old_session = client.cookies.get("__Host-Nexora")
     with Session(engine) as db:
         user = db.scalar(select(User))
@@ -194,6 +197,7 @@ def test_google_verification_and_no_email_account_linking(client, app, monkeypat
     assert client.get("/api/auth/providers").json() == {"googleClientId": None}
     assert write(client, "POST", "/api/auth/google", json={"credential": "forged"}).status_code == 503
     app.state.settings.google_client_id = "test-client.apps.googleusercontent.com"
+    app.state.services.identity.google.client_id = app.state.settings.google_client_id
     assert write(client, "POST", "/api/auth/google", json={"credential": "forged"}).status_code == 401
     payload = {
         "sub": "google-123",
@@ -206,7 +210,7 @@ def test_google_verification_and_no_email_account_linking(client, app, monkeypat
         assert audience == app.state.settings.google_client_id
         return payload
 
-    monkeypatch.setattr("app.routers.auth.id_token.verify_oauth2_token", verify)
+    monkeypatch.setattr("app.infrastructure.google.id_token.verify_oauth2_token", verify)
     assert (
         write(client, "POST", "/api/auth/google", json={"credential": "header.payload.signature"}).status_code
         == 200
@@ -241,7 +245,7 @@ def test_migrations_match_models_and_seed_does_not_reset_stock(engine):
 
 
 def test_alembic_downgrade_upgrade(engine):
-    config = Config(str(Path(__file__).resolve().parents[1] / "alembic.ini"))
+    config = Config(str(Path(__file__).resolve().parents[2] / "alembic.ini"))
     with engine.begin() as connection:
         config.attributes["connection"] = connection
         command.downgrade(config, "base")
@@ -255,7 +259,15 @@ def test_production_settings_fail_closed():
     with pytest.raises(ValueError):
         Settings(environment="production", database_url="sqlite://", secret_key="x" * 48)
     assert Settings(environment="development").secure_cookies is False
-    assert Settings(environment="production", secret_key="x" * 48).secure_cookies is True
+    assert (
+        Settings(
+            environment="production",
+            secret_key="x" * 48,
+            redis_url="redis://localhost:6379",
+            frontend_url="https://shop.test",
+        ).secure_cookies
+        is True
+    )
 
 
 def test_account_profile_and_order_details_are_private(client, app, engine):
@@ -270,7 +282,11 @@ def test_account_profile_and_order_details_are_private(client, app, engine):
         "/api/account/profile",
         json={"fullName": " Updated Name ", "email": "attacker@example.com"},
     )
-    assert response.json() == {"email": "user@example.com", "fullName": "Updated Name"}
+    assert response.json() == {
+        "email": "user@example.com",
+        "fullName": "Updated Name",
+        "emailVerifiedAt": None,
+    }
     assert client.get("/api/auth/me").json()["fullName"] == "Updated Name"
     product = client.get("/api/products?limit=1").json()[0]
     write(client, "PUT", f"/api/account/cart/{product['id']}", json={"quantity": 1})
@@ -292,8 +308,8 @@ def test_account_profile_and_order_details_are_private(client, app, engine):
         assert other.get("/api/auth/me").json()["fullName"] != "Updated Name"
 
 
-def test_authentication_rate_limit_is_shared(client, app):
-    app.state.settings.auth_rate_limit = 1
+def test_login_rate_limit_is_independent(client, app):
+    app.state.settings.login_ip_limit = 1
     register(client)
     response = write(
         client, "POST", "/api/auth/login", json={"email": "user@example.com", "password": "wrong"}
@@ -306,12 +322,13 @@ def test_google_signature_and_transport_errors(client, app, monkeypatch):
     from google.auth.exceptions import TransportError
 
     app.state.settings.google_client_id = "test-client.apps.googleusercontent.com"
+    app.state.services.identity.google.client_id = app.state.settings.google_client_id
     for error, status in [(ValueError("bad signature"), 401), (TransportError("unreachable"), 503)]:
 
         def verify(*args, **kwargs):
             raise error
 
-        monkeypatch.setattr("app.routers.auth.id_token.verify_oauth2_token", verify)
+        monkeypatch.setattr("app.infrastructure.google.id_token.verify_oauth2_token", verify)
         response = write(client, "POST", "/api/auth/google", json={"credential": "header.payload.signature"})
         assert response.status_code == status
         assert client.get("/api/auth/me").status_code == 401

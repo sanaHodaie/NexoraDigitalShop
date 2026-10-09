@@ -21,7 +21,8 @@ def run_migrations():
         with context.begin_transaction():
             context.run_migrations()
         return
-    url = Settings().database_url.get_secret_value()
+    settings = Settings()
+    url = (settings.migration_database_url or settings.database_url).get_secret_value()
     if context.is_offline_mode():
         context.configure(
             url=url, target_metadata=target_metadata, literal_binds=True, dialect_opts={"paramstyle": "named"}

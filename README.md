@@ -10,23 +10,23 @@ src/                         React storefront
 public/                      Public images and favicons
 backend/
   app/
-    main.py                  FastAPI app, middleware, errors
-    config.py                Pydantic environment settings
-    db.py                    SQLAlchemy engine and request sessions
-    models.py                Database models
-    schemas.py               Pydantic request/response contracts
-    security.py              Passwords, sessions, CSRF, rate limiting
-    routers/                 Authentication, catalogue, account endpoints
+    domain/                  Pure entities, money and session/order invariants
+    application/             Identity, shopping and order use cases + repository ports
+    infrastructure/          Sync SQLAlchemy, Redis, crypto, Google, mail and outbox worker
+    presentation/            Thin FastAPI routers, Pydantic contracts and dependencies
+    core/                    Validated configuration and redacted JSON logging
+    bootstrap.py             Composition root: binds ports to adapters
+    main.py                  HTTP assembly, CSRF, CORS, headers and exception handlers
     seed.py                  Idempotent catalogue seeding
   alembic/                   Versioned schema migrations
   data/products.json         Initial catalogue
-  tests/                     API, security and migration checks
+  tests/                     unit/, integration/, security/
   legacy/Nexora.Api/          Archived ASP.NET source and local data
   pyproject.toml / uv.lock    Python dependencies
-  start.py                   Migrate, seed, then start Uvicorn
-compose.yaml                 Local PostgreSQL + API
+  start.py                   Migrate with owner credentials; supervise API + worker
+compose.yaml                 Local PostgreSQL + Redis + API/worker + Vite
 render.yaml                  Optional free Render API deployment
-vercel.mjs                   Vite hosting and same-origin API proxy
+vercel.json                  Vite hosting, frontend CSP and same-origin API proxy
 ```
 
 The ASP.NET source is archived and no longer used. Existing SQLite files are
@@ -37,14 +37,30 @@ store needs a separate data migration/password-reset plan before switching.
 
 ## Run locally
 
+For installation without Docker, follow [Windows local setup](backend/LOCAL_SETUP.fa.md).
+
 Install Python 3.13, [uv](https://docs.astral.sh/uv/), Node.js and PostgreSQL.
-With Docker installed, start both the API and a persistent local database:
+With Docker Desktop running, start the frontend, API and persistent local database:
 
 ```sh
-docker compose up --build
+docker compose up -d --build
 ```
 
-Or start only PostgreSQL with `docker compose up -d db` (or install PostgreSQL
+Open `http://localhost:3000`; API docs are at `http://localhost:8000/docs`.
+No separate Python/Node terminal is needed with this command. Stop any existing
+local servers on ports 3000 and 8000 first. This Compose setup uses the local
+database only and does not connect to Neon. Rebuild after source changes with
+the same command. Use `docker compose logs -f` for logs and `docker compose stop`
+to stop the local services; `docker compose start` starts them again. Database
+data persists in the named volume (do not use `down -v` if you want to keep it).
+The frontend container runs Vite for local development, not production hosting.
+Existing Compose volumes need the role upgrade once before the new API starts:
+`Get-Content backend/scripts/init-local.sql | docker compose exec -T db psql -U nexora -d nexora`.
+This preserves data; do not delete the volume. Local Compose disables email
+verification for checkout because no email provider is configured. Production
+keeps verification enabled.
+
+Alternatively, start only PostgreSQL with `docker compose up -d db` (or install PostgreSQL
 directly), then run the API outside Docker:
 
 ```sh
@@ -93,16 +109,13 @@ It does not provision a paid database/disk. Hosting accounts, database credentia
 and actual remote deployment are still needed; configuration files alone do not
 make the online API work.
 
-On **Vercel**, set `NEXORA_API_ORIGIN=https://YOUR_BACKEND_HOST` (without `/api`),
-then deploy the latest commit. Root Directory: repository root; framework: Vite;
-build: `npm run build`; output: `dist`. The proxy preserves `/api`, cookies and
-same-origin CSRF; do not point the browser directly to the backend hostname.
-
-`/api/products` should return a JSON array; `/api/csrf` a token. `/api/auth/me`
-returns 401 when logged out. Without an API origin, the configured fallback
-returns JSON 503 `BACKEND_NOT_CONFIGURED`. Vercel plain-text 404, even on
-`/api/backend-unavailable`, indicates an outdated or incorrectly rooted
-deployment. Deploy the repository, not just `dist` or an older release.
+On **Vercel**, `vercel.json` is the active configuration. Its first rewrite
+proxies `/api/:path*` to the current Render API before the SPA fallback. Update
+that HTTPS destination when changing hosts. `NEXORA_API_ORIGIN` is not read by
+this JSON configuration. Keep the frontend and API same-origin from the browser.
+Root Directory: repository root; build: `npm run build`; output: `dist`.
+`/api/products` must return JSON, `/api/csrf` a token, and `/api/auth/me` returns
+401 when logged out.
 
 ### Google sign-in
 
@@ -123,34 +136,65 @@ or access/refresh token is shipped to the browser.
 - `GET /api/account/wishlist`, `PUT`/`DELETE /api/account/wishlist/{id}`
 - `GET`/`POST /api/account/orders`, `POST /api/newsletter`, `GET /health`
 
-React contracts remain camelCase with `{ "error": "..." }` failures. Passwords
-use Argon2. Login cookies contain random tokens; only token hashes and expiration
-dates are stored in PostgreSQL. Logout revokes the session. Signed CSRF tokens
-are bound to the browser cookie and current session. API responses are `no-store`.
-Authentication shares a global limit of 10 requests/minute; newsletter allows 5.
-Run one Uvicorn worker; multiple workers require a shared limiter store.
+React contracts remain camelCase and errors preserve `error`, adding `code`.
+Registration now returns a generic **202** and requires a separate login, avoiding
+account enumeration. Password change requires `currentPassword` and `newPassword`.
+`emailVerifiedAt` and `reservationExpiresAt` are additive response fields.
 
-Cart/wishlist/orders are account scoped. Checkout uses server prices and atomic
-stock reservations in one transaction, with $9.99 shipping below $99. Orders stay
-`pending_payment`; there is no real payment integration. Existing fixed rial
-conversion in the frontend is unchanged.
+New routes: `/api/auth/logout-all`, `/api/auth/request-verification`,
+`/api/auth/verify-email`, `/api/auth/confirm-email-change`, `/api/account/email`,
+`/api/account/orders/{id}/cancel`, and permission-protected
+`/api/management/orders/{id}/confirm-payment`. The last route is manual management
+confirmation, **not a payment gateway or a public payment webhook**.
 
-## Account area
+Passwords use Argon2; session/action-token tables store SHA-256 hashes of random
+256-bit tokens. Sessions have idle (30 minute default), absolute (14 day default)
+timeouts, last-use timestamps and revocation. Password changes rotate the current
+session and revoke all previous sessions. CSRF remains bound to browser + session.
 
-Password recovery uses `POST /api/auth/forgot-password` and
-`POST /api/auth/reset-password`. Configure `RESEND_API_KEY`, a verified sender
-in `MAIL_FROM`, and `FRONTEND_URL` (the storefront origin, HTTPS in production)
-on the backend. See [Resend email API](https://resend.com/docs/api-reference/emails/send-email).
-Never put the key in a `VITE_` variable. Without email configuration the UI
-reports that delivery is unavailable. Google-only users should continue with Google.
+Production requires Redis for atomic, shared rate limits with independent IP and
+account buckets. Unknown/known account failures and recovery requests share public
+responses. CORS defaults to no cross-origin access; exact origins are configurable.
+Frontend and API security headers use separate CSPs; inline scripts/eval are not
+allowed in the frontend policy. Inline styles remain necessary for React motion.
 
-Startup applies migration `0002`. Reset links open `/reset-password` with a token
-in the URL fragment, removed from history after loading. Only token hashes are
-stored; links expire after 30 minutes, are single-use, and reset revokes existing
-sessions. Requests share the authentication rate limit and a one-minute resend
-cooldown per account. Background delivery errors are logged without credentials;
-check the provider dashboard for delivery failures. Tests mock email delivery;
-real delivery requires configuring and deploying the backend.
+Checkout uses database prices, Decimal totals, user/order row locks and conditional
+inventory updates in one transaction. Unpaid reservations expire after 20 minutes;
+the durable worker releases stock once. Cancelling also releases stock. Payment
+confirmation requires a database permission and is idempotent per payment reference.
+
+## Email and operational requirements
+
+Set `RESEND_API_KEY`, verified `MAIL_FROM` and `FRONTEND_URL`. Verification is
+required for checkout by default. Local-only demonstrations can set
+`REQUIRE_VERIFIED_EMAIL=false`; do not use this to bypass production verification.
+Recovery and verification links expire after 30 minutes and are consumed once.
+
+Email requests are transactionally queued in PostgreSQL, not BackgroundTasks.
+The outbox encrypts delivery payloads (including raw link tokens) with a key derived
+from `SECRET_KEY`, clears successful payloads, claims leased jobs with SKIP LOCKED,
+retries up to six attempts and records dead-letter failures. Only token hashes are
+in authentication token tables; the delivery queue is an encrypted exception.
+Keep SECRET_KEY stable or outstanding encrypted jobs cannot be decrypted.
+
+`start.py` supervises separate API and worker processes. To deploy the worker
+separately set `RUN_WORKER=false` on the web process and run
+`python -m app.infrastructure.worker` using the runtime credential. PostgreSQL
+outbox was chosen instead of a Redis queue so the account change and email enqueue
+commit atomically; Redis is reserved for distributed request limits.
+
+Runtime `DATABASE_URL` must use a restricted application role; production startup
+rejects administrative/table-owner/schema-create roles. `MIGRATION_DATABASE_URL`
+uses a separate migration owner and is removed from child-process environments.
+Use `scripts/provision.sql` for initial role setup. Startup grants only the required
+table/column access; runtime cannot modify RBAC tables or delete/update audit logs.
+For a separate migration job, use `MIGRATE_ON_START=false` on the runtime and apply
+`scripts/grants.sql` after Alembic as the migration owner. No `.env` is tracked.
+
+Migration **0003** revokes old sessions, leaves existing password users unverified,
+and marks old unpaid reservations due for expiry by the worker. Back up the database
+before deployment and review older unpaid orders. See the full implementation and
+validation report: [Architecture/security report](backend/SECURITY_ARCHITECTURE.fa.md).
 
 Signed-in users open `/account` from the header user icon. The responsive Persian
 dashboard includes order history and details, wishlist, cart, profile editing,
@@ -170,12 +214,14 @@ uv run alembic upgrade head
 uv run alembic revision --autogenerate -m "describe schema change"
 # Review generated revisions before applying them.
 uv run pytest
-uv run ruff check app tests alembic start.py
+uv run ruff check app tests alembic scripts start.py
+uv run python scripts/audit_dependencies.py
 ```
 
 Quick tests use isolated SQLite databases **only as test doubles**. Set
 `TEST_DATABASE_URL` to a dedicated PostgreSQL test database to run the same suite
-against PostgreSQL, including competing-order inventory checks. Tests create and
+against PostgreSQL, including competing-order inventory checks. Set `TEST_REDIS_URL`
+to a dedicated Redis test database for the shared-limit test. Tests create and
 drop unique `nexora_test_*` schemas; never supply production credentials.
 
 At the repository root: `npm run build`, `npm run lint`, and

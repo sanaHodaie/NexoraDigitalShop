@@ -10,7 +10,11 @@ import { CustomerReviews } from '../components/Reviews/CustomerReviews';
 import { TrustBadges } from '../components/Trust/TrustBadges';
 import { NewsletterSection } from '../components/Newsletter/NewsletterSection';
 
-export default function HomePage() { return <>
+export default function HomePage() {
+  React.useEffect(() => {
+    document.getElementById(window.location.hash.slice(1))?.scrollIntoView();
+  }, []);
+  return <>
 
             {/* Full-bleed Hero Section (Pure image backdrop with right-aligned text) */}
             <HeroSection />

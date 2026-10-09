@@ -18,6 +18,7 @@ export function AuthModal() {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const [notice, setNotice] = useState('');
   const [busy, setBusy] = useState(false);
   const register = view === 'register';
 
@@ -36,10 +37,13 @@ export function AuthModal() {
     heading.current?.focus({ preventScroll: true });
   }, [view, isAuthOpen]);
 
-  const switchView = next => { setView(next); setError(''); setPassword(''); setShowPassword(false); };
+  const switchView = next => { setView(next); setError(''); setNotice(''); setPassword(''); setShowPassword(false); };
   const submit = async event => {
     event.preventDefault(); setError(''); setBusy(true);
-    try { await authenticate(email.trim(), password, register, fullName.trim()); }
+    try {
+      const result = await authenticate(email.trim(), password, register, fullName.trim());
+      if (register) { switchView('login'); setNotice(result.message); }
+    }
     catch (err) { setError(err.message); }
     finally { setBusy(false); }
   };
@@ -95,6 +99,7 @@ export function AuthModal() {
               </label>
               {register ? <p id="password-help" className="auth-field-help">رمز عبور باید بین ۱۲ تا ۱۲۸ کاراکتر باشد.</p> : <button type="button" className="recovery-link" onClick={() => switchView('forgot')}>رمز عبورت رو فراموش کردی؟</button>}
               {error && <p role="alert" className="auth-error">{error}</p>}
+              {notice && <p role="status" className="auth-field-help">{notice}</p>}
               <button disabled={busy} className="auth-primary" type="submit">{busy ? 'در حال بررسی…' : register ? 'ساخت حساب کاربری' : 'ورود به حساب'}</button>
             </fieldset>
           </form>

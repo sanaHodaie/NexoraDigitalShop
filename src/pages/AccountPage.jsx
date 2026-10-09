@@ -12,7 +12,7 @@ const sections = [
   ['wishlist', 'علاقه‌مندی‌ها', Heart], ['cart', 'سبد خرید', ShoppingBag],
   ['profile', 'اطلاعات شخصی', UserRound], ['security', 'امنیت حساب', ShieldCheck],
 ];
-const statuses = { pending_payment: 'در انتظار پرداخت', paid: 'پرداخت‌شده', processing: 'در حال پردازش', shipped: 'ارسال‌شده', delivered: 'تحویل‌شده', cancelled: 'لغوشده', refunded: 'بازپرداخت‌شده' };
+const statuses = { pending: 'در انتظار', pending_payment: 'در انتظار پرداخت', paid: 'پرداخت‌شده', expired: 'مهلت رزرو تمام شده', processing: 'در حال پردازش', shipped: 'ارسال‌شده', delivered: 'تحویل‌شده', cancelled: 'لغوشده', refunded: 'بازپرداخت‌شده' };
 const dateFormat = new Intl.DateTimeFormat('fa-IR', { dateStyle: 'medium' });
 function dateLabel(value) { const date = new Date(value); return Number.isNaN(date.getTime()) ? '—' : dateFormat.format(date); }
 function Empty({ icon: Icon = Package, title, children }) {
@@ -21,7 +21,17 @@ function Empty({ icon: Icon = Package, title, children }) {
 function Failure({ retry }) { return <div className="account-notice" role="alert">دریافت اطلاعات انجام نشد. <button type="button" onClick={retry}>تلاش مجدد <RefreshCw size={15} /></button></div>; }
 function Loading() { return <div role="status" className="account-loading"><span />در حال دریافت اطلاعات حساب…</div>; }
 
-function OrderCard({ order }) {
+function OrderCard({ order: initialOrder }) {
+  const [order, setOrder] = useState(initialOrder);
+  const [cancelling, setCancelling] = useState(false);
+  const [cancelError, setCancelError] = useState('');
+  useEffect(() => setOrder(initialOrder), [initialOrder]);
+  const cancel = async () => {
+    setCancelling(true); setCancelError('');
+    try { const result = await api(`/account/orders/${order.id}/cancel`, { method: 'POST' }); setOrder(value => ({ ...value, ...result })); }
+    catch (e) { setCancelError(e.message); }
+    finally { setCancelling(false); }
+  };
   const { formatPrice, toPersianDigits } = useShop();
   const [open, setOpen] = useState(false);
   const [detail, setDetail] = useState(null);
@@ -42,7 +52,8 @@ function OrderCard({ order }) {
       {state === 'loading' ? <Loading /> : state === 'error' ? <Failure retry={() => setRetry(retry + 1)} /> : <>
         {detail.lines.map(line => <div className="account-order-line" key={line.productId}><span>{line.name}<small>{toPersianDigits(line.quantity)} عدد</small></span><b>{formatPrice(line.unitPrice * line.quantity)}</b></div>)}
         <div className="account-order-line"><span>هزینهٔ ارسال</span><b>{formatPrice(detail.shipping)}</b></div>
-        {order.status === 'pending_payment' && <p className="account-muted">این سفارش هنوز پرداخت نشده است. درگاه پرداخت آنلاین در حال حاضر فعال نیست.</p>}
+        {order.status === 'pending_payment' && <><p className="account-muted">این سفارش هنوز پرداخت نشده است. رزرو کالا تا {order.reservationExpiresAt ? new Date(order.reservationExpiresAt).toLocaleString('fa-IR') : 'پایان مهلت پرداخت'} معتبر است. درگاه پرداخت آنلاین هنوز فعال نیست.</p><button className="account-button secondary" disabled={cancelling} onClick={cancel}>لغو سفارش و آزاد کردن رزرو</button></>}
+        {cancelError && <p role="alert" className="account-error">{cancelError}</p>}
       </>}
     </div>}
   </article>;
@@ -70,11 +81,33 @@ function Profile() {
 }
 
 function Security({ onLogout, busy }) {
+  const { logout } = useShop();
+  const [leaving, setLeaving] = useState(false);
+  const allDevices = async () => { setLeaving(true); try { await logout(true); } catch { /* Context displays failure. */ } finally { setLeaving(false); } };
   return <section className="account-panel"><span className="account-empty-icon"><ShieldCheck size={28} /></span><h2>امنیت و حریم خصوصی</h2><p className="account-muted">اطلاعات حساب، سفارش‌ها و علاقه‌مندی‌ها فقط پس از ورود به حساب شما قابل مشاهده‌اند.</p>
     <div className="account-security-row"><ShieldCheck size={20} /><div><h3>ورود امن به حساب</h3><p>اطلاعات ورود در کوکی امن نگه‌داری می‌شود و در اختیار کدهای صفحه قرار نمی‌گیرد.</p></div></div>
     <div className="account-security-row"><LogOut size={20} /><div><h3>از دستگاه مشترک استفاده می‌کنید؟</h3><p>پس از پایان کار از حساب خارج شوید تا نشست ورود این دستگاه بسته شود.</p></div></div>
     <button className="account-button danger" onClick={onLogout} disabled={busy}><LogOut size={17} />{busy ? 'در حال خروج…' : 'خروج از حساب کاربری'}</button>
+    <button className="account-button secondary" onClick={allDevices} disabled={busy || leaving}>خروج از تمام دستگاه‌ها</button>
   </section>;
+}
+
+function EmailVerificationNotice() {
+  const { user, setUser } = useShop();
+  const [busy, setBusy] = useState(false);
+  const [message, setMessage] = useState('');
+  const request = async () => {
+    setBusy(true);
+    try { const result = await api('/auth/request-verification', { method: 'POST', body: JSON.stringify({ email: user.email }) }); setMessage(result.message); }
+    catch (e) { setMessage(e.message); }
+    finally { setBusy(false); }
+  };
+  const refresh = async () => {
+    setBusy(true);
+    try { setUser(await api('/auth/me')); } catch (e) { setMessage(e.message); } finally { setBusy(false); }
+  };
+  if (user.emailVerifiedAt) return null;
+  return <section className="account-panel"><h2>تأیید ایمیل</h2><p>برای ثبت سفارش، ابتدا آدرس ایمیل خود را تأیید کنید.</p><button className="account-button" disabled={busy} onClick={request}>ارسال لینک تأیید</button><button className="account-button secondary" disabled={busy} onClick={refresh}>ایمیل را تأیید کردم</button>{message && <p role="status">{message}</p>}</section>;
 }
 
 export default function AccountPage() {
@@ -111,6 +144,7 @@ export default function AccountPage() {
   const orderReady = ordersState === 'ready';
   const renderOrders = (limit) => ordersState === 'loading' ? <Loading /> : ordersState === 'error' ? <Failure retry={() => setReload(reload + 1)} /> : orders.length ? <div className="account-orders">{orders.slice(0, limit).map(order => <OrderCard key={order.id} order={order} />)}</div> : <Empty title="هنوز سفارشی ثبت نکرده‌اید">اولین انتخاب هوشمندانهٔ شما از اینجا شروع می‌شود.</Empty>;
   return <div className="account-page" dir="rtl">
+    <EmailVerificationNotice />
     <div className="account-breadcrumb"><a href="/">نکسورا</a><span>/</span><span>حساب کاربری</span><a href="/#trending" className="account-back">بازگشت به فروشگاه <ArrowUpLeft size={15} /></a></div>
     <section className="account-hero"><div className="account-hero-copy"><span className="account-eyebrow">فضای شخصی شما در نکسورا</span><h1>{user.fullName || 'همراه نکسورا'}، خوش آمدید</h1><p>انتخاب‌های شما، خریدهای شما، دنیای شما.</p><span className="account-private"><ShieldCheck size={15} />حساب شخصی و امن</span></div><div className="account-hero-art account-phone-art" aria-hidden="true"><img src={phoneImage} alt="" width="1280" height="1280" decoding="async" /></div></section>
     <div className="account-layout">

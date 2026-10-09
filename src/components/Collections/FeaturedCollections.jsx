@@ -1,6 +1,8 @@
 import React from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { FEATURED_COLLECTIONS } from '../../data/mockData';
+import { Link } from 'react-router-dom';
+import { categoryHref } from '../../data/catalog';
 
 export const FeaturedCollections = () => {
   return (
@@ -28,8 +30,9 @@ export const FeaturedCollections = () => {
       {/* Grid of Collections: Full photo cards with gradient and text overlay */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
         {FEATURED_COLLECTIONS.map((col) => (
-          <div
+          <Link
             key={col.id}
+            to={categoryHref(col.link.slice(1))}
             className="group relative rounded-3xl overflow-hidden h-60 sm:h-64 flex flex-col justify-between p-5 border border-slate-200/60 dark:border-slate-800 shadow-md hover:shadow-2xl transition-all duration-300 cursor-pointer"
           >
             {/* Full Card Image Background */}
@@ -67,7 +70,7 @@ export const FeaturedCollections = () => {
                 <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
               </div>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </section>

@@ -1,15 +1,21 @@
 name: Backend checks
 on:
   push:
-    paths: ['backend/**', '.github/workflows/backend.yml']
+    paths: ['backend/**', 'src/**', 'scripts/**', 'package*.json', 'vercel.json', '.github/workflows/backend.yml']
   pull_request:
-    paths: ['backend/**', '.github/workflows/backend.yml']
+    paths: ['backend/**', 'src/**', 'scripts/**', 'package*.json', 'vercel.json', '.github/workflows/backend.yml']
 permissions:
   contents: read
 jobs:
   postgres:
     runs-on: ubuntu-latest
     services:
+      redis:
+        image: redis:7-alpine
+        ports: ['6379:6379']
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s --health-timeout 5s --health-retries 10
       postgres:
         image: postgres:17
         env:
@@ -25,6 +31,7 @@ jobs:
         working-directory: backend
     env:
       TEST_DATABASE_URL: postgresql+psycopg://nexora:test-only-password@localhost:5432/nexora_test
+      TEST_REDIS_URL: redis://localhost:6379/15
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -32,5 +39,19 @@ jobs:
           python-version: '3.13'
       - run: pip install uv==0.11.27
       - run: uv sync --frozen
-      - run: uv run --frozen ruff check app tests alembic start.py
+      - run: uv run --frozen ruff check app tests alembic scripts start.py
       - run: uv run --frozen pytest -q
+      - run: python scripts/audit_dependencies.py
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run build
+      - run: node --test scripts/api-client.test.mjs scripts/vercel-config.test.mjs scripts/catalog.test.mjs
+      - run: npm audit --audit-level=high

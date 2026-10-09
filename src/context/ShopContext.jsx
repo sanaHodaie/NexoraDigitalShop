@@ -1,10 +1,12 @@
 import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { api, resetCsrf } from '../api/client';
-import { navigate, usePathname } from '../navigation';
+import { useNavigate } from 'react-router-dom';
+import { usePathname } from '../navigation';
 
 const ShopContext = createContext();
 const RIAL_RATE = 600000;
 export const ShopProvider = ({ children }) => {
+  const navigate = useNavigate();
   const [cart, setCart] = useState([]);
   const [wishlist, setWishlist] = useState([]);
   const [allProducts, setAllProducts] = useState([]);
@@ -93,7 +95,8 @@ export const ShopProvider = ({ children }) => {
     showCenterMessage('ورود موفق', account.fullName ? `${account.fullName}، به نکسورا خوش آمدی.` : 'به حساب خود وارد شدید.', 'user');
   };
   const authenticate = async (email, password, register, fullName) => {
-    await api(`/auth/${register ? 'register' : 'login'}`, { method: 'POST', body: JSON.stringify({ email, password, ...(register ? { fullName } : {}) }) });
+    const result = await api(`/auth/${register ? 'register' : 'login'}`, { method: 'POST', body: JSON.stringify({ email, password, ...(register ? { fullName } : {}) }) });
+    if (register) return result;
     await finishAuthentication();
   };
   const authenticateGoogle = async credential => {
@@ -104,9 +107,9 @@ export const ShopProvider = ({ children }) => {
     if (!isLoggedIn) { setIsAuthOpen(true); return; }
     navigate('/account');
   };
-  const logout = async () => {
+  const logout = async (allDevices = false) => {
     try {
-      await api('/auth/logout', { method: 'POST' });
+      await api(allDevices === true ? '/auth/logout-all' : '/auth/logout', { method: 'POST' });
       resetCsrf();
       sessionBootstrap.current?.abort();
       accountEpoch.current++;

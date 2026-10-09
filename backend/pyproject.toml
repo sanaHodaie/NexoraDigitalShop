@@ -13,6 +13,8 @@ dependencies = [
   "alembic>=1.14,<2",
   "pwdlib[argon2]>=0.2,<1",
   "google-auth[requests]>=2.38,<3",
+  "redis>=5,<8",
+  "cryptography>=46,<51",
 ]
 
 [dependency-groups]

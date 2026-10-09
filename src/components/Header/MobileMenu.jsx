@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from 'motion/react';
 import { X, ChevronDown, Smartphone, Laptop, Headphones, Gamepad2, Home, Watch, Cable, Camera, Radio, ShieldCheck } from 'lucide-react';
 import { Logo } from './Logo';
 import { CATEGORIES } from '../../data/mockData';
+import { Link } from 'react-router-dom';
+import { CATALOG_CATEGORIES, categoryHref } from '../../data/catalog';
 import { useShop } from '../../context/ShopContext';
 import { AccountIcon } from '../../assets/icons/AccountIcon';
 
@@ -114,9 +116,9 @@ export const MobileMenu = ({ isOpen, onClose }) => {
                         className="bg-slate-50/70 dark:bg-slate-900/50 border-t border-slate-100 dark:border-slate-800 px-3 py-2 space-y-1"
                       >
                         {CATEGORIES.map((cat) => (
-                          <a
+                          <Link
                             key={cat.id}
-                            href={`/#${cat.id}`}
+                            to={categoryHref(cat.id)}
                             onClick={onClose}
                             className="flex items-center justify-between px-3 py-2 text-xs font-medium text-slate-700 dark:text-slate-300 hover:text-blue-600 rounded-xl hover:bg-white dark:hover:bg-slate-800 transition-colors"
                           >
@@ -125,9 +127,9 @@ export const MobileMenu = ({ isOpen, onClose }) => {
                               <span>{cat.name}</span>
                             </span>
                             <span className="text-[10px] text-slate-400">
-                              {cat.count}+ کالا
+                              {CATALOG_CATEGORIES[cat.id] ? '۱۰ محصول منتخب' : `${cat.count}+ کالا`}
                             </span>
-                          </a>
+                          </Link>
                         ))}
                       </motion.div>
                     )}

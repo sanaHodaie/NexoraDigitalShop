@@ -1,9 +1,10 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 export const Logo = ({ className = '' }) => {
   return (
-    <a
-      href="/"
+    <Link
+      to="/"
       className={`inline-flex items-center gap-2.5 group select-none ${className}`}
     >
       {/* Geometric Modern Tech Symbol */}
@@ -23,6 +24,6 @@ export const Logo = ({ className = '' }) => {
           TECH MARKETPLACE
         </span>
       </div>
-    </a>
+    </Link>
   );
 };
