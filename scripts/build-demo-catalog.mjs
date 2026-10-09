@@ -27,6 +27,19 @@ const computers = [
   ['اپل آی‌مک M3', 'Apple iMac M3 24-inch', 'Apple', 1299, 'رم ۸ گیگابایت', 'SSD ۲۵۶ گیگابایت', 'نمایشگر ۲۴ اینچ 4.5K', '#92bdd8', 'desktop'],
 ];
 
+const audio = [
+  ['هدفون سونی WH-1000XM4', 'Sony WH-1000XM4', 'Sony', 279, 'حذف نویز فعال', 'اتصال بلوتوث', 'طراحی دورگوشی', '#9fadc3', 'headphones'],
+  ['هدفون بوز QuietComfort 45', 'Bose QuietComfort 45', 'Bose', 249, 'حذف نویز فعال', 'حالت شنیدن محیط', 'طراحی تاشو', '#b5c4d2', 'headphones'],
+  ['هدفون سنهایزر مومنتوم ۴', 'Sennheiser Momentum 4 Wireless', 'Sennheiser', 299, 'حذف نویز تطبیقی', 'تنظیم اکولایزر', 'اتصال بلوتوث', '#a1acc0', 'headphones'],
+  ['هدفون جی‌بی‌ال Tune 770NC', 'JBL Tune 770NC', 'JBL', 129, 'حذف نویز تطبیقی', 'طراحی تاشو', 'اتصال بلوتوث', '#a8b9df', 'headphones'],
+  ['ایرپاد اپل نسل سوم', 'Apple AirPods (3rd generation)', 'Apple', 169, 'تراشه Apple H1', 'اکولایزر تطبیقی', 'مقاومت IPX4', '#e2e8f0', 'earbuds-stem'],
+  ['هندزفری سامسونگ گلکسی بادز ۲ پرو', 'Samsung Galaxy Buds2 Pro', 'Samsung', 179, 'حذف نویز فعال', 'حالت صدای محیط', 'کیس شارژ همراه', '#b8aed6', 'earbuds'],
+  ['هندزفری سونی WF-C700N', 'Sony WF-C700N', 'Sony', 99, 'حذف نویز فعال', 'بلوتوث ۵٫۲', 'کیس شارژ همراه', '#b7d4c5', 'earbuds'],
+  ['اسپیکر جی‌بی‌ال Flip 6', 'JBL Flip 6', 'JBL', 119, 'اتصال بلوتوث', 'مقاومت IP67', 'طراحی قابل حمل', '#87acd8', 'speaker-round'],
+  ['اسپیکر مارشال امبرتون ۲', 'Marshall Emberton II', 'Marshall', 149, 'اتصال بلوتوث', 'مقاومت IP67', 'طراحی قابل حمل', '#bdad8d', 'speaker'],
+  ['اسپیکر انکر ساندکور Motion+', 'Anker Soundcore Motion+', 'Soundcore', 99, 'پشتیبانی Hi-Res Audio', 'بلوتوث ۵٫۰', 'توان خروجی ۳۰ وات', '#97adbf', 'speaker'],
+];
+
 function illustration(kind, tint, index) {
   const defs = `<defs>
     <linearGradient id="metal" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f8fafc"/><stop offset=".45" stop-color="${tint}"/><stop offset="1" stop-color="#64748b"/></linearGradient>
@@ -39,7 +52,20 @@ function illustration(kind, tint, index) {
   const pattern = `<ellipse cx="256" cy="${148 + index * 3}" rx="140" ry="62" fill="none" stroke="#93c5fd" stroke-width="25" opacity=".35" transform="rotate(-38 256 180)"/><ellipse cx="285" cy="208" rx="125" ry="44" fill="none" stroke="#dbeafe" stroke-width="13" opacity=".45" transform="rotate(-38 285 208)"/>`;
   const wallpaper = kind === 'phone' ? pattern : `<g clip-path="url(#computer-display)">${pattern}</g>`;
   let device;
-  if (kind === 'phone') {
+  if (kind === 'headphones') {
+    device = `<ellipse cx="240" cy="319" rx="115" ry="10" fill="#0f172a" opacity=".16" filter="url(#shadow)"/>
+      <g transform="rotate(-8 240 180)"><path d="M132 215 V154 C132 23 348 23 348 154 V215" fill="none" stroke="#475569" stroke-width="25"/><path d="M132 205 V154 C132 30 348 30 348 154 V205" fill="none" stroke="url(#metal)" stroke-width="17"/><path d="M145 126 C163 51 317 51 335 126" fill="none" stroke="${tint}" stroke-width="22" stroke-linecap="round"/>
+      <rect x="108" y="159" width="66" height="133" rx="31" fill="#1e293b" stroke="#64748b" stroke-width="3"/><rect x="108" y="169" width="42" height="113" rx="21" fill="url(#metal)"/><rect x="303" y="159" width="66" height="133" rx="31" fill="#1e293b" stroke="#64748b" stroke-width="3"/><rect x="327" y="169" width="42" height="113" rx="21" fill="url(#metal)"/><path d="M338 263 h10" stroke="#334155" stroke-width="3" stroke-linecap="round"/></g>`;
+  } else if (kind.startsWith('earbuds')) {
+    const stem = kind === 'earbuds-stem';
+    device = `<ellipse cx="240" cy="307" rx="107" ry="10" fill="#0f172a" opacity=".16" filter="url(#shadow)"/><rect x="140" y="209" width="200" height="93" rx="36" fill="url(#metal)" stroke="#94a3b8"/><path d="M143 239 Q240 261 337 239" fill="none" stroke="#64748b"/><circle cx="240" cy="268" r="3" fill="#4ade80"/>
+      <g transform="rotate(-18 184 140)">${stem ? '<rect x="189" y="112" width="22" height="84" rx="11" fill="url(#metal)"/>' : ''}<ellipse cx="177" cy="111" rx="37" ry="31" fill="url(#metal)" stroke="#94a3b8"/><ellipse cx="154" cy="113" rx="10" ry="16" fill="#334155"/><path d="M175 94 q13 -3 20 7" fill="none" stroke="#f8fafc" stroke-width="3" stroke-linecap="round"/></g>
+      <g transform="rotate(18 293 140)">${stem ? '<rect x="268" y="112" width="22" height="84" rx="11" fill="url(#metal)"/>' : ''}<ellipse cx="302" cy="111" rx="37" ry="31" fill="url(#metal)" stroke="#94a3b8"/><ellipse cx="325" cy="113" rx="10" ry="16" fill="#334155"/><path d="M288 94 q13 -3 20 7" fill="none" stroke="#f8fafc" stroke-width="3" stroke-linecap="round"/></g>`;
+  } else if (kind.startsWith('speaker')) {
+    const rounded = kind === 'speaker-round';
+    device = `<defs><pattern id="mesh" width="7" height="7" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r="1.2" fill="${tint}" opacity=".65"/></pattern></defs><ellipse cx="240" cy="285" rx="160" ry="11" fill="#0f172a" opacity=".18" filter="url(#shadow)"/>
+      <g transform="rotate(-8 240 180)"><rect x="78" y="112" width="324" height="152" rx="${rounded ? 65 : 24}" fill="url(#metal)" stroke="#64748b" stroke-width="2"/><rect x="90" y="123" width="300" height="130" rx="${rounded ? 56 : 18}" fill="#1e293b"/><rect x="90" y="123" width="300" height="130" rx="${rounded ? 56 : 18}" fill="url(#mesh)"/><rect x="209" y="113" width="62" height="11" rx="5" fill="#475569"/><path d="M227 114 v8 m-4 -4 h8 m17 0 h9" stroke="#e2e8f0" stroke-width="2"/><circle cx="240" cy="191" r="13" fill="${tint}" opacity=".85"/><path d="M235 186 L245 191 L235 196Z" fill="#334155"/></g>`;
+  } else if (kind === 'phone') {
     const cameras = index < 5 ? '<circle cx="140" cy="73" r="13"/><circle cx="168" cy="99" r="13"/>' : '<circle cx="137" cy="69" r="11"/><circle cx="137" cy="98" r="11"/><circle cx="137" cy="127" r="11"/>';
     device = `<ellipse cx="243" cy="325" rx="99" ry="10" fill="#0f172a" opacity=".18" filter="url(#shadow)"/>
       <g transform="rotate(-12 165 185)"><rect x="112" y="42" width="128" height="260" rx="24" fill="url(#metal)" stroke="#64748b" stroke-width="2"/><rect x="120" y="51" width="63" height="65" rx="17" fill="${tint}"/><g fill="#101b2d" stroke="#94a3b8" stroke-width="3">${cameras}</g><circle cx="169" cy="69" r="4" fill="#f8fafc"/></g>
@@ -58,17 +84,19 @@ function illustration(kind, tint, index) {
 const products = [];
 const assets = new URL('../public/assets/products/', import.meta.url);
 await mkdir(assets, { recursive: true });
-for (const [category, rows, prefix] of [['smartphones', phones, 'phone'], ['laptops', computers, 'computer']]) {
+const categoryLabels = { smartphones: 'گوشی هوشمند', laptops: 'لپ‌تاپ و پی‌سی', audio: 'تجهیزات صوتی' };
+const kindLabels = { phone: 'گوشی هوشمند', laptop: 'لپ‌تاپ', mini: 'مینی پی‌سی', desktop: 'آل‌این‌وان', headphones: 'هدفون', earbuds: 'هندزفری', 'earbuds-stem': 'هندزفری', speaker: 'اسپیکر', 'speaker-round': 'اسپیکر' };
+for (const [category, rows, prefix] of [['smartphones', phones, 'phone'], ['laptops', computers, 'computer'], ['audio', audio, 'audio']]) {
   for (const [index, row] of rows.entries()) {
     const [name, nameEn, brand, price, ...details] = row;
     const [first, second, third, tint, kind = 'phone'] = details;
     const id = `${prefix}-${String(index + 1).padStart(2, '0')}`;
-    const kindLabel = kind === 'phone' ? 'گوشی هوشمند' : kind === 'laptop' ? 'لپ‌تاپ' : kind === 'mini' ? 'مینی پی‌سی' : 'آل‌این‌وان';
-    products.push({ id, name, nameEn, brand, category, categoryFa: category === 'smartphones' ? 'گوشی هوشمند' : 'لپ‌تاپ و پی‌سی', kindLabel,
+    const kindLabel = kindLabels[kind];
+    products.push({ id, name, nameEn, brand, category, categoryFa: categoryLabels[category], kindLabel,
       price, rating: 0, reviewCount: 0, image: `/assets/products/${id}.svg`, specs: [first, second, third],
       description: `${name}؛ ${first}، ${second} و ${third}. پیکربندی و قیمت نمونه برای تست فروشگاه.`, inStock: true, demo: true });
     await writeFile(new URL(`${id}.svg`, assets), illustration(kind, tint, index), 'utf8');
   }
 }
 await writeFile(new URL('../backend/data/catalog-products.json', import.meta.url), JSON.stringify(products, null, 2) + '\n', 'utf8');
-console.log('Generated 20 demo products and 20 local SVG illustrations.');
+console.log(`Generated ${products.length} demo products and local SVG illustrations.`);

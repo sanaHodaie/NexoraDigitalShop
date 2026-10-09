@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="360" viewBox="0 0 480 360"><title>Demo earbuds illustration</title><defs>
+    <linearGradient id="metal" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f8fafc"/><stop offset=".45" stop-color="#b8aed6"/><stop offset="1" stop-color="#64748b"/></linearGradient>
+    <linearGradient id="screen" x1="0" y1="1" x2="1" y2="0"><stop stop-color="#0b1835"/><stop offset=".48" stop-color="#2563eb"/><stop offset="1" stop-color="#b8aed6"/></linearGradient>
+    <radialGradient id="orb"><stop stop-color="#eff6ff" stop-opacity=".9"/><stop offset="1" stop-color="#60a5fa" stop-opacity="0"/></radialGradient>
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="9"/></filter>
+    <clipPath id="display"><rect x="186" y="50" width="130" height="254" rx="18"/></clipPath>
+    <clipPath id="computer-display"><rect x="100" y="70" width="280" height="172" rx="4"/></clipPath>
+  </defs><ellipse cx="240" cy="307" rx="107" ry="10" fill="#0f172a" opacity=".16" filter="url(#shadow)"/><rect x="140" y="209" width="200" height="93" rx="36" fill="url(#metal)" stroke="#94a3b8"/><path d="M143 239 Q240 261 337 239" fill="none" stroke="#64748b"/><circle cx="240" cy="268" r="3" fill="#4ade80"/>
+      <g transform="rotate(-18 184 140)"><ellipse cx="177" cy="111" rx="37" ry="31" fill="url(#metal)" stroke="#94a3b8"/><ellipse cx="154" cy="113" rx="10" ry="16" fill="#334155"/><path d="M175 94 q13 -3 20 7" fill="none" stroke="#f8fafc" stroke-width="3" stroke-linecap="round"/></g>
+      <g transform="rotate(18 293 140)"><ellipse cx="302" cy="111" rx="37" ry="31" fill="url(#metal)" stroke="#94a3b8"/><ellipse cx="325" cy="113" rx="10" ry="16" fill="#334155"/><path d="M288 94 q13 -3 20 7" fill="none" stroke="#f8fafc" stroke-width="3" stroke-linecap="round"/></g></svg>

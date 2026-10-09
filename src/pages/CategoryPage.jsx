@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router-dom';
-import { ArrowLeft, ChevronLeft, Laptop, Search, SlidersHorizontal, Smartphone, X } from 'lucide-react';
+import { ArrowLeft, ChevronLeft, Headphones, Laptop, Search, SlidersHorizontal, Smartphone, X } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
 import { CATALOG_CATEGORIES, selectCatalogProducts } from '../data/catalog';
 import CatalogProductCard from '../components/Products/CatalogProductCard';
@@ -43,7 +43,7 @@ export default function CategoryPage() {
   }, [category, categoryId]);
 
   if (!category) return <section className="catalog-page catalog-empty" dir="rtl"><h1>این دسته‌بندی پیدا نشد</h1><Link to="/">بازگشت به خانه</Link></section>;
-  const Icon = categoryId === 'smartphones' ? Smartphone : Laptop;
+  const Icon = { smartphones: Smartphone, laptops: Laptop, audio: Headphones }[categoryId];
   return <div className="catalog-page" dir="rtl">
     <nav className="catalog-breadcrumb" aria-label="مسیر صفحه"><Link to="/">خانه</Link><ChevronLeft size={14} aria-hidden="true" /><span aria-current="page">{category.title}</span></nav>
     <header className="catalog-hero">

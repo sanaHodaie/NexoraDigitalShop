@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="360" viewBox="0 0 480 360"><title>Demo speaker illustration</title><defs>
+    <linearGradient id="metal" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f8fafc"/><stop offset=".45" stop-color="#97adbf"/><stop offset="1" stop-color="#64748b"/></linearGradient>
+    <linearGradient id="screen" x1="0" y1="1" x2="1" y2="0"><stop stop-color="#0b1835"/><stop offset=".48" stop-color="#2563eb"/><stop offset="1" stop-color="#97adbf"/></linearGradient>
+    <radialGradient id="orb"><stop stop-color="#eff6ff" stop-opacity=".9"/><stop offset="1" stop-color="#60a5fa" stop-opacity="0"/></radialGradient>
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="9"/></filter>
+    <clipPath id="display"><rect x="186" y="50" width="130" height="254" rx="18"/></clipPath>
+    <clipPath id="computer-display"><rect x="100" y="70" width="280" height="172" rx="4"/></clipPath>
+  </defs><defs><pattern id="mesh" width="7" height="7" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r="1.2" fill="#97adbf" opacity=".65"/></pattern></defs><ellipse cx="240" cy="285" rx="160" ry="11" fill="#0f172a" opacity=".18" filter="url(#shadow)"/>
+      <g transform="rotate(-8 240 180)"><rect x="78" y="112" width="324" height="152" rx="24" fill="url(#metal)" stroke="#64748b" stroke-width="2"/><rect x="90" y="123" width="300" height="130" rx="18" fill="#1e293b"/><rect x="90" y="123" width="300" height="130" rx="18" fill="url(#mesh)"/><rect x="209" y="113" width="62" height="11" rx="5" fill="#475569"/><path d="M227 114 v8 m-4 -4 h8 m17 0 h9" stroke="#e2e8f0" stroke-width="2"/><circle cx="240" cy="191" r="13" fill="#97adbf" opacity=".85"/><path d="M235 186 L245 191 L235 196Z" fill="#334155"/></g></svg>

@@ -103,5 +103,30 @@ try {
   await evaluate("document.querySelector('a[href=\"/category/smartphones\"]').click()");
   await until('location.pathname === "/category/smartphones" && document.querySelectorAll(".catalog-card").length === 10');
   assert.deepEqual(errors, []);
+  await evaluate("document.querySelector('.catalog-breadcrumb a').click()");
+  await until('location.pathname === "/" && Boolean(document.querySelector("#trending"))');
+  await evaluate("document.querySelector('a[href=\"/category/audio\"]').click()");
+  await until('location.pathname === "/category/audio" && document.querySelectorAll(".catalog-card").length === 10');
+  assert.equal(await evaluate('document.querySelectorAll(".catalog-switch a").length'), 1);
+  assert.equal(await evaluate('document.querySelector(".catalog-switch a").getAttribute("href")'), '/category/audio');
+  for (const width of [320, 375, 480, 768, 1024, 1440]) {
+    await command('Emulation.setDeviceMetricsOverride', { width, height: 1000, deviceScaleFactor: 1, mobile: false });
+    for (const dark of [false, true]) {
+      await evaluate(`document.documentElement.classList.toggle('dark', ${dark})`);
+      await wait(100);
+      assert.ok(await evaluate(`document.documentElement.scrollWidth <= innerWidth && [...document.querySelectorAll('.catalog-page *')].every(el => { const r = el.getBoundingClientRect(); return !r.width || el.closest('.catalog-hero-art') || (r.left >= -1 && r.right <= innerWidth + 1); })`), `Audio overflow at ${width}`);
+    }
+  }
+  await evaluate("document.documentElement.classList.remove('dark')");
+  await wait(400);
+  const audioDesktop = await command('Page.captureScreenshot');
+  await writeFile(join(output, 'audio-desktop.png'), Buffer.from(audioDesktop.data, 'base64'));
+  await evaluate("[...document.querySelectorAll('.catalog-brands button')].find(b => b.textContent === 'Sony').click()");
+  await until('document.querySelectorAll(".catalog-card").length === 2');
+  await evaluate("document.querySelector('.catalog-detail').click()");
+  await until('document.querySelectorAll(".fixed.inset-0.z-50").length > 0');
+  await command('Page.navigate', { url: `${base}/category/audio` });
+  await until('location.search === "" && document.querySelectorAll(".catalog-card").length === 10');
+  assert.deepEqual(errors, []);
   console.log(`PASS: 10 products/category, 6 widths, light/dark, router/back/reload, brand filter and quick view. Screenshots: ${output}`);
 } finally { socket?.close(); browser.kill(); }

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="360" viewBox="0 0 480 360"><title>Demo headphones illustration</title><defs>
+    <linearGradient id="metal" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f8fafc"/><stop offset=".45" stop-color="#9fadc3"/><stop offset="1" stop-color="#64748b"/></linearGradient>
+    <linearGradient id="screen" x1="0" y1="1" x2="1" y2="0"><stop stop-color="#0b1835"/><stop offset=".48" stop-color="#2563eb"/><stop offset="1" stop-color="#9fadc3"/></linearGradient>
+    <radialGradient id="orb"><stop stop-color="#eff6ff" stop-opacity=".9"/><stop offset="1" stop-color="#60a5fa" stop-opacity="0"/></radialGradient>
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="9"/></filter>
+    <clipPath id="display"><rect x="186" y="50" width="130" height="254" rx="18"/></clipPath>
+    <clipPath id="computer-display"><rect x="100" y="70" width="280" height="172" rx="4"/></clipPath>
+  </defs><ellipse cx="240" cy="319" rx="115" ry="10" fill="#0f172a" opacity=".16" filter="url(#shadow)"/>
+      <g transform="rotate(-8 240 180)"><path d="M132 215 V154 C132 23 348 23 348 154 V215" fill="none" stroke="#475569" stroke-width="25"/><path d="M132 205 V154 C132 30 348 30 348 154 V205" fill="none" stroke="url(#metal)" stroke-width="17"/><path d="M145 126 C163 51 317 51 335 126" fill="none" stroke="#9fadc3" stroke-width="22" stroke-linecap="round"/>
+      <rect x="108" y="159" width="66" height="133" rx="31" fill="#1e293b" stroke="#64748b" stroke-width="3"/><rect x="108" y="169" width="42" height="113" rx="21" fill="url(#metal)"/><rect x="303" y="159" width="66" height="133" rx="31" fill="#1e293b" stroke="#64748b" stroke-width="3"/><rect x="327" y="169" width="42" height="113" rx="21" fill="url(#metal)"/><path d="M338 263 h10" stroke="#334155" stroke-width="3" stroke-linecap="round"/></g></svg>

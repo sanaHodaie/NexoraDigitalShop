@@ -418,5 +418,215 @@
     "description": "اپل آی‌مک M3؛ رم ۸ گیگابایت، SSD ۲۵۶ گیگابایت و نمایشگر ۲۴ اینچ 4.5K. پیکربندی و قیمت نمونه برای تست فروشگاه.",
     "inStock": true,
     "demo": true
+  },
+  {
+    "id": "audio-01",
+    "name": "هدفون سونی WH-1000XM4",
+    "nameEn": "Sony WH-1000XM4",
+    "brand": "Sony",
+    "category": "audio",
+    "categoryFa": "تجهیزات صوتی",
+    "kindLabel": "هدفون",
+    "price": 279,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/audio-01.svg",
+    "specs": [
+      "حذف نویز فعال",
+      "اتصال بلوتوث",
+      "طراحی دورگوشی"
+    ],
+    "description": "هدفون سونی WH-1000XM4؛ حذف نویز فعال، اتصال بلوتوث و طراحی دورگوشی. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "audio-02",
+    "name": "هدفون بوز QuietComfort 45",
+    "nameEn": "Bose QuietComfort 45",
+    "brand": "Bose",
+    "category": "audio",
+    "categoryFa": "تجهیزات صوتی",
+    "kindLabel": "هدفون",
+    "price": 249,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/audio-02.svg",
+    "specs": [
+      "حذف نویز فعال",
+      "حالت شنیدن محیط",
+      "طراحی تاشو"
+    ],
+    "description": "هدفون بوز QuietComfort 45؛ حذف نویز فعال، حالت شنیدن محیط و طراحی تاشو. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "audio-03",
+    "name": "هدفون سنهایزر مومنتوم ۴",
+    "nameEn": "Sennheiser Momentum 4 Wireless",
+    "brand": "Sennheiser",
+    "category": "audio",
+    "categoryFa": "تجهیزات صوتی",
+    "kindLabel": "هدفون",
+    "price": 299,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/audio-03.svg",
+    "specs": [
+      "حذف نویز تطبیقی",
+      "تنظیم اکولایزر",
+      "اتصال بلوتوث"
+    ],
+    "description": "هدفون سنهایزر مومنتوم ۴؛ حذف نویز تطبیقی، تنظیم اکولایزر و اتصال بلوتوث. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "audio-04",
+    "name": "هدفون جی‌بی‌ال Tune 770NC",
+    "nameEn": "JBL Tune 770NC",
+    "brand": "JBL",
+    "category": "audio",
+    "categoryFa": "تجهیزات صوتی",
+    "kindLabel": "هدفون",
+    "price": 129,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/audio-04.svg",
+    "specs": [
+      "حذف نویز تطبیقی",
+      "طراحی تاشو",
+      "اتصال بلوتوث"
+    ],
+    "description": "هدفون جی‌بی‌ال Tune 770NC؛ حذف نویز تطبیقی، طراحی تاشو و اتصال بلوتوث. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "audio-05",
+    "name": "ایرپاد اپل نسل سوم",
+    "nameEn": "Apple AirPods (3rd generation)",
+    "brand": "Apple",
+    "category": "audio",
+    "categoryFa": "تجهیزات صوتی",
+    "kindLabel": "هندزفری",
+    "price": 169,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/audio-05.svg",
+    "specs": [
+      "تراشه Apple H1",
+      "اکولایزر تطبیقی",
+      "مقاومت IPX4"
+    ],
+    "description": "ایرپاد اپل نسل سوم؛ تراشه Apple H1، اکولایزر تطبیقی و مقاومت IPX4. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "audio-06",
+    "name": "هندزفری سامسونگ گلکسی بادز ۲ پرو",
+    "nameEn": "Samsung Galaxy Buds2 Pro",
+    "brand": "Samsung",
+    "category": "audio",
+    "categoryFa": "تجهیزات صوتی",
+    "kindLabel": "هندزفری",
+    "price": 179,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/audio-06.svg",
+    "specs": [
+      "حذف نویز فعال",
+      "حالت صدای محیط",
+      "کیس شارژ همراه"
+    ],
+    "description": "هندزفری سامسونگ گلکسی بادز ۲ پرو؛ حذف نویز فعال، حالت صدای محیط و کیس شارژ همراه. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "audio-07",
+    "name": "هندزفری سونی WF-C700N",
+    "nameEn": "Sony WF-C700N",
+    "brand": "Sony",
+    "category": "audio",
+    "categoryFa": "تجهیزات صوتی",
+    "kindLabel": "هندزفری",
+    "price": 99,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/audio-07.svg",
+    "specs": [
+      "حذف نویز فعال",
+      "بلوتوث ۵٫۲",
+      "کیس شارژ همراه"
+    ],
+    "description": "هندزفری سونی WF-C700N؛ حذف نویز فعال، بلوتوث ۵٫۲ و کیس شارژ همراه. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "audio-08",
+    "name": "اسپیکر جی‌بی‌ال Flip 6",
+    "nameEn": "JBL Flip 6",
+    "brand": "JBL",
+    "category": "audio",
+    "categoryFa": "تجهیزات صوتی",
+    "kindLabel": "اسپیکر",
+    "price": 119,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/audio-08.svg",
+    "specs": [
+      "اتصال بلوتوث",
+      "مقاومت IP67",
+      "طراحی قابل حمل"
+    ],
+    "description": "اسپیکر جی‌بی‌ال Flip 6؛ اتصال بلوتوث، مقاومت IP67 و طراحی قابل حمل. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "audio-09",
+    "name": "اسپیکر مارشال امبرتون ۲",
+    "nameEn": "Marshall Emberton II",
+    "brand": "Marshall",
+    "category": "audio",
+    "categoryFa": "تجهیزات صوتی",
+    "kindLabel": "اسپیکر",
+    "price": 149,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/audio-09.svg",
+    "specs": [
+      "اتصال بلوتوث",
+      "مقاومت IP67",
+      "طراحی قابل حمل"
+    ],
+    "description": "اسپیکر مارشال امبرتون ۲؛ اتصال بلوتوث، مقاومت IP67 و طراحی قابل حمل. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "audio-10",
+    "name": "اسپیکر انکر ساندکور Motion+",
+    "nameEn": "Anker Soundcore Motion+",
+    "brand": "Soundcore",
+    "category": "audio",
+    "categoryFa": "تجهیزات صوتی",
+    "kindLabel": "اسپیکر",
+    "price": 99,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/audio-10.svg",
+    "specs": [
+      "پشتیبانی Hi-Res Audio",
+      "بلوتوث ۵٫۰",
+      "توان خروجی ۳۰ وات"
+    ],
+    "description": "اسپیکر انکر ساندکور Motion+؛ پشتیبانی Hi-Res Audio، بلوتوث ۵٫۰ و توان خروجی ۳۰ وات. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
   }
 ]

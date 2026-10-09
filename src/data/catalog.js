@@ -1,4 +1,11 @@
 export const CATALOG_CATEGORIES = {
+  audio: {
+    title: 'تجهیزات صوتی',
+    english: 'AUDIO & SOUND',
+    description: 'صدای دلخواهت را پیدا کن؛ از هدفون و هندزفری روزمره تا اسپیکر همراه لحظه‌هایت.',
+    image: '/assets/products/audio-01.svg',
+    productIds: Array.from({ length: 10 }, (_, index) => `audio-${String(index + 1).padStart(2, '0')}`),
+  },
   smartphones: {
     title: 'گوشی هوشمند',
     english: 'SMARTPHONES',
