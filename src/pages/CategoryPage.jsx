@@ -1,9 +1,10 @@
 import React, { useEffect, useMemo } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router-dom';
-import { ArrowLeft, ChevronLeft, Headphones, Laptop, Search, SlidersHorizontal, Smartphone, X } from 'lucide-react';
+import { ArrowLeft, ChevronLeft, Gamepad2, Headphones, Laptop, Search, SlidersHorizontal, Smartphone, X } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
 import { CATALOG_CATEGORIES, selectCatalogProducts } from '../data/catalog';
 import CatalogProductCard from '../components/Products/CatalogProductCard';
+import CategoryHeroArt from '../components/Categories/CategoryHeroArt';
 import './catalog.css';
 
 export default function CategoryPage() {
@@ -43,7 +44,7 @@ export default function CategoryPage() {
   }, [category, categoryId]);
 
   if (!category) return <section className="catalog-page catalog-empty" dir="rtl"><h1>این دسته‌بندی پیدا نشد</h1><Link to="/">بازگشت به خانه</Link></section>;
-  const Icon = { smartphones: Smartphone, laptops: Laptop, audio: Headphones }[categoryId];
+  const Icon = { smartphones: Smartphone, laptops: Laptop, audio: Headphones, gaming: Gamepad2 }[categoryId];
   return <div className="catalog-page" dir="rtl">
     <nav className="catalog-breadcrumb" aria-label="مسیر صفحه"><Link to="/">خانه</Link><ChevronLeft size={14} aria-hidden="true" /><span aria-current="page">{category.title}</span></nav>
     <header className="catalog-hero">
@@ -55,7 +56,7 @@ export default function CategoryPage() {
           <Link to={`/category/${categoryId}`} aria-current="page">{category.title}<ArrowLeft size={14} /></Link>
         </nav>
       </div>
-      <div className="catalog-hero-art" aria-hidden="true"><span className="catalog-orbit" /><img src={category.image} alt="" width="480" height="360" /></div>
+      <CategoryHeroArt key={categoryId} category={category} />
     </header>
 
     <section aria-label="فهرست محصولات">
@@ -79,6 +80,7 @@ export default function CategoryPage() {
           : products.length === 0 ? <div className="catalog-empty"><Search size={32} /><h2>{filtered ? 'محصولی با این مشخصات پیدا نشد' : 'محصولات این مجموعه به‌زودی اضافه می‌شوند'}</h2><p>{filtered ? 'عبارت جست‌وجو یا برند انتخاب‌شده را تغییر دهید.' : 'کمی بعد دوباره به این صفحه سر بزنید.'}</p>{filtered && <button onClick={() => setParams({}, { replace: true })}>نمایش همه محصولات</button>}</div>
             : <div className="catalog-grid">{products.map((product, index) => <CatalogProductCard key={product.id} product={product} eager={index < 4} />)}</div>}
       <p className="catalog-demo-note">این مجموعه برای تست فروشگاه است؛ قیمت‌ها و پیکربندی‌ها نمونه‌اند و تصاویر، نمایشی هستند.</p>
+      {categoryId === 'gaming' && <p className="catalog-demo-note">عکس کنسول هیرو: <a href="https://commons.wikimedia.org/wiki/File:PlayStation_5_and_DualSense_with_transparent_background.png" target="_blank" rel="noreferrer">Osh33m / Soberian</a>؛ ویرایش زاویه و ترکیب کنسول و کنترلر، با مجوز <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noreferrer">CC BY-SA 4.0</a></p>}
     </section>
   </div>;
 }

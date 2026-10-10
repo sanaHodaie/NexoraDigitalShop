@@ -13,6 +13,9 @@ test('each category has ten distinct purchasable seed products with local artwor
     assert.equal(selected.length, 10);
     assert.ok(selected.every(p => p.category === id && p.price > 0 && p.specs.length === 3));
     for (const product of selected) await access(new URL(`../public${product.image}`, import.meta.url));
+    for (const asset of [CATALOG_CATEGORIES[id].image, CATALOG_CATEGORIES[id].fallbackImage]) {
+      await access(new URL(`../public${asset}`, import.meta.url));
+    }
     assert.equal(categoryHref(id), `/category/${id}`);
   }
 });

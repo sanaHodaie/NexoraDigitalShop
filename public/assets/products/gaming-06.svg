@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="360" viewBox="0 0 480 360"><title>Demo handheld illustration</title><defs>
+    <linearGradient id="metal" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f8fafc"/><stop offset=".45" stop-color="#79c9c4"/><stop offset="1" stop-color="#64748b"/></linearGradient>
+    <linearGradient id="screen" x1="0" y1="1" x2="1" y2="0"><stop stop-color="#0b1835"/><stop offset=".48" stop-color="#2563eb"/><stop offset="1" stop-color="#79c9c4"/></linearGradient>
+    <radialGradient id="orb"><stop stop-color="#eff6ff" stop-opacity=".9"/><stop offset="1" stop-color="#60a5fa" stop-opacity="0"/></radialGradient>
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="9"/></filter>
+    <clipPath id="display"><rect x="186" y="50" width="130" height="254" rx="18"/></clipPath>
+    <clipPath id="computer-display"><rect x="100" y="70" width="280" height="172" rx="4"/></clipPath>
+  </defs><ellipse cx="240" cy="279" rx="168" ry="11" fill="#0f172a" opacity=".16" filter="url(#shadow)"/><g transform="rotate(-7 240 180)"><rect x="55" y="106" width="370" height="144" rx="32" fill="url(#metal)" stroke="#64748b"/><rect x="112" y="113" width="256" height="130" rx="5" fill="#0f172a"/><rect x="124" y="124" width="232" height="108" rx="3" fill="url(#screen)"/><path d="M145 210 Q227 105 337 150" fill="none" stroke="#93c5fd" stroke-width="14" opacity=".5"/><circle cx="83" cy="145" r="15" fill="#1e293b"/><path d="M83 184 v30 m-15 -15 h30" stroke="#334155" stroke-width="8"/><circle cx="397" cy="210" r="14" fill="#1e293b"/><g fill="#334155"><circle cx="394" cy="134" r="5"/><circle cx="383" cy="145" r="5"/><circle cx="405" cy="145" r="5"/><circle cx="394" cy="156" r="5"/></g></g></svg>

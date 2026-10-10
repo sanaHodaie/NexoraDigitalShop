@@ -628,5 +628,215 @@
     "description": "اسپیکر انکر ساندکور Motion+؛ پشتیبانی Hi-Res Audio، بلوتوث ۵٫۰ و توان خروجی ۳۰ وات. پیکربندی و قیمت نمونه برای تست فروشگاه.",
     "inStock": true,
     "demo": true
+  },
+  {
+    "id": "gaming-01",
+    "name": "کنسول پلی‌استیشن ۵ اسلیم دیسک‌خور",
+    "nameEn": "Sony PlayStation 5 Slim Disc Edition 1TB",
+    "brand": "Sony",
+    "category": "gaming",
+    "categoryFa": "گیمینگ و کنسول",
+    "kindLabel": "کنسول",
+    "price": 499,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/gaming-01.svg",
+    "specs": [
+      "SSD یک ترابایت",
+      "درایو دیسک Blu-ray",
+      "کنترلر DualSense"
+    ],
+    "description": "کنسول پلی‌استیشن ۵ اسلیم دیسک‌خور؛ SSD یک ترابایت، درایو دیسک Blu-ray و کنترلر DualSense. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "gaming-02",
+    "name": "کنسول پلی‌استیشن ۵ اسلیم دیجیتال",
+    "nameEn": "Sony PlayStation 5 Slim Digital Edition 1TB",
+    "brand": "Sony",
+    "category": "gaming",
+    "categoryFa": "گیمینگ و کنسول",
+    "kindLabel": "کنسول",
+    "price": 449,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/gaming-02.svg",
+    "specs": [
+      "SSD یک ترابایت",
+      "نسخهٔ بدون دیسک",
+      "کنترلر DualSense"
+    ],
+    "description": "کنسول پلی‌استیشن ۵ اسلیم دیجیتال؛ SSD یک ترابایت، نسخهٔ بدون دیسک و کنترلر DualSense. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "gaming-03",
+    "name": "کنسول ایکس‌باکس سری ایکس",
+    "nameEn": "Microsoft Xbox Series X 1TB Carbon Black",
+    "brand": "Microsoft",
+    "category": "gaming",
+    "categoryFa": "گیمینگ و کنسول",
+    "kindLabel": "کنسول",
+    "price": 499,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/gaming-03.svg",
+    "specs": [
+      "SSD یک ترابایت",
+      "درایو دیسک Blu-ray",
+      "کنترلر بی‌سیم"
+    ],
+    "description": "کنسول ایکس‌باکس سری ایکس؛ SSD یک ترابایت، درایو دیسک Blu-ray و کنترلر بی‌سیم. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "gaming-04",
+    "name": "کنسول ایکس‌باکس سری اس",
+    "nameEn": "Microsoft Xbox Series S 512GB Robot White",
+    "brand": "Microsoft",
+    "category": "gaming",
+    "categoryFa": "گیمینگ و کنسول",
+    "kindLabel": "کنسول",
+    "price": 299,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/gaming-04.svg",
+    "specs": [
+      "SSD ۵۱۲ گیگابایت",
+      "نسخهٔ بدون دیسک",
+      "کنترلر بی‌سیم"
+    ],
+    "description": "کنسول ایکس‌باکس سری اس؛ SSD ۵۱۲ گیگابایت، نسخهٔ بدون دیسک و کنترلر بی‌سیم. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "gaming-05",
+    "name": "کنسول نینتندو سوییچ OLED",
+    "nameEn": "Nintendo Switch OLED 64GB White",
+    "brand": "Nintendo",
+    "category": "gaming",
+    "categoryFa": "گیمینگ و کنسول",
+    "kindLabel": "کنسول دستی",
+    "price": 349,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/gaming-05.svg",
+    "specs": [
+      "نمایشگر OLED هفت اینچ",
+      "حافظهٔ ۶۴ گیگابایت",
+      "کنترلرهای جداشدنی"
+    ],
+    "description": "کنسول نینتندو سوییچ OLED؛ نمایشگر OLED هفت اینچ، حافظهٔ ۶۴ گیگابایت و کنترلرهای جداشدنی. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "gaming-06",
+    "name": "کنسول نینتندو سوییچ لایت",
+    "nameEn": "Nintendo Switch Lite Turquoise",
+    "brand": "Nintendo",
+    "category": "gaming",
+    "categoryFa": "گیمینگ و کنسول",
+    "kindLabel": "کنسول دستی",
+    "price": 199,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/gaming-06.svg",
+    "specs": [
+      "کنسول دستی",
+      "کنترلرهای یکپارچه",
+      "نمایشگر لمسی"
+    ],
+    "description": "کنسول نینتندو سوییچ لایت؛ کنسول دستی، کنترلرهای یکپارچه و نمایشگر لمسی. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "gaming-07",
+    "name": "کنسول دستی استیم دک OLED",
+    "nameEn": "Valve Steam Deck OLED 512GB",
+    "brand": "Valve",
+    "category": "gaming",
+    "categoryFa": "گیمینگ و کنسول",
+    "kindLabel": "کنسول دستی",
+    "price": 549,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/gaming-07.svg",
+    "specs": [
+      "SSD ۵۱۲ گیگابایت",
+      "نمایشگر OLED",
+      "سیستم‌عامل SteamOS"
+    ],
+    "description": "کنسول دستی استیم دک OLED؛ SSD ۵۱۲ گیگابایت، نمایشگر OLED و سیستم‌عامل SteamOS. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "gaming-08",
+    "name": "دستهٔ پلی‌استیشن دوال‌سنس",
+    "nameEn": "Sony DualSense Wireless Controller White",
+    "brand": "Sony",
+    "category": "gaming",
+    "categoryFa": "گیمینگ و کنسول",
+    "kindLabel": "کنترلر",
+    "price": 69,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/gaming-08.svg",
+    "specs": [
+      "بازخورد لمسی",
+      "تریگرهای تطبیقی",
+      "میکروفون داخلی"
+    ],
+    "description": "دستهٔ پلی‌استیشن دوال‌سنس؛ بازخورد لمسی، تریگرهای تطبیقی و میکروفون داخلی. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "gaming-09",
+    "name": "دستهٔ بی‌سیم ایکس‌باکس",
+    "nameEn": "Microsoft Xbox Wireless Controller Carbon Black",
+    "brand": "Microsoft",
+    "category": "gaming",
+    "categoryFa": "گیمینگ و کنسول",
+    "kindLabel": "کنترلر",
+    "price": 59,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/gaming-09.svg",
+    "specs": [
+      "اتصال بلوتوث",
+      "درگاه USB-C",
+      "دکمهٔ اشتراک‌گذاری"
+    ],
+    "description": "دستهٔ بی‌سیم ایکس‌باکس؛ اتصال بلوتوث، درگاه USB-C و دکمهٔ اشتراک‌گذاری. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "gaming-10",
+    "name": "ماوس گیمینگ لاجیتک G502 HERO",
+    "nameEn": "Logitech G502 HERO",
+    "brand": "Logitech",
+    "category": "gaming",
+    "categoryFa": "گیمینگ و کنسول",
+    "kindLabel": "ماوس گیمینگ",
+    "price": 49,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/gaming-10.svg",
+    "specs": [
+      "حسگر HERO",
+      "اتصال سیمی USB",
+      "دکمه‌های قابل تنظیم"
+    ],
+    "description": "ماوس گیمینگ لاجیتک G502 HERO؛ حسگر HERO، اتصال سیمی USB و دکمه‌های قابل تنظیم. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
   }
 ]

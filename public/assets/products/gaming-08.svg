@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="360" viewBox="0 0 480 360"><title>Demo gamepad illustration</title><defs>
+    <linearGradient id="metal" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f8fafc"/><stop offset=".45" stop-color="#dce8f4"/><stop offset="1" stop-color="#64748b"/></linearGradient>
+    <linearGradient id="screen" x1="0" y1="1" x2="1" y2="0"><stop stop-color="#0b1835"/><stop offset=".48" stop-color="#2563eb"/><stop offset="1" stop-color="#dce8f4"/></linearGradient>
+    <radialGradient id="orb"><stop stop-color="#eff6ff" stop-opacity=".9"/><stop offset="1" stop-color="#60a5fa" stop-opacity="0"/></radialGradient>
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="9"/></filter>
+    <clipPath id="display"><rect x="186" y="50" width="130" height="254" rx="18"/></clipPath>
+    <clipPath id="computer-display"><rect x="100" y="70" width="280" height="172" rx="4"/></clipPath>
+  </defs><ellipse cx="240" cy="292" rx="140" ry="12" fill="#0f172a" opacity=".16" filter="url(#shadow)"/><g transform="rotate(-9 240 180)"><path d="M151 104 Q119 106 106 153 L85 247 Q82 279 111 274 L172 218 H308 L369 274 Q398 279 395 247 L374 153 Q361 106 329 104Z" fill="url(#metal)" stroke="#64748b" stroke-width="2"/><path d="M171 115 H309 L290 176 H190Z" fill="#334155"/><circle cx="195" cy="205" r="20" fill="#1e293b" stroke="#64748b" stroke-width="4"/><circle cx="285" cy="205" r="20" fill="#1e293b" stroke="#64748b" stroke-width="4"/><path d="M148 133 v42 m-21 -21 h42" stroke="#334155" stroke-width="13"/><g fill="#334155"><circle cx="335" cy="135" r="8"/><circle cx="315" cy="155" r="8"/><circle cx="355" cy="155" r="8"/><circle cx="335" cy="175" r="8"/></g></g></svg>

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="360" viewBox="0 0 480 360"><title>Demo mouse illustration</title><defs>
+    <linearGradient id="metal" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f8fafc"/><stop offset=".45" stop-color="#7e9ac2"/><stop offset="1" stop-color="#64748b"/></linearGradient>
+    <linearGradient id="screen" x1="0" y1="1" x2="1" y2="0"><stop stop-color="#0b1835"/><stop offset=".48" stop-color="#2563eb"/><stop offset="1" stop-color="#7e9ac2"/></linearGradient>
+    <radialGradient id="orb"><stop stop-color="#eff6ff" stop-opacity=".9"/><stop offset="1" stop-color="#60a5fa" stop-opacity="0"/></radialGradient>
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="9"/></filter>
+    <clipPath id="display"><rect x="186" y="50" width="130" height="254" rx="18"/></clipPath>
+    <clipPath id="computer-display"><rect x="100" y="70" width="280" height="172" rx="4"/></clipPath>
+  </defs><ellipse cx="240" cy="310" rx="90" ry="10" fill="#0f172a" opacity=".15" filter="url(#shadow)"/><g transform="rotate(-17 240 180)"><path d="M239 65 C132 65 142 165 151 237 C162 313 320 313 329 229 C336 142 342 65 239 65Z" fill="url(#metal)" stroke="#475569" stroke-width="3"/><path d="M239 68 V190 M160 181 Q240 213 324 181" fill="none" stroke="#334155" stroke-width="5"/><rect x="228" y="103" width="22" height="49" rx="9" fill="#1e293b"/><path d="M206 237 L239 215 L270 237 L239 260Z" fill="none" stroke="#60a5fa" stroke-width="4"/></g></svg>

@@ -40,6 +40,19 @@ const audio = [
   ['اسپیکر انکر ساندکور Motion+', 'Anker Soundcore Motion+', 'Soundcore', 99, 'پشتیبانی Hi-Res Audio', 'بلوتوث ۵٫۰', 'توان خروجی ۳۰ وات', '#97adbf', 'speaker'],
 ];
 
+const gaming = [
+  ['کنسول پلی‌استیشن ۵ اسلیم دیسک‌خور', 'Sony PlayStation 5 Slim Disc Edition 1TB', 'Sony', 499, 'SSD یک ترابایت', 'درایو دیسک Blu-ray', 'کنترلر DualSense', '#d6e3f4', 'console-ps'],
+  ['کنسول پلی‌استیشن ۵ اسلیم دیجیتال', 'Sony PlayStation 5 Slim Digital Edition 1TB', 'Sony', 449, 'SSD یک ترابایت', 'نسخهٔ بدون دیسک', 'کنترلر DualSense', '#bccde5', 'console-ps'],
+  ['کنسول ایکس‌باکس سری ایکس', 'Microsoft Xbox Series X 1TB Carbon Black', 'Microsoft', 499, 'SSD یک ترابایت', 'درایو دیسک Blu-ray', 'کنترلر بی‌سیم', '#687c88', 'console-x'],
+  ['کنسول ایکس‌باکس سری اس', 'Microsoft Xbox Series S 512GB Robot White', 'Microsoft', 299, 'SSD ۵۱۲ گیگابایت', 'نسخهٔ بدون دیسک', 'کنترلر بی‌سیم', '#e1e7ef', 'console-s'],
+  ['کنسول نینتندو سوییچ OLED', 'Nintendo Switch OLED 64GB White', 'Nintendo', 349, 'نمایشگر OLED هفت اینچ', 'حافظهٔ ۶۴ گیگابایت', 'کنترلرهای جداشدنی', '#d6e1ef', 'handheld'],
+  ['کنسول نینتندو سوییچ لایت', 'Nintendo Switch Lite Turquoise', 'Nintendo', 199, 'کنسول دستی', 'کنترلرهای یکپارچه', 'نمایشگر لمسی', '#79c9c4', 'handheld'],
+  ['کنسول دستی استیم دک OLED', 'Valve Steam Deck OLED 512GB', 'Valve', 549, 'SSD ۵۱۲ گیگابایت', 'نمایشگر OLED', 'سیستم‌عامل SteamOS', '#74869b', 'handheld'],
+  ['دستهٔ پلی‌استیشن دوال‌سنس', 'Sony DualSense Wireless Controller White', 'Sony', 69, 'بازخورد لمسی', 'تریگرهای تطبیقی', 'میکروفون داخلی', '#dce8f4', 'gamepad'],
+  ['دستهٔ بی‌سیم ایکس‌باکس', 'Microsoft Xbox Wireless Controller Carbon Black', 'Microsoft', 59, 'اتصال بلوتوث', 'درگاه USB-C', 'دکمهٔ اشتراک‌گذاری', '#7f91aa', 'gamepad'],
+  ['ماوس گیمینگ لاجیتک G502 HERO', 'Logitech G502 HERO', 'Logitech', 49, 'حسگر HERO', 'اتصال سیمی USB', 'دکمه‌های قابل تنظیم', '#7e9ac2', 'mouse'],
+];
+
 function illustration(kind, tint, index) {
   const defs = `<defs>
     <linearGradient id="metal" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f8fafc"/><stop offset=".45" stop-color="${tint}"/><stop offset="1" stop-color="#64748b"/></linearGradient>
@@ -52,7 +65,18 @@ function illustration(kind, tint, index) {
   const pattern = `<ellipse cx="256" cy="${148 + index * 3}" rx="140" ry="62" fill="none" stroke="#93c5fd" stroke-width="25" opacity=".35" transform="rotate(-38 256 180)"/><ellipse cx="285" cy="208" rx="125" ry="44" fill="none" stroke="#dbeafe" stroke-width="13" opacity=".45" transform="rotate(-38 285 208)"/>`;
   const wallpaper = kind === 'phone' ? pattern : `<g clip-path="url(#computer-display)">${pattern}</g>`;
   let device;
-  if (kind === 'headphones') {
+  if (kind.startsWith('console')) {
+    const shell = kind === 'console-ps'
+      ? '<path d="M187 47 Q242 62 291 43 L300 290 Q244 316 178 289Z" fill="#1e293b"/><path d="M184 46 L200 56 L199 288 L177 302Z M280 49 L300 41 L315 298 L288 289Z" fill="url(#metal)" stroke="#cbd5e1" stroke-width="2"/><path d="M202 60 L202 283" stroke="#60a5fa" stroke-width="3"/>'
+      : `<rect x="158" y="62" width="164" height="232" rx="9" fill="url(#metal)" stroke="#64748b"/><rect x="168" y="73" width="143" height="210" rx="4" fill="${kind === 'console-s' ? '#e2e8f0' : '#1e293b'}"/><circle cx="239" cy="139" r="47" fill="#111827"/><circle cx="293" cy="269" r="5" fill="#94a3b8"/>`;
+    device = `<ellipse cx="240" cy="313" rx="109" ry="10" fill="#0f172a" opacity=".18" filter="url(#shadow)"/><g transform="rotate(-7 240 180)">${shell}</g>`;
+  } else if (kind === 'handheld') {
+    device = `<ellipse cx="240" cy="279" rx="168" ry="11" fill="#0f172a" opacity=".16" filter="url(#shadow)"/><g transform="rotate(-7 240 180)"><rect x="55" y="106" width="370" height="144" rx="32" fill="url(#metal)" stroke="#64748b"/><rect x="112" y="113" width="256" height="130" rx="5" fill="#0f172a"/><rect x="124" y="124" width="232" height="108" rx="3" fill="url(#screen)"/><path d="M145 210 Q227 105 337 150" fill="none" stroke="#93c5fd" stroke-width="14" opacity=".5"/><circle cx="83" cy="145" r="15" fill="#1e293b"/><path d="M83 184 v30 m-15 -15 h30" stroke="#334155" stroke-width="8"/><circle cx="397" cy="210" r="14" fill="#1e293b"/><g fill="#334155"><circle cx="394" cy="134" r="5"/><circle cx="383" cy="145" r="5"/><circle cx="405" cy="145" r="5"/><circle cx="394" cy="156" r="5"/></g></g>`;
+  } else if (kind === 'gamepad') {
+    device = `<ellipse cx="240" cy="292" rx="140" ry="12" fill="#0f172a" opacity=".16" filter="url(#shadow)"/><g transform="rotate(-9 240 180)"><path d="M151 104 Q119 106 106 153 L85 247 Q82 279 111 274 L172 218 H308 L369 274 Q398 279 395 247 L374 153 Q361 106 329 104Z" fill="url(#metal)" stroke="#64748b" stroke-width="2"/><path d="M171 115 H309 L290 176 H190Z" fill="#334155"/><circle cx="195" cy="205" r="20" fill="#1e293b" stroke="#64748b" stroke-width="4"/><circle cx="285" cy="205" r="20" fill="#1e293b" stroke="#64748b" stroke-width="4"/><path d="M148 133 v42 m-21 -21 h42" stroke="#334155" stroke-width="13"/><g fill="#334155"><circle cx="335" cy="135" r="8"/><circle cx="315" cy="155" r="8"/><circle cx="355" cy="155" r="8"/><circle cx="335" cy="175" r="8"/></g></g>`;
+  } else if (kind === 'mouse') {
+    device = `<ellipse cx="240" cy="310" rx="90" ry="10" fill="#0f172a" opacity=".15" filter="url(#shadow)"/><g transform="rotate(-17 240 180)"><path d="M239 65 C132 65 142 165 151 237 C162 313 320 313 329 229 C336 142 342 65 239 65Z" fill="url(#metal)" stroke="#475569" stroke-width="3"/><path d="M239 68 V190 M160 181 Q240 213 324 181" fill="none" stroke="#334155" stroke-width="5"/><rect x="228" y="103" width="22" height="49" rx="9" fill="#1e293b"/><path d="M206 237 L239 215 L270 237 L239 260Z" fill="none" stroke="#60a5fa" stroke-width="4"/></g>`;
+  } else if (kind === 'headphones') {
     device = `<ellipse cx="240" cy="319" rx="115" ry="10" fill="#0f172a" opacity=".16" filter="url(#shadow)"/>
       <g transform="rotate(-8 240 180)"><path d="M132 215 V154 C132 23 348 23 348 154 V215" fill="none" stroke="#475569" stroke-width="25"/><path d="M132 205 V154 C132 30 348 30 348 154 V205" fill="none" stroke="url(#metal)" stroke-width="17"/><path d="M145 126 C163 51 317 51 335 126" fill="none" stroke="${tint}" stroke-width="22" stroke-linecap="round"/>
       <rect x="108" y="159" width="66" height="133" rx="31" fill="#1e293b" stroke="#64748b" stroke-width="3"/><rect x="108" y="169" width="42" height="113" rx="21" fill="url(#metal)"/><rect x="303" y="159" width="66" height="133" rx="31" fill="#1e293b" stroke="#64748b" stroke-width="3"/><rect x="327" y="169" width="42" height="113" rx="21" fill="url(#metal)"/><path d="M338 263 h10" stroke="#334155" stroke-width="3" stroke-linecap="round"/></g>`;
@@ -84,9 +108,10 @@ function illustration(kind, tint, index) {
 const products = [];
 const assets = new URL('../public/assets/products/', import.meta.url);
 await mkdir(assets, { recursive: true });
-const categoryLabels = { smartphones: 'گوشی هوشمند', laptops: 'لپ‌تاپ و پی‌سی', audio: 'تجهیزات صوتی' };
+const categoryLabels = { smartphones: 'گوشی هوشمند', laptops: 'لپ‌تاپ و پی‌سی', audio: 'تجهیزات صوتی', gaming: 'گیمینگ و کنسول' };
 const kindLabels = { phone: 'گوشی هوشمند', laptop: 'لپ‌تاپ', mini: 'مینی پی‌سی', desktop: 'آل‌این‌وان', headphones: 'هدفون', earbuds: 'هندزفری', 'earbuds-stem': 'هندزفری', speaker: 'اسپیکر', 'speaker-round': 'اسپیکر' };
-for (const [category, rows, prefix] of [['smartphones', phones, 'phone'], ['laptops', computers, 'computer'], ['audio', audio, 'audio']]) {
+Object.assign(kindLabels, { 'console-ps': 'کنسول', 'console-x': 'کنسول', 'console-s': 'کنسول', handheld: 'کنسول دستی', gamepad: 'کنترلر', mouse: 'ماوس گیمینگ' });
+for (const [category, rows, prefix] of [['smartphones', phones, 'phone'], ['laptops', computers, 'computer'], ['audio', audio, 'audio'], ['gaming', gaming, 'gaming']]) {
   for (const [index, row] of rows.entries()) {
     const [name, nameEn, brand, price, ...details] = row;
     const [first, second, third, tint, kind = 'phone'] = details;

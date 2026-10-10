@@ -128,5 +128,32 @@ try {
   await command('Page.navigate', { url: `${base}/category/audio` });
   await until('location.search === "" && document.querySelectorAll(".catalog-card").length === 10');
   assert.deepEqual(errors, []);
-  console.log(`PASS: 10 products/category, 6 widths, light/dark, router/back/reload, brand filter and quick view. Screenshots: ${output}`);
+  await evaluate("document.querySelector('.catalog-breadcrumb a').click()");
+  await until('location.pathname === "/" && Boolean(document.querySelector("#trending"))');
+  await evaluate("document.querySelector('a[href=\"/category/gaming\"]').click()");
+  await until('location.pathname === "/category/gaming" && document.querySelectorAll(".catalog-card").length === 10');
+  for (const category of ['gaming', 'smartphones', 'laptops', 'audio']) {
+    await command('Page.navigate', { url: `${base}/category/${category}` });
+    await until(`document.querySelector('.catalog-hero-art img')?.getAttribute('src') === '/assets/category-heroes/${category}.png' && document.querySelector('.catalog-hero-art img').naturalWidth > 0`);
+    assert.equal(await evaluate('document.querySelectorAll(".catalog-switch a").length'), 1);
+    for (const width of [320, 375, 480, 768, 1024, 1440]) {
+      await command('Emulation.setDeviceMetricsOverride', { width, height: 1000, deviceScaleFactor: 1, mobile: false });
+      for (const dark of [false, true]) {
+        await evaluate(`document.documentElement.classList.toggle('dark', ${dark})`);
+        await wait(100);
+        assert.ok(await evaluate(`document.documentElement.scrollWidth <= innerWidth && [...document.querySelectorAll('.catalog-card')].every(el => { const r = el.getBoundingClientRect(); return r.left >= -1 && r.right <= innerWidth + 1; })`), `${category} overflow at ${width}`);
+      }
+    }
+    await command('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] });
+    await until('getComputedStyle(document.querySelector(".catalog-device-float")).animationName === "none"');
+    await command('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'no-preference' }] });
+    for (const width of [375, 1440]) {
+      await command('Emulation.setDeviceMetricsOverride', { width, height: 1000, deviceScaleFactor: 1, mobile: false });
+      await wait(200);
+      const screenshot = await command('Page.captureScreenshot');
+      await writeFile(join(output, `${category}-${width}.png`), Buffer.from(screenshot.data, 'base64'));
+    }
+  }
+  assert.deepEqual(errors, []);
+  console.log(`PASS: 10 products/category, 6 widths, light/dark, router/back/reload, real hero photos, reduced motion, brand filter and quick view. Screenshots: ${output}`);
 } finally { socket?.close(); browser.kill(); }

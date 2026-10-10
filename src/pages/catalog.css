@@ -17,8 +17,15 @@
 .catalog-switch { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
 .catalog-switch a { display: inline-flex; align-items: center; justify-content: center; gap: 14px; min-height: 42px; border-radius: 12px; padding: 10px 14px; font-size: 11px; font-weight: 700; border: 1px solid var(--catalog-line); background: var(--catalog-surface); }
 .catalog-switch a[aria-current] { color: white; background: #2563eb; border-color: #2563eb; }
-.catalog-hero-art { position: relative; min-width: 0; display: grid; place-items: center; }
-.catalog-hero-art img { position: relative; width: 100%; max-width: 390px; height: auto; transform: rotate(-8deg); filter: drop-shadow(0 20px 18px #1e3a8a1a); }
+.catalog-hero-art { position: relative; min-width: 0; width: 100%; height: 290px; display: grid; place-items: center; perspective: 1000px; }
+.catalog-device-tilt { width: 100%; max-width: 390px; transform-style: preserve-3d; }
+.catalog-device-float { transform-style: preserve-3d; animation: catalog-device-float 8s ease-in-out infinite; animation-play-state: paused; }
+.catalog-hero-art img { position: relative; width: 100%; height: 260px; object-fit: contain; filter: drop-shadow(0 15px 12px #0f172a26); }
+.catalog-device-shadow { position: absolute; bottom: 10px; width: 48%; height: 16px; border-radius: 50%; background: #1e3a8a20; filter: blur(10px); animation: catalog-device-shadow 8s ease-in-out infinite; animation-play-state: paused; }
+.dark .catalog-device-shadow { background: #0005; }
+.catalog-hero-art[data-active=true] :is(.catalog-device-float, .catalog-device-shadow) { animation-play-state: running; }
+@keyframes catalog-device-float { 0%, 100% { transform: translate3d(0, 3px, 0) rotateX(1deg) rotateY(-3deg) rotateZ(-1deg); } 50% { transform: translate3d(0, -5px, 8px) rotateX(-1deg) rotateY(3deg) rotateZ(1deg); } }
+@keyframes catalog-device-shadow { 0%, 100% { transform: scale(1); opacity: .75; } 50% { transform: scale(.91); opacity: .5; } }
 .catalog-orbit { position: absolute; width: 70%; aspect-ratio: 1; border: 1px solid #60a5fa44; border-radius: 50%; box-shadow: 0 0 0 28px #60a5fa08, 0 0 0 29px #60a5fa22; }
 .catalog-toolbar { display: flex; gap: 16px; justify-content: space-between; margin-top: 36px; }
 .catalog-search { display: flex; align-items: center; gap: 12px; background: var(--catalog-surface); border: 1px solid var(--catalog-line); border-radius: 14px; padding: 0 16px; width: min(100%, 430px); color: var(--catalog-muted); }
@@ -75,7 +82,7 @@
 @media (max-width: 1100px) { .catalog-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; } }
 @media (max-width: 760px) { .catalog-page { padding: 24px 16px 48px; } .catalog-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; } .catalog-toolbar { gap: 10px; } .catalog-select { padding-inline: 10px; } .catalog-select svg { display: none; } .catalog-card-body { padding: 14px; } }
 @media (max-width: 479px) { .catalog-page { padding-inline: 14px; } .catalog-grid { grid-template-columns: minmax(0, 1fr); } .catalog-card { display: grid; grid-template-columns: minmax(0, 1fr); } .catalog-card-media { max-height: 245px; } .catalog-image-button { height: 230px; aspect-ratio: auto; } .catalog-card-body { padding: 18px; } .catalog-card h2 { font-size: 16px; } .catalog-toolbar { flex-direction: column; } .catalog-select select { width: 100%; } .catalog-search { width: 100%; } }
-@media (prefers-reduced-motion: reduce) { .catalog-card, .catalog-image-button img { transition: none; } }
+@media (prefers-reduced-motion: reduce) { .catalog-card, .catalog-image-button img { transition: none; } .catalog-device-float, .catalog-device-shadow { animation: none; } }
 @media (max-width: 1100px) { .catalog-hero { padding: 28px; } }
-@media (max-width: 760px) { .catalog-hero { grid-template-columns: 1fr; padding: 24px; } .catalog-hero-art { position: absolute; width: 210px; left: -45px; top: -35px; opacity: .12; z-index: -1; } .catalog-hero-copy > p { max-width: 100%; } }
+@media (max-width: 760px) { .catalog-hero { grid-template-columns: 1fr; padding: 24px; } .catalog-hero-art { height: 180px; max-width: 300px; justify-self: center; margin-top: 18px; } .catalog-hero-art img { height: 165px; } .catalog-orbit { width: 150px; } .catalog-hero-copy > p { max-width: 100%; } }
 @media (max-width: 479px) { .catalog-hero { padding: 22px 18px; } .catalog-hero h1 { font-size: 28px; } }
