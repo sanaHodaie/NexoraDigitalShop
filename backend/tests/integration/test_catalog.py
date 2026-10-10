@@ -35,3 +35,26 @@ def test_catalog_products_persist_in_cart_and_seed_preserves_inventory(client, e
         assert product.price == Decimal("731.25")
         assert product.stock == 7
     assert len(client.get("/api/account/cart").json()) == 4
+
+
+def test_gaming_photos_replace_only_seed_placeholders(client, engine):
+    with Session(engine) as db, db.begin():
+        product = db.get(Product, "gaming-01")
+        product.price = Decimal("321.50")
+        product.stock = 3
+        product.payload = {**product.payload, "image": "/assets/products/gaming-01.svg", "description": "Custom description"}
+        custom = db.get(Product, "gaming-02")
+        custom.payload = {**custom.payload, "image": "/assets/products/custom-console.webp"}
+    seed(engine)
+    seed(engine)
+    with Session(engine) as db:
+        product = db.get(Product, "gaming-01")
+        assert product.payload["image"] == "/assets/products/gaming-01.webp"
+        assert product.payload["description"] == "Custom description"
+        assert product.price == Decimal("321.50")
+        assert product.stock == 3
+        assert db.get(Product, "gaming-02").payload["image"] == "/assets/products/custom-console.webp"
+    register(client)
+    assert write(client, "PUT", "/api/account/cart/gaming-01", json={"quantity": 1}).status_code == 204
+    assert client.get("/api/account/cart").json()[0]["product"]["image"] == "/assets/products/gaming-01.webp"
+    assert client.get("/api/products/gaming-01").json()["image"] == "/assets/products/gaming-01.webp"

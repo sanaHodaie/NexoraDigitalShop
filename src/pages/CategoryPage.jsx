@@ -1,10 +1,11 @@
 import React, { useEffect, useMemo } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router-dom';
-import { ArrowLeft, ChevronLeft, Gamepad2, Headphones, Laptop, Search, SlidersHorizontal, Smartphone, X } from 'lucide-react';
+import { ArrowLeft, ChevronLeft, Gamepad2, Headphones, Laptop, Search, Smartphone, X } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
 import { CATALOG_CATEGORIES, selectCatalogProducts } from '../data/catalog';
 import CatalogProductCard from '../components/Products/CatalogProductCard';
 import CategoryHeroArt from '../components/Categories/CategoryHeroArt';
+import CatalogSort from '../components/Categories/CatalogSort';
 import './catalog.css';
 
 export default function CategoryPage() {
@@ -62,7 +63,7 @@ export default function CategoryPage() {
     <section aria-label="فهرست محصولات">
       <div className="catalog-toolbar">
         <label className="catalog-search"><Search size={19} aria-hidden="true" /><input type="search" value={query} onChange={event => update('q', event.target.value)} placeholder="جست‌وجو در این دسته…" aria-label="جست‌وجو در این دسته" maxLength={100} /></label>
-        <label className="catalog-select"><SlidersHorizontal size={17} aria-hidden="true" /><span className="sr-only">مرتب‌سازی</span><select value={sort} onChange={event => update('sort', event.target.value === 'featured' ? '' : event.target.value)}><option value="featured">پیشنهاد نکسورا</option><option value="price-asc">ارزان‌ترین</option><option value="price-desc">گران‌ترین</option></select></label>
+        <CatalogSort key={categoryId} value={sort} onChange={value => update('sort', value === 'featured' ? '' : value)} />
       </div>
       <div className="catalog-filters">
         <div className="catalog-brands" role="group" aria-label="فیلتر برند">

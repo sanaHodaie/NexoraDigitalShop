@@ -27,13 +27,13 @@ export const RecommendedSection = () => {
           return (
             <div
               key={product.id}
-              className="group relative rounded-[28px] overflow-hidden bg-slate-900 h-96 sm:h-[420px] flex flex-col justify-end p-5 shadow-xl hover:shadow-2xl transition-all duration-500 cursor-pointer border border-slate-200/50 dark:border-slate-800 text-right"
+              className="product-hover-card group relative rounded-[28px] overflow-hidden bg-slate-900 h-96 sm:h-[420px] flex flex-col justify-end p-5 shadow-xl cursor-pointer border border-slate-200/50 dark:border-slate-800 text-right"
             >
               {/* Full Background Product Photo */}
               <img
                 src={product.image}
                 alt={product.name}
-                className="absolute inset-0 w-full h-full object-cover group-hover:scale-108 transition-transform duration-700"
+                className="absolute inset-0 w-full h-full object-cover"
                 referrerPolicy="no-referrer"
               />
 

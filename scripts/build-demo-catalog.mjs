@@ -118,7 +118,7 @@ for (const [category, rows, prefix] of [['smartphones', phones, 'phone'], ['lapt
     const id = `${prefix}-${String(index + 1).padStart(2, '0')}`;
     const kindLabel = kindLabels[kind];
     products.push({ id, name, nameEn, brand, category, categoryFa: categoryLabels[category], kindLabel,
-      price, rating: 0, reviewCount: 0, image: `/assets/products/${id}.svg`, specs: [first, second, third],
+      price, rating: 0, reviewCount: 0, image: `/assets/products/${id}.${category === 'gaming' ? 'webp' : 'svg'}`, specs: [first, second, third],
       description: `${name}؛ ${first}، ${second} و ${third}. پیکربندی و قیمت نمونه برای تست فروشگاه.`, inStock: true, demo: true });
     await writeFile(new URL(`${id}.svg`, assets), illustration(kind, tint, index), 'utf8');
   }

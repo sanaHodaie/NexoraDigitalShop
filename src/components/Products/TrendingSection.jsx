@@ -81,13 +81,13 @@ export const TrendingSection = () => {
             <div
               key={product.id}
               onClick={() => setQuickViewProduct(product)}
-              className="group relative rounded-[30px] overflow-hidden bg-slate-900 h-[390px] sm:h-[410px] flex flex-col justify-end p-4 sm:p-4.5 shadow-xl hover:shadow-2xl transition-all duration-500 border border-slate-200/50 dark:border-slate-800 text-right cursor-pointer"
+              className="product-hover-card group relative rounded-[30px] overflow-hidden bg-slate-900 h-[390px] sm:h-[410px] flex flex-col justify-end p-4 sm:p-4.5 shadow-xl border border-slate-200/50 dark:border-slate-800 text-right cursor-pointer"
             >
               {/* Full Image Background */}
               <img
                 src={product.image}
                 alt={product.name}
-                className="absolute inset-0 w-full h-full object-cover group-hover:scale-108 transition-transform duration-700"
+                className="absolute inset-0 w-full h-full object-cover"
                 referrerPolicy="no-referrer"
               />
 

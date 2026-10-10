@@ -26,7 +26,6 @@ export default function CatalogProductCard({ product, eager = false }) {
       <button className={`catalog-wishlist ${saved ? 'is-saved' : ''}`} aria-pressed={saved}
         aria-label={`${saved ? 'حذف از' : 'افزودن به'} علاقه‌مندی‌ها: ${product.name}`} disabled={Boolean(busy)}
         onClick={() => perform('wishlist', toggleWishlist)}><Heart size={18} fill={saved ? 'currentColor' : 'none'} /></button>
-      <span className="catalog-image-note">تصویر نمایشی</span>
     </div>
     <div className="catalog-card-body">
       <div className="catalog-card-brand"><span dir="ltr">{product.brand}</span><span>{product.kindLabel}</span></div>

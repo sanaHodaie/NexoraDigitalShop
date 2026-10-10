@@ -31,6 +31,13 @@ def seed(engine):
                 )
                 .on_conflict_do_nothing(index_elements=["id"])
             )
+            # Upgrade only the original gaming placeholders, preserving custom images
+            # and every other field (including edited prices, stock and descriptions).
+            if product["id"] in {f"gaming-{i:02d}" for i in range(1, 11)}:
+                current = db.get(Product, product["id"], with_for_update=True)
+                placeholder = f"/assets/products/{product['id']}.svg"
+                if current.payload.get("image") == placeholder:
+                    current.payload = {**current.payload, "image": product["image"]}
 
 
 if __name__ == "__main__":

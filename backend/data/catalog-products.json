@@ -640,7 +640,7 @@
     "price": 499,
     "rating": 0,
     "reviewCount": 0,
-    "image": "/assets/products/gaming-01.svg",
+    "image": "/assets/products/gaming-01.webp",
     "specs": [
       "SSD یک ترابایت",
       "درایو دیسک Blu-ray",
@@ -661,7 +661,7 @@
     "price": 449,
     "rating": 0,
     "reviewCount": 0,
-    "image": "/assets/products/gaming-02.svg",
+    "image": "/assets/products/gaming-02.webp",
     "specs": [
       "SSD یک ترابایت",
       "نسخهٔ بدون دیسک",
@@ -682,7 +682,7 @@
     "price": 499,
     "rating": 0,
     "reviewCount": 0,
-    "image": "/assets/products/gaming-03.svg",
+    "image": "/assets/products/gaming-03.webp",
     "specs": [
       "SSD یک ترابایت",
       "درایو دیسک Blu-ray",
@@ -703,7 +703,7 @@
     "price": 299,
     "rating": 0,
     "reviewCount": 0,
-    "image": "/assets/products/gaming-04.svg",
+    "image": "/assets/products/gaming-04.webp",
     "specs": [
       "SSD ۵۱۲ گیگابایت",
       "نسخهٔ بدون دیسک",
@@ -724,7 +724,7 @@
     "price": 349,
     "rating": 0,
     "reviewCount": 0,
-    "image": "/assets/products/gaming-05.svg",
+    "image": "/assets/products/gaming-05.webp",
     "specs": [
       "نمایشگر OLED هفت اینچ",
       "حافظهٔ ۶۴ گیگابایت",
@@ -745,7 +745,7 @@
     "price": 199,
     "rating": 0,
     "reviewCount": 0,
-    "image": "/assets/products/gaming-06.svg",
+    "image": "/assets/products/gaming-06.webp",
     "specs": [
       "کنسول دستی",
       "کنترلرهای یکپارچه",
@@ -766,7 +766,7 @@
     "price": 549,
     "rating": 0,
     "reviewCount": 0,
-    "image": "/assets/products/gaming-07.svg",
+    "image": "/assets/products/gaming-07.webp",
     "specs": [
       "SSD ۵۱۲ گیگابایت",
       "نمایشگر OLED",
@@ -787,7 +787,7 @@
     "price": 69,
     "rating": 0,
     "reviewCount": 0,
-    "image": "/assets/products/gaming-08.svg",
+    "image": "/assets/products/gaming-08.webp",
     "specs": [
       "بازخورد لمسی",
       "تریگرهای تطبیقی",
@@ -808,7 +808,7 @@
     "price": 59,
     "rating": 0,
     "reviewCount": 0,
-    "image": "/assets/products/gaming-09.svg",
+    "image": "/assets/products/gaming-09.webp",
     "specs": [
       "اتصال بلوتوث",
       "درگاه USB-C",
@@ -829,7 +829,7 @@
     "price": 49,
     "rating": 0,
     "reviewCount": 0,
-    "image": "/assets/products/gaming-10.svg",
+    "image": "/assets/products/gaming-10.webp",
     "specs": [
       "حسگر HERO",
       "اتصال سیمی USB",

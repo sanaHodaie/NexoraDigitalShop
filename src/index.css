@@ -63,3 +63,17 @@
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+/* A shared, gentle lift without resizing product images or shifting the grid. */
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .product-hover-card, .catalog-card, .account-product, .cart-drawer-item {
+    transition: translate 220ms ease-out, box-shadow 220ms ease-out, border-color 220ms ease-out;
+  }
+  .product-hover-card:hover, .catalog-card:hover, .account-product:hover, .cart-drawer-item:hover {
+    translate: 0 -3px;
+    box-shadow: 0 10px 24px -12px rgb(15 23 42 / 24%);
+  }
+  .dark :is(.product-hover-card, .catalog-card, .account-product, .cart-drawer-item):hover {
+    box-shadow: 0 10px 24px -12px rgb(0 0 0 / 55%);
+  }
+}

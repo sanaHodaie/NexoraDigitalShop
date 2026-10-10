@@ -47,18 +47,38 @@ try {
     throw new Error(`Condition not met: ${expression}`);
   }
   await command('Runtime.enable');
+  await command('Page.bringToFront');
   await command('Network.enable');
   await command('Network.setBlockedURLs', { urls: ['https://fonts.googleapis.com/*', 'https://fonts.gstatic.com/*', 'https://images.unsplash.com/*'] });
   await command('Page.navigate', { url: `${base}/category/smartphones` });
   await until('document.querySelectorAll(".catalog-card").length === 10');
+  assert.equal(await evaluate('document.querySelectorAll(".catalog-image-note").length'), 0);
+  await evaluate("document.querySelector('.catalog-sort-trigger').click()");
+  await until('document.querySelector("[role=menuitemradio][aria-checked=true]") === document.activeElement');
+  await command('Input.dispatchKeyEvent', { type: 'keyDown', key: 'ArrowDown', code: 'ArrowDown' });
+  assert.equal(await evaluate('document.activeElement.textContent'), 'ارزان‌ترین', 'Arrow key moves to the next sort option');
+  await command('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Enter', code: 'Enter', windowsVirtualKeyCode: 13 });
+  await command('Input.dispatchKeyEvent', { type: 'keyUp', key: 'Enter', code: 'Enter', windowsVirtualKeyCode: 13 });
+  await until('location.search.includes("price-asc") && !document.querySelector(".catalog-sort-menu")');
+  await evaluate("document.querySelector('.catalog-sort-trigger').click()");
+  await command('Input.dispatchKeyEvent', { type: 'keyDown', key: 'Escape', code: 'Escape' });
+  await until('!document.querySelector(".catalog-sort-menu") && document.activeElement.matches(".catalog-sort-trigger")');
+  await evaluate("document.querySelector('.catalog-sort-trigger').click()");
+  await evaluate("document.querySelectorAll('[role=menuitemradio]')[2].click()");
+  await until('location.search.includes("price-desc")');
+  await evaluate("document.querySelector('.catalog-sort-trigger').click()");
+  await evaluate("document.querySelectorAll('[role=menuitemradio]')[0].click()");
+  await until('!location.search.includes("sort=")');
   await evaluate('window.__catalogNavigationCheck = 1');
   for (const width of [320, 375, 480, 768, 1024, 1440]) {
     await command('Emulation.setDeviceMetricsOverride', { width, height: 1000, deviceScaleFactor: 1, mobile: false });
     for (const dark of [false, true]) {
       await evaluate(`document.documentElement.classList.toggle('dark', ${dark})`);
+      await evaluate("document.querySelector('.catalog-sort-trigger').click()");
       await wait(100);
       const metrics = await evaluate(`({width: innerWidth, scroll: document.documentElement.scrollWidth, overflowing: [...document.querySelectorAll('.catalog-page *')].filter(el => { const r = el.getBoundingClientRect(); return r.width > 0 && (r.right > innerWidth + 1 || r.left < -1) && !el.closest('.catalog-hero-art'); }).map(el => el.className)})`);
       assert.ok(metrics.scroll <= width && !metrics.overflowing.length, `Overflow at ${width}: ${JSON.stringify(metrics)}`);
+      await evaluate("document.querySelector('.catalog-search input').focus()");
     }
   }
   await command('Emulation.setDeviceMetricsOverride', { width: 1440, height: 1100, deviceScaleFactor: 1, mobile: false });

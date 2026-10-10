@@ -71,7 +71,7 @@ export const WishlistModal = () => {
               wishlist.map((item) => (
                 <div
                   key={item.id}
-                  className="flex items-center justify-between gap-4 p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60"
+                  className="product-hover-card flex items-center justify-between gap-4 p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/60 dark:border-slate-700/60"
                 >
                   {/* Thumbnail & Title */}
                   <div className="flex items-center gap-3 flex-1">
