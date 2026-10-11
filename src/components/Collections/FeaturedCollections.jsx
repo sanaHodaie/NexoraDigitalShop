@@ -36,7 +36,7 @@ export const FeaturedCollections = () => {
             className="group relative rounded-3xl overflow-hidden h-60 sm:h-64 flex flex-col justify-between p-5 border border-slate-200/60 dark:border-slate-800 shadow-md hover:shadow-2xl transition-all duration-300 cursor-pointer"
           >
             {/* Full Card Image Background */}
-            <img
+            <img loading="lazy" decoding="async"
               src={col.image}
               alt={col.title}
               className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"

@@ -1,3 +1,4 @@
+import { optimizedImage } from '../../data/imageAssets';
 import React, { useState } from 'react';
 import { ArrowUpLeft, Check, Heart, ShoppingBag } from 'lucide-react';
 import { useShop } from '../../context/ShopContext';
@@ -17,7 +18,7 @@ export default function CatalogProductCard({ product, eager = false }) {
     <div className="catalog-card-media">
       <button className="catalog-image-button" onClick={() => setQuickViewProduct(product)} aria-label={`مشاهده جزئیات ${product.name}`}>
         {imageFailed ? <span className="catalog-image-fallback">تصویر در دسترس نیست</span> : <img
-          src={product.image} alt={product.name} width="480" height="360"
+          src={optimizedImage(product.image)} alt={product.name} width="480" height="360"
           loading={eager ? 'eager' : 'lazy'} decoding="async" onError={() => setImageFailed(true)} />}
       </button>
       <span className={`catalog-stock ${product.inStock ? '' : 'catalog-stock-unavailable'}`}>

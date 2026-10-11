@@ -1,11 +1,8 @@
-import React, { lazy, Suspense, useEffect } from 'react';
+import React, { lazy, Suspense, useEffect, useState } from 'react';
 import { ThemeProvider } from './context/ThemeContext';
 import { ShopProvider, useShop } from './context/ShopContext';
 import { Navbar } from './components/Header/Navbar';
 import { Footer } from './components/Footer/Footer';
-import { CartDrawer } from './components/Modals/CartDrawer';
-import { WishlistModal } from './components/Modals/WishlistModal';
-import { QuickViewModal } from './components/Modals/QuickViewModal';
 import { ToastContainer } from './components/Modals/ToastContainer';
 import { usePathname } from './navigation';
 import { BrowserRouter, Link, Route, Routes, useLocation } from 'react-router-dom';
@@ -16,6 +13,16 @@ const AccountPage = lazy(() => import('./pages/AccountPage'));
 const ResetPasswordPage = lazy(() => import('./pages/ResetPasswordPage'));
 const VerifyEmailPage = lazy(() => import('./pages/VerifyEmailPage'));
 const AuthModal = lazy(() => import('./components/Auth/AuthModal').then(module => ({ default: module.AuthModal })));
+const CartDrawer = lazy(() => import('./components/Modals/CartDrawer').then(module => ({ default: module.CartDrawer })));
+const WishlistModal = lazy(() => import('./components/Modals/WishlistModal').then(module => ({ default: module.WishlistModal })));
+const QuickViewModal = lazy(() => import('./components/Modals/QuickViewModal').then(module => ({ default: module.QuickViewModal })));
+
+function DeferredModal({ active, children }) {
+  const [visited, setVisited] = useState(false);
+  useEffect(() => { if (active) setVisited(true); }, [active]);
+  // Keep loaded dialogs mounted so their exit animations can finish.
+  return active || visited ? <Suspense fallback={<div role="status" className="fixed bottom-6 inset-x-4 z-50 rounded-2xl bg-white dark:bg-slate-900 p-4 text-center shadow-xl">در حال باز کردن…</div>}>{children}</Suspense> : null;
+}
 
 function Storefront() {
   const pathname = usePathname();
@@ -27,7 +34,7 @@ function Storefront() {
   const account = pathname === '/account' || pathname === '/account/';
   const recovery = pathname === '/reset-password' || pathname === '/reset-password/';
   const verification = ['/verify-email', '/confirm-email-change'].includes(pathname.replace(/\/$/, ''));
-  const { isAuthOpen } = useShop();
+  const { isAuthOpen, isCartOpen, isWishlistModalOpen, quickViewProduct } = useShop();
   useEffect(() => {
     if (!account && !recovery && !verification) return;
     const title = document.title;
@@ -54,7 +61,10 @@ function Storefront() {
       </Suspense>
     </main>
     <Footer />
-    <CartDrawer /><WishlistModal /><QuickViewModal /><ToastContainer />
+    <DeferredModal active={isCartOpen}><CartDrawer /></DeferredModal>
+    <DeferredModal active={isWishlistModalOpen}><WishlistModal /></DeferredModal>
+    <DeferredModal active={Boolean(quickViewProduct)}><QuickViewModal /></DeferredModal>
+    <ToastContainer />
     {isAuthOpen && <Suspense fallback={<div role="status" className="fixed bottom-6 inset-x-4 z-50 rounded-2xl bg-white dark:bg-slate-900 p-4 text-center shadow-xl">در حال باز کردن فرم ورود…</div>}><AuthModal /></Suspense>}
   </div>;
 }

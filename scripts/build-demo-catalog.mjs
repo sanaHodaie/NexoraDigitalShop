@@ -4,9 +4,9 @@ import { mkdir, writeFile } from 'node:fs/promises';
 
 const phones = [
   ['اپل آیفون ۱۵', 'Apple iPhone 15', 'Apple', 799, '۱۲۸ گیگابایت', 'تراشه A16 Bionic', 'دوربین ۴۸ مگاپیکسل', '#a4d5dc'],
-  ['اپل آیفون ۱۵ پلاس', 'Apple iPhone 15 Plus', 'Apple', 899, '۲۵۶ گیگابایت', 'نمایشگر ۶٫۷ اینچ', 'دوربین ۴۸ مگاپیکسل', '#e5bacd'],
+  ['اپل آیفون ۱۵ پرو مکس', 'Apple iPhone 15 Pro Max', 'Apple', 899, '۲۵۶ گیگابایت', 'نمایشگر ۶٫۷ اینچ', 'دوربین ۴۸ مگاپیکسل', '#e5bacd'],
   ['اپل آیفون ۱۴', 'Apple iPhone 14', 'Apple', 649, '۱۲۸ گیگابایت', 'تراشه A15 Bionic', 'دوربین ۱۲ مگاپیکسل', '#9bbae1'],
-  ['اپل آیفون ۱۴ پلاس', 'Apple iPhone 14 Plus', 'Apple', 749, '۲۵۶ گیگابایت', 'نمایشگر ۶٫۷ اینچ', 'دوربین ۱۲ مگاپیکسل', '#c4b8df'],
+  ['اپل آیفون ۱۴ پرو مکس', 'Apple iPhone 14 Pro Max', 'Apple', 749, '۲۵۶ گیگابایت', 'نمایشگر ۶٫۷ اینچ', 'دوربین ۴۸ مگاپیکسل', '#c4b8df'],
   ['اپل آیفون ۱۳', 'Apple iPhone 13', 'Apple', 549, '۱۲۸ گیگابایت', 'تراشه A15 Bionic', 'دوربین ۱۲ مگاپیکسل', '#aec7b6'],
   ['سامسونگ گلکسی S24', 'Samsung Galaxy S24', 'Samsung', 799, '۲۵۶ گیگابایت', 'رم ۸ گیگابایت', 'دوربین ۵۰ مگاپیکسل', '#b4b6d7'],
   ['سامسونگ گلکسی S24 اولترا', 'Samsung Galaxy S24 Ultra', 'Samsung', 1199, '۲۵۶ گیگابایت', 'رم ۱۲ گیگابایت', 'دوربین ۲۰۰ مگاپیکسل', '#c2bcb2'],
@@ -118,7 +118,7 @@ for (const [category, rows, prefix] of [['smartphones', phones, 'phone'], ['lapt
     const id = `${prefix}-${String(index + 1).padStart(2, '0')}`;
     const kindLabel = kindLabels[kind];
     products.push({ id, name, nameEn, brand, category, categoryFa: categoryLabels[category], kindLabel,
-      price, rating: 0, reviewCount: 0, image: `/assets/products/${id}.${category === 'gaming' ? 'webp' : 'svg'}`, specs: [first, second, third],
+      price, rating: 0, reviewCount: 0, image: `/assets/products/${id}.${['gaming', 'smartphones'].includes(category) ? 'webp' : 'svg'}`, specs: [first, second, third],
       description: `${name}؛ ${first}، ${second} و ${third}. پیکربندی و قیمت نمونه برای تست فروشگاه.`, inStock: true, demo: true });
     await writeFile(new URL(`${id}.svg`, assets), illustration(kind, tint, index), 'utf8');
   }

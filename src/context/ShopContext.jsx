@@ -1,5 +1,6 @@
-import React, { createContext, useCallback, useContext, useEffect, useRef, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { api, resetCsrf } from '../api/client';
+import { productsResource } from '../api/products';
 import { useNavigate } from 'react-router-dom';
 import { usePathname } from '../navigation';
 
@@ -9,9 +10,7 @@ export const ShopProvider = ({ children }) => {
   const navigate = useNavigate();
   const [cart, setCart] = useState([]);
   const [wishlist, setWishlist] = useState([]);
-  const [allProducts, setAllProducts] = useState([]);
-  const [productsStatus, setProductsStatus] = useState('loading');
-  const productsRequest = useRef(null);
+  const { products: allProducts, status: productsStatus, refreshError: productsRefreshError } = useSyncExternalStore(productsResource.subscribe, productsResource.getSnapshot);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
   const [authStatus, setAuthStatus] = useState('loading');
@@ -23,8 +22,6 @@ export const ShopProvider = ({ children }) => {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isWishlistModalOpen, setIsWishlistModalOpen] = useState(false);
   const [quickViewProduct, setQuickViewProduct] = useState(null);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [centerToast, setCenterToast] = useState(null);
 
   const showCenterMessage = (title, message, iconType = 'info') => setCenterToast({ id: Date.now(), title, message, iconType });
@@ -42,27 +39,21 @@ export const ShopProvider = ({ children }) => {
       throw error;
     }
   }, []);
-  const reloadProducts = useCallback(async () => {
-    productsRequest.current?.abort();
-    const controller = new AbortController();
-    productsRequest.current = controller;
-    setProductsStatus('loading');
-    try {
-      const products = await api('/products', { signal: controller.signal });
-      if (!Array.isArray(products)) throw new Error('Invalid product response');
-      if (controller.signal.aborted) return;
-      setAllProducts(products);
-      setProductsStatus('ready');
-    } catch {
-      // Initial background loading must not open a blocking global error modal.
-      // Keep the failure visible beside the catalogue, where it can be retried.
-      if (!controller.signal.aborted) setProductsStatus('error');
-    }
-  }, []);
+  const reloadProducts = useCallback(() => productsResource.load({ force: true }), []);
   useEffect(() => {
-    if (!pathname.startsWith('/account') && !pathname.startsWith('/reset-password')) reloadProducts();
-    return () => productsRequest.current?.abort();
-  }, [reloadProducts, pathname]);
+    if (!pathname.startsWith('/account') && !pathname.startsWith('/reset-password')) productsResource.load();
+  }, [pathname]);
+  useEffect(() => {
+    const refresh = () => { if (!document.hidden) productsResource.load(); };
+    window.addEventListener('focus', refresh);
+    document.addEventListener('visibilitychange', refresh);
+    const timer = window.setInterval(refresh, 60_000);
+    return () => {
+      window.clearInterval(timer);
+      window.removeEventListener('focus', refresh);
+      document.removeEventListener('visibilitychange', refresh);
+    };
+  }, []);
   useEffect(() => {
     const controller = new AbortController();
     sessionBootstrap.current = controller;
@@ -145,12 +136,12 @@ export const ShopProvider = ({ children }) => {
   };
   const toPersianDigits = num => String(num ?? '').replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[Number(d)]);
   const formatPrice = amount => `${toPersianDigits(Math.round((amount || 0) * RIAL_RATE).toLocaleString('en-US'))} ریال`;
-  return <ShopContext.Provider value={{ cart, wishlist, allProducts, productsStatus, reloadProducts, user, setUser, authStatus, accountStatus, refreshAccount, logout, isLoggedIn, isAuthOpen, setIsAuthOpen, authenticate, authenticateGoogle, toggleLogin,
+  return <ShopContext.Provider value={{ cart, wishlist, allProducts, productsStatus, productsRefreshError, reloadProducts, user, setUser, authStatus, accountStatus, refreshAccount, logout, isLoggedIn, isAuthOpen, setIsAuthOpen, authenticate, authenticateGoogle, toggleLogin,
     addToCart, removeFromCart, updateQuantity, clearCart, toggleWishlist, isInWishlist: id => wishlist.some(x => x.id === id),
     totalCartCount: cart.reduce((sum, x) => sum + x.quantity, 0), totalWishlistCount: wishlist.length,
     cartSubtotal: cart.reduce((sum, x) => sum + x.product.price * x.quantity, 0),
     isCartOpen, setIsCartOpen, isWishlistModalOpen, setIsWishlistModalOpen, quickViewProduct, setQuickViewProduct,
-    searchQuery, setSearchQuery, isSearchOpen, setIsSearchOpen, centerToast, closeCenterMessage: () => setCenterToast(null),
+    centerToast, closeCenterMessage: () => setCenterToast(null),
     showCenterMessage, addToast: message => showCenterMessage('خبرنامه', message), formatPrice, toPersianDigits }}>
     {children}
   </ShopContext.Provider>;

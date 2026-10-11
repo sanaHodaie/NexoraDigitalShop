@@ -1,3 +1,4 @@
+import { optimizedImage } from '../../data/imageAssets';
 import React from 'react';
 import { Zap, Mail, Star, Heart, ShieldCheck } from 'lucide-react';
 import { useShop } from '../../context/ShopContext';
@@ -60,8 +61,8 @@ export const FlashDeals = () => {
                   {/* TOP IMAGE CONTAINER: Squarer aspect ratio */}
                   <div className="relative w-full h-44 sm:h-48 rounded-[22px] overflow-hidden bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
                     {/* Product Image */}
-                    <img
-                      src={deal.image}
+                    <img loading="lazy" decoding="async"
+                      src={optimizedImage(deal.image)}
                       alt={deal.name}
                       className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-500 filter drop-shadow-md"
                       referrerPolicy="no-referrer"

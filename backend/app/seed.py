@@ -9,6 +9,30 @@ from app.config import Settings
 from app.db import make_engine
 from app.models import Product
 
+PHOTO_PRODUCT_IDS = {f"{prefix}-{i:02d}" for prefix in ("gaming", "phone") for i in range(1, 11)}
+
+
+def correct_phone_model(current, product):
+    """Correct the two demo Plus records without overwriting merchant edits."""
+    previous = {
+        **product,
+        "name": product["name"].replace("پرو مکس", "پلاس"),
+        "nameEn": product["nameEn"].replace("Pro Max", "Plus"),
+        "description": product["description"].replace("پرو مکس", "پلاس"),
+    }
+    if product["id"] == "phone-04":
+        previous["specs"] = [spec.replace("۴۸", "۱۲") for spec in product["specs"]]
+        previous["description"] = previous["description"].replace("۴۸", "۱۲")
+    if current.name != previous["name"] or current.name_en != previous["nameEn"]:
+        return
+    current.name = product["name"]
+    current.name_en = product["nameEn"]
+    current.payload = {
+        **current.payload,
+        **{key: product[key] for key in ("name", "nameEn", "description", "specs")
+           if current.payload.get(key) == previous[key]},
+    }
+
 
 def seed(engine):
     data_dir = Path(__file__).resolve().parents[1] / "data"
@@ -31,13 +55,15 @@ def seed(engine):
                 )
                 .on_conflict_do_nothing(index_elements=["id"])
             )
-            # Upgrade only the original gaming placeholders, preserving custom images
+            # Upgrade only the original gaming/phone placeholders, preserving custom images
             # and every other field (including edited prices, stock and descriptions).
-            if product["id"] in {f"gaming-{i:02d}" for i in range(1, 11)}:
+            if product["id"] in PHOTO_PRODUCT_IDS:
                 current = db.get(Product, product["id"], with_for_update=True)
                 placeholder = f"/assets/products/{product['id']}.svg"
                 if current.payload.get("image") == placeholder:
                     current.payload = {**current.payload, "image": product["image"]}
+                if product["id"] in {"phone-02", "phone-04"}:
+                    correct_phone_model(current, product)
 
 
 if __name__ == "__main__":

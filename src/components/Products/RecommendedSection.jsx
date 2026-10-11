@@ -1,3 +1,4 @@
+import { optimizedImage } from '../../data/imageAssets';
 import React from 'react';
 import { Heart, Plus } from 'lucide-react';
 import { useShop } from '../../context/ShopContext';
@@ -30,8 +31,8 @@ export const RecommendedSection = () => {
               className="product-hover-card group relative rounded-[28px] overflow-hidden bg-slate-900 h-96 sm:h-[420px] flex flex-col justify-end p-5 shadow-xl cursor-pointer border border-slate-200/50 dark:border-slate-800 text-right"
             >
               {/* Full Background Product Photo */}
-              <img
-                src={product.image}
+              <img loading="lazy" decoding="async"
+                src={optimizedImage(product.image)}
                 alt={product.name}
                 className="absolute inset-0 w-full h-full object-cover"
                 referrerPolicy="no-referrer"

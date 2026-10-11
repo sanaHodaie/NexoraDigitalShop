@@ -10,7 +10,7 @@
     "price": 799,
     "rating": 0,
     "reviewCount": 0,
-    "image": "/assets/products/phone-01.svg",
+    "image": "/assets/products/phone-01.webp",
     "specs": [
       "۱۲۸ گیگابایت",
       "تراشه A16 Bionic",
@@ -22,8 +22,8 @@
   },
   {
     "id": "phone-02",
-    "name": "اپل آیفون ۱۵ پلاس",
-    "nameEn": "Apple iPhone 15 Plus",
+    "name": "اپل آیفون ۱۵ پرو مکس",
+    "nameEn": "Apple iPhone 15 Pro Max",
     "brand": "Apple",
     "category": "smartphones",
     "categoryFa": "گوشی هوشمند",
@@ -31,13 +31,13 @@
     "price": 899,
     "rating": 0,
     "reviewCount": 0,
-    "image": "/assets/products/phone-02.svg",
+    "image": "/assets/products/phone-02.webp",
     "specs": [
       "۲۵۶ گیگابایت",
       "نمایشگر ۶٫۷ اینچ",
       "دوربین ۴۸ مگاپیکسل"
     ],
-    "description": "اپل آیفون ۱۵ پلاس؛ ۲۵۶ گیگابایت، نمایشگر ۶٫۷ اینچ و دوربین ۴۸ مگاپیکسل. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "description": "اپل آیفون ۱۵ پرو مکس؛ ۲۵۶ گیگابایت، نمایشگر ۶٫۷ اینچ و دوربین ۴۸ مگاپیکسل. پیکربندی و قیمت نمونه برای تست فروشگاه.",
     "inStock": true,
     "demo": true
   },
@@ -52,7 +52,7 @@
     "price": 649,
     "rating": 0,
     "reviewCount": 0,
-    "image": "/assets/products/phone-03.svg",
+    "image": "/assets/products/phone-03.webp",
     "specs": [
       "۱۲۸ گیگابایت",
       "تراشه A15 Bionic",
@@ -64,8 +64,8 @@
   },
   {
     "id": "phone-04",
-    "name": "اپل آیفون ۱۴ پلاس",
-    "nameEn": "Apple iPhone 14 Plus",
+    "name": "اپل آیفون ۱۴ پرو مکس",
+    "nameEn": "Apple iPhone 14 Pro Max",
     "brand": "Apple",
     "category": "smartphones",
     "categoryFa": "گوشی هوشمند",
@@ -73,13 +73,13 @@
     "price": 749,
     "rating": 0,
     "reviewCount": 0,
-    "image": "/assets/products/phone-04.svg",
+    "image": "/assets/products/phone-04.webp",
     "specs": [
       "۲۵۶ گیگابایت",
       "نمایشگر ۶٫۷ اینچ",
-      "دوربین ۱۲ مگاپیکسل"
+      "دوربین ۴۸ مگاپیکسل"
     ],
-    "description": "اپل آیفون ۱۴ پلاس؛ ۲۵۶ گیگابایت، نمایشگر ۶٫۷ اینچ و دوربین ۱۲ مگاپیکسل. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "description": "اپل آیفون ۱۴ پرو مکس؛ ۲۵۶ گیگابایت، نمایشگر ۶٫۷ اینچ و دوربین ۴۸ مگاپیکسل. پیکربندی و قیمت نمونه برای تست فروشگاه.",
     "inStock": true,
     "demo": true
   },
@@ -94,7 +94,7 @@
     "price": 549,
     "rating": 0,
     "reviewCount": 0,
-    "image": "/assets/products/phone-05.svg",
+    "image": "/assets/products/phone-05.webp",
     "specs": [
       "۱۲۸ گیگابایت",
       "تراشه A15 Bionic",
@@ -115,7 +115,7 @@
     "price": 799,
     "rating": 0,
     "reviewCount": 0,
-    "image": "/assets/products/phone-06.svg",
+    "image": "/assets/products/phone-06.webp",
     "specs": [
       "۲۵۶ گیگابایت",
       "رم ۸ گیگابایت",
@@ -136,7 +136,7 @@
     "price": 1199,
     "rating": 0,
     "reviewCount": 0,
-    "image": "/assets/products/phone-07.svg",
+    "image": "/assets/products/phone-07.webp",
     "specs": [
       "۲۵۶ گیگابایت",
       "رم ۱۲ گیگابایت",
@@ -157,7 +157,7 @@
     "price": 449,
     "rating": 0,
     "reviewCount": 0,
-    "image": "/assets/products/phone-08.svg",
+    "image": "/assets/products/phone-08.webp",
     "specs": [
       "۲۵۶ گیگابایت",
       "رم ۸ گیگابایت",
@@ -178,7 +178,7 @@
     "price": 349,
     "rating": 0,
     "reviewCount": 0,
-    "image": "/assets/products/phone-09.svg",
+    "image": "/assets/products/phone-09.webp",
     "specs": [
       "۱۲۸ گیگابایت",
       "رم ۶ گیگابایت",
@@ -199,7 +199,7 @@
     "price": 599,
     "rating": 0,
     "reviewCount": 0,
-    "image": "/assets/products/phone-10.svg",
+    "image": "/assets/products/phone-10.webp",
     "specs": [
       "۲۵۶ گیگابایت",
       "رم ۸ گیگابایت",

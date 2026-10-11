@@ -1,3 +1,4 @@
+import { optimizedImage } from '../../data/imageAssets';
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Heart, ShoppingBag, Search } from 'lucide-react';
@@ -15,6 +16,7 @@ export const Navbar = () => {
   const [isSearchActive, setIsSearchActive] = useState(false);
   const [desktopSearchOpen, setDesktopSearchOpen] = useState(false);
   const [hideDesktopHeader, setHideDesktopHeader] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     const footer = document.getElementById('footer');
@@ -39,8 +41,6 @@ export const Navbar = () => {
     isLoggedIn,
     user,
     toggleLogin,
-    searchQuery,
-    setSearchQuery,
     toPersianDigits,
     formatPrice,
     setQuickViewProduct,
@@ -341,7 +341,7 @@ export const Navbar = () => {
                   {/* Right side: Product Thumbnail Image */}
                   <div className="w-12 h-12 rounded-lg bg-slate-100 dark:bg-slate-800 p-1 shrink-0 overflow-hidden border border-slate-200/50 dark:border-slate-700/50">
                     <img
-                      src={p.image}
+                      src={optimizedImage(p.image)}
                       alt={p.name}
                       className="w-full h-full object-contain"
                       referrerPolicy="no-referrer"

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { optimizedImage } from '../../data/imageAssets';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Trash2, Plus, Minus, ShoppingBag, ArrowLeft, CheckCircle, Truck } from 'lucide-react';
 import { api } from '../../api/client';
@@ -142,7 +143,7 @@ export const CartDrawer = () => {
                     {/* Thumbnail */}
                     <div className="w-20 h-24 sm:w-24 sm:h-28 rounded-xl bg-white dark:bg-slate-800 p-2 shrink-0 overflow-hidden border border-slate-200/50 dark:border-slate-700/50">
                       <img
-                        src={item.product.image}
+                        src={optimizedImage(item.product.image)}
                         alt={item.product.name}
                         className="w-full h-full object-contain"
                         referrerPolicy="no-referrer"

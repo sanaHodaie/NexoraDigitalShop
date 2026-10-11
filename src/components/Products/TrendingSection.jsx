@@ -1,10 +1,11 @@
+import { optimizedImage } from '../../data/imageAssets';
 import React, { useState } from 'react';
 import { Heart, Plus, Users, Award, Flame } from 'lucide-react';
 import { useShop } from '../../context/ShopContext';
 
 export const TrendingSection = () => {
   const [activeCategory, setActiveCategory] = useState('all');
-  const { addToCart, toggleWishlist, isInWishlist, setQuickViewProduct, formatPrice, toPersianDigits, allProducts, productsStatus, reloadProducts } = useShop();
+  const { addToCart, toggleWishlist, isInWishlist, setQuickViewProduct, formatPrice, toPersianDigits, allProducts, productsStatus, productsRefreshError, reloadProducts } = useShop();
 
   const categories = [
     { id: 'all', label: 'همه داغ‌ترین‌ها' },
@@ -54,9 +55,9 @@ export const TrendingSection = () => {
         </div>
       </div>
 
-      {productsStatus === 'error' && (
+      {productsRefreshError && (
         <div role="status" className="mb-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 text-sm text-slate-600 dark:text-slate-300">
-          <p>در حال حاضر امکان دریافت محصولات نیست. لطفاً دوباره تلاش کنید.</p>
+          <p>{allProducts.length ? 'آخرین اطلاعات دریافت‌شده نمایش داده می‌شود؛ به‌روزرسانی انجام نشد.' : 'در حال حاضر امکان دریافت محصولات نیست. لطفاً دوباره تلاش کنید.'}</p>
           <button type="button" onClick={reloadProducts} className="shrink-0 rounded-xl bg-blue-600 hover:bg-blue-700 px-4 py-2 text-xs font-bold text-white cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-500">
             تلاش مجدد برای دریافت محصولات
           </button>
@@ -84,8 +85,8 @@ export const TrendingSection = () => {
               className="product-hover-card group relative rounded-[30px] overflow-hidden bg-slate-900 h-[390px] sm:h-[410px] flex flex-col justify-end p-4 sm:p-4.5 shadow-xl border border-slate-200/50 dark:border-slate-800 text-right cursor-pointer"
             >
               {/* Full Image Background */}
-              <img
-                src={product.image}
+              <img loading="lazy" decoding="async"
+                src={optimizedImage(product.image)}
                 alt={product.name}
                 className="absolute inset-0 w-full h-full object-cover"
                 referrerPolicy="no-referrer"

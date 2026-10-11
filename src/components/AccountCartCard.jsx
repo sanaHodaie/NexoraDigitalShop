@@ -1,3 +1,4 @@
+import { optimizedImage } from '../data/imageAssets';
 import React from 'react';
 import { ArrowUpLeft, PackageCheck, Pencil, ShoppingBag, Trash2, Truck } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
@@ -9,7 +10,7 @@ export function AccountCartCard({ product, quantity }) {
   return <article className="account-product user-cart-card">
     <section className="user-cart-visual">
       <button className="account-product-image user-cart-image" onClick={() => setQuickViewProduct(product)} aria-label={`مشاهدهٔ ${product.name}`}>
-        <img src={product.image} alt={product.name} width="400" height="400" loading="lazy" decoding="async" />
+        <img src={optimizedImage(product.image)} alt={product.name} width="400" height="400" loading="lazy" decoding="async" />
       </button>
       <span className="user-cart-price">{formatPrice(product.price)}</span>
     </section>

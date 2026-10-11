@@ -4,8 +4,8 @@ import { ArrowRight, Eye, EyeOff, X, ShieldCheck } from 'lucide-react';
 import { useShop } from '../../context/ShopContext';
 import { GoogleSignIn } from './GoogleSignIn';
 import { PasswordRecovery } from './PasswordRecovery';
-import headphonesImage from '../../assets/images/auth-headphones.png';
-import earbudsImage from '../../assets/images/auth-earbuds.png';
+import headphonesImage from '../../assets/images/auth-headphones.webp';
+import earbudsImage from '../../assets/images/auth-earbuds.webp';
 import './auth.css';
 
 export function AuthModal() {

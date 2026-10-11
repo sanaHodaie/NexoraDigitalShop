@@ -1,66 +1,119 @@
-import React, { useState } from 'react';
+import { optimizedImage } from '../../data/imageAssets';
+import React, { useLayoutEffect, useRef, useState, useSyncExternalStore } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { Heart, ShoppingBag, Check, Shield, Truck, RotateCcw, Star } from 'lucide-react';
 import { useShop } from '../../context/ShopContext';
 import { CloseIcon } from '../../assets/icons/CloseIcon';
+import './quick-view.css';
+
+const mobileQuery = '(max-width: 767px)';
+const subscribeMobile = callback => {
+  const query = window.matchMedia(mobileQuery);
+  query.addEventListener('change', callback);
+  return () => query.removeEventListener('change', callback);
+};
+const reducedMotionQuery = '(prefers-reduced-motion: reduce)';
+const subscribeReducedMotion = callback => {
+  const query = window.matchMedia(reducedMotionQuery);
+  query.addEventListener('change', callback);
+  return () => query.removeEventListener('change', callback);
+};
 
 export const QuickViewModal = () => {
-  const { quickViewProduct, setQuickViewProduct, addToCart, toggleWishlist, isInWishlist, formatPrice, toPersianDigits } = useShop();
+  const { quickViewProduct } = useShop();
+  return createPortal(
+    <AnimatePresence>
+      {quickViewProduct && <QuickViewDialog key={quickViewProduct.id} quickViewProduct={quickViewProduct} />}
+    </AnimatePresence>, document.body
+  );
+};
+
+function QuickViewDialog({ quickViewProduct }) {
+  const { setQuickViewProduct, addToCart, toggleWishlist, isInWishlist, formatPrice, toPersianDigits } = useShop();
   const [quantity, setQuantity] = useState(1);
   const [added, setAdded] = useState(false);
+  const dialog = useRef(null);
+  const addedTimer = useRef(null);
+  const mobile = useSyncExternalStore(subscribeMobile, () => window.matchMedia(mobileQuery).matches, () => false);
+  const reducedMotion = useSyncExternalStore(subscribeReducedMotion, () => window.matchMedia(reducedMotionQuery).matches, () => false);
 
-  if (!quickViewProduct) return null;
+  useLayoutEffect(() => {
+    const previousFocus = document.activeElement;
+    const overflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    dialog.current.querySelector('button').focus({ preventScroll: true });
+    return () => {
+      document.body.style.overflow = overflow;
+      clearTimeout(addedTimer.current);
+      if (previousFocus?.isConnected) previousFocus.focus({ preventScroll: true });
+    };
+  }, []);
+
+  const handleKeyDown = event => {
+    if (event.key === 'Escape') { event.stopPropagation(); setQuickViewProduct(null); }
+    if (event.key !== 'Tab') return;
+    const buttons = [...dialog.current.querySelectorAll('button:not(:disabled)')];
+    const first = buttons[0], last = buttons[buttons.length - 1];
+    if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+    else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+  };
 
   const isFavorited = isInWishlist(quickViewProduct.id);
 
   const handleAddToCart = () => {
     addToCart(quickViewProduct, quantity);
     setAdded(true);
-    setTimeout(() => setAdded(false), 2000);
+    clearTimeout(addedTimer.current);
+    addedTimer.current = setTimeout(() => setAdded(false), 2000);
   };
 
   return (
-    <AnimatePresence>
-      <div className="fixed inset-0 z-50 overflow-y-auto p-3 sm:p-6 flex items-center justify-center">
+      <motion.div className="quick-view-layer fixed inset-0 z-50 font-vazir" dir="rtl"
+        initial="hidden" animate="visible" exit="hidden">
         {/* Backdrop */}
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
+          variants={{ hidden: { opacity: 0 }, visible: { opacity: 1 } }}
+          transition={{ duration: reducedMotion ? 0 : 0.25 }}
           onClick={() => setQuickViewProduct(null)}
           className="fixed inset-0 bg-slate-950/70 backdrop-blur-sm"
         />
 
         {/* Modal Dialog: Designed so image occupies the ENTIRE RIGHT SIDE (in RTL), and info on the left side */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.94, y: 15 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.94, y: 15 }}
-          transition={{ duration: 0.28, ease: 'easeOut' }}
-          className="relative w-full max-w-4xl bg-white dark:bg-slate-900 rounded-[32px] sm:rounded-[36px] shadow-2xl border border-slate-200/80 dark:border-slate-800 overflow-hidden z-10 my-auto"
+          ref={dialog} role="dialog" aria-modal="true" aria-labelledby="quick-view-title" onKeyDown={handleKeyDown}
+          variants={{
+            hidden: reducedMotion ? { opacity: 0, scale: 1, y: 0 } : { opacity: mobile ? 1 : 0, scale: mobile ? 1 : 0.96, y: mobile ? '100%' : 16 },
+            visible: { opacity: 1, scale: 1, y: 0 },
+          }}
+          transition={{ duration: reducedMotion ? 0 : mobile ? 0.38 : 0.25, ease: [0.22, 1, 0.36, 1] }}
+          className="quick-view-panel relative w-full max-w-4xl bg-white dark:bg-slate-900 shadow-2xl border border-slate-200/80 dark:border-slate-800 overflow-hidden z-10"
         >
+          <div className="quick-view-handle" aria-hidden="true"><span className="bg-slate-300 dark:bg-slate-600" /></div>
           {/* Close button (top-left) */}
           <button
+            type="button" aria-label="بستن جزئیات محصول"
             onClick={() => setQuickViewProduct(null)}
             className="absolute top-4 left-4 z-30 w-9 h-9 rounded-full bg-white/80 dark:bg-slate-800/80 backdrop-blur-md text-slate-600 dark:text-slate-300 hover:text-rose-500 transition-colors flex items-center justify-center p-1.5 cursor-pointer shadow-md"
           >
             <CloseIcon className="w-4 h-4" />
           </button>
 
+          <div className="quick-view-scroll">
           <div className="flex flex-col md:flex-row items-stretch">
             {/* PRODUCT IMAGE: Occupies the FULL RIGHT SIDE (in RTL) */}
-            <div className="relative w-full md:w-1/2 min-h-[320px] md:min-h-[460px] bg-slate-100 dark:bg-slate-950 overflow-hidden flex items-center justify-center">
+            <div className="quick-view-image relative w-full md:w-1/2 md:min-h-[460px] bg-white overflow-hidden flex items-center justify-center">
               <img
-                src={quickViewProduct.image}
+                src={optimizedImage(quickViewProduct.image)}
                 alt={quickViewProduct.name}
-                className="absolute inset-0 w-full h-full object-cover select-none"
+                className="absolute inset-0 w-full h-full object-contain select-none"
                 referrerPolicy="no-referrer"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/20 pointer-events-none md:bg-gradient-to-l md:from-transparent md:to-black/30" />
 
               {/* Wishlist Heart toggle on top-right of image */}
               <button
                 type="button"
+                aria-label="علاقه‌مندی محصول" aria-pressed={isFavorited}
                 onClick={() => toggleWishlist(quickViewProduct)}
                 className="absolute top-4 right-4 z-20 w-10 h-10 rounded-full bg-black/40 backdrop-blur-md text-white flex items-center justify-center hover:bg-rose-500 transition-all cursor-pointer shadow-md"
               >
@@ -84,7 +137,7 @@ export const QuickViewModal = () => {
               <div className="space-y-3">
                 {/* Title + Verified Badge */}
                 <div className="flex items-center justify-start gap-2">
-                  <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white leading-tight">
+                  <h3 id="quick-view-title" className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white leading-tight">
                     {quickViewProduct.name}
                   </h3>
                   <span className="w-5 h-5 rounded-full bg-[#10b981] text-white flex items-center justify-center text-[11px] font-black shrink-0">
@@ -150,7 +203,7 @@ export const QuickViewModal = () => {
               </div>
 
               {/* Action Controls */}
-              <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center gap-3">
+              <div className="quick-view-actions mt-6 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center gap-3">
                 {/* Quantity */}
                 <div className="flex items-center border border-slate-200 dark:border-slate-700 rounded-2xl bg-slate-50 dark:bg-slate-800 overflow-hidden">
                   <button
@@ -197,8 +250,8 @@ export const QuickViewModal = () => {
               </div>
             </div>
           </div>
+          </div>
         </motion.div>
-      </div>
-    </AnimatePresence>
+      </motion.div>
   );
-};
+}

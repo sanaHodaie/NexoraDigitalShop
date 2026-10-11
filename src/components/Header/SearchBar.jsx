@@ -1,9 +1,11 @@
+import { optimizedImage } from '../../data/imageAssets';
 import React, { useState, useRef, useEffect } from 'react';
 import { Search, X, ArrowUpLeft, Sparkles } from 'lucide-react';
 import { useShop } from '../../context/ShopContext';
 
 export const SearchBar = ({ className = '', isCompact = false }) => {
-  const { searchQuery, setSearchQuery, setQuickViewProduct, allProducts } = useShop();
+  const { setQuickViewProduct, allProducts } = useShop();
+  const [searchQuery, setSearchQuery] = useState('');
   const [isOpen, setIsOpen] = useState(false);
   const [isExpanded, setIsExpanded] = useState(false);
   const containerRef = useRef(null);
@@ -102,7 +104,7 @@ export const SearchBar = ({ className = '', isCompact = false }) => {
                   <div className="flex items-center gap-2.5">
                     <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 p-1 overflow-hidden shrink-0">
                       <img
-                        src={product.image}
+                        src={optimizedImage(product.image)}
                         alt={product.name}
                         className="w-full h-full object-contain"
                         referrerPolicy="no-referrer"

@@ -1,0 +1,37 @@
+.quick-view-layer {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.quick-view-panel {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  max-height: 92vh;
+  max-height: 92dvh;
+  border-radius: 28px 28px 0 0;
+}
+
+.quick-view-handle { flex: none; height: 24px; display: grid; place-items: center; }
+.quick-view-handle span { width: 38px; height: 4px; border-radius: 999px; }
+.quick-view-scroll {
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  scrollbar-width: thin;
+}
+.quick-view-image { min-height: clamp(200px, 34dvh, 320px); }
+.quick-view-actions { flex-wrap: wrap; }
+.quick-view-actions > button { min-width: 150px; }
+
+@media (min-width: 768px) {
+  .quick-view-layer { align-items: center; padding: 24px; }
+  .quick-view-panel { max-height: calc(100vh - 48px); max-height: calc(100dvh - 48px); border-radius: 36px; }
+  .quick-view-handle { display: none; }
+  .quick-view-image { min-height: 460px; }
+}

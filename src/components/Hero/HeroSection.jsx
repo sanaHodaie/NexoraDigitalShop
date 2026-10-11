@@ -10,6 +10,7 @@ export const HeroSection = () => {
       <div className="absolute inset-0 w-full h-full">
         <img
           src={HERO_IMAGE}
+          fetchPriority="high" decoding="async" width="1536" height="1024"
           alt="نسل جدید تجهیزات الکترونیک نکسورا"
           className="w-full h-full object-cover object-[70%_center] sm:object-left lg:object-center select-none"
           referrerPolicy="no-referrer"
@@ -23,7 +24,7 @@ export const HeroSection = () => {
         <div className="max-w-xl text-right">
           {/* Main Headline */}
           <motion.h1
-            initial={{ opacity: 0, y: 20 }}
+            initial={false}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.55, delay: 0.1 }}
             className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-black text-slate-900 dark:text-white leading-[1.25] sm:leading-[1.18] tracking-tight mb-4"
@@ -37,7 +38,7 @@ export const HeroSection = () => {
 
           {/* Subtitle Description */}
           <motion.p
-            initial={{ opacity: 0, y: 20 }}
+            initial={false}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.55, delay: 0.2 }}
             className="text-slate-700 dark:text-slate-200 text-xs sm:text-base leading-relaxed mb-6 font-medium max-w-lg"

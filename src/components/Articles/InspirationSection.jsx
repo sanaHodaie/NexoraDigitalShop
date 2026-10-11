@@ -33,7 +33,7 @@ export const InspirationSection = () => {
             className="group relative rounded-2xl overflow-hidden bg-slate-900 h-64 sm:h-72 flex flex-col justify-end p-4 shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer"
           >
             {/* Background Image with Scrim Gradient */}
-            <img
+            <img loading="lazy" decoding="async"
               src={article.image}
               alt={article.title}
               className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-70 group-hover:opacity-60"

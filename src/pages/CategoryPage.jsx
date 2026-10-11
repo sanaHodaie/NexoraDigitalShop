@@ -12,7 +12,7 @@ export default function CategoryPage() {
   const { categoryId } = useParams();
   const [params, setParams] = useSearchParams();
   const category = CATALOG_CATEGORIES[categoryId];
-  const { allProducts, productsStatus, reloadProducts, toPersianDigits } = useShop();
+  const { allProducts, productsStatus, productsRefreshError, reloadProducts, toPersianDigits } = useShop();
   const query = params.get('q') || '';
   const brand = params.get('brand') || '';
   const sort = ['price-asc', 'price-desc'].includes(params.get('sort')) ? params.get('sort') : 'featured';
@@ -76,6 +76,7 @@ export default function CategoryPage() {
         <p role="status" aria-live="polite">{productsStatus === 'loading' ? 'در حال دریافت محصولات…' : productsStatus === 'ready' ? `${toPersianDigits(products.length)} محصول${filtered ? ` از ${toPersianDigits(collection.length)}` : ' منتخب'}` : 'دریافت محصولات انجام نشد'}</p>
         {filtered && <button onClick={() => setParams({}, { replace: true })}><X size={14} />پاک کردن فیلترها</button>}
       </div>
+      {productsRefreshError && allProducts.length > 0 && <p role="status" className="catalog-demo-note">آخرین اطلاعات دریافت‌شده نمایش داده می‌شود؛ به‌روزرسانی انجام نشد. <button onClick={reloadProducts}>تلاش مجدد</button></p>}
       {productsStatus === 'loading' ? <div className="catalog-grid" aria-hidden="true">{Array.from({ length: 8 }, (_, i) => <div className="catalog-skeleton" key={i}><div /><span /><span /></div>)}</div>
         : productsStatus === 'error' ? <div className="catalog-empty"><h2>محصولات بارگذاری نشدند</h2><p>اتصال به فروشگاه را بررسی کنید و دوباره تلاش کنید.</p><button onClick={reloadProducts}>تلاش مجدد</button></div>
           : products.length === 0 ? <div className="catalog-empty"><Search size={32} /><h2>{filtered ? 'محصولی با این مشخصات پیدا نشد' : 'محصولات این مجموعه به‌زودی اضافه می‌شوند'}</h2><p>{filtered ? 'عبارت جست‌وجو یا برند انتخاب‌شده را تغییر دهید.' : 'کمی بعد دوباره به این صفحه سر بزنید.'}</p>{filtered && <button onClick={() => setParams({}, { replace: true })}>نمایش همه محصولات</button>}</div>

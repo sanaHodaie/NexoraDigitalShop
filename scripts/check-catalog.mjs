@@ -154,7 +154,7 @@ try {
   await until('location.pathname === "/category/gaming" && document.querySelectorAll(".catalog-card").length === 10');
   for (const category of ['gaming', 'smartphones', 'laptops', 'audio']) {
     await command('Page.navigate', { url: `${base}/category/${category}` });
-    await until(`document.querySelector('.catalog-hero-art img')?.getAttribute('src') === '/assets/category-heroes/${category}.png' && document.querySelector('.catalog-hero-art img').naturalWidth > 0`);
+    await until(`document.querySelector('.catalog-hero-art img')?.getAttribute('src') === '/assets/category-heroes/${category}.webp' && document.querySelector('.catalog-hero-art img').naturalWidth > 0`);
     assert.equal(await evaluate('document.querySelectorAll(".catalog-switch a").length'), 1);
     for (const width of [320, 375, 480, 768, 1024, 1440]) {
       await command('Emulation.setDeviceMetricsOverride', { width, height: 1000, deviceScaleFactor: 1, mobile: false });
