@@ -220,7 +220,7 @@
     "price": 1099,
     "rating": 0,
     "reviewCount": 0,
-    "image": "/assets/products/computer-01.svg",
+    "image": "/assets/products/computer-01.webp",
     "specs": [
       "رم ۱۶ گیگابایت",
       "SSD ۲۵۶ گیگابایت",
@@ -241,7 +241,7 @@
     "price": 1599,
     "rating": 0,
     "reviewCount": 0,
-    "image": "/assets/products/computer-02.svg",
+    "image": "/assets/products/computer-02.webp",
     "specs": [
       "رم ۱۶ گیگابایت",
       "SSD ۵۱۲ گیگابایت",
@@ -262,7 +262,7 @@
     "price": 649,
     "rating": 0,
     "reviewCount": 0,
-    "image": "/assets/products/computer-03.svg",
+    "image": "/assets/products/computer-03.webp",
     "specs": [
       "رم ۱۶ گیگابایت",
       "SSD ۵۱۲ گیگابایت",
@@ -283,7 +283,7 @@
     "price": 599,
     "rating": 0,
     "reviewCount": 0,
-    "image": "/assets/products/computer-04.svg",
+    "image": "/assets/products/computer-04.webp",
     "specs": [
       "رم ۱۶ گیگابایت",
       "SSD ۵۱۲ گیگابایت",
@@ -304,7 +304,7 @@
     "price": 699,
     "rating": 0,
     "reviewCount": 0,
-    "image": "/assets/products/computer-05.svg",
+    "image": "/assets/products/computer-05.webp",
     "specs": [
       "رم ۱۶ گیگابایت",
       "SSD ۵۱۲ گیگابایت",
@@ -325,7 +325,7 @@
     "price": 999,
     "rating": 0,
     "reviewCount": 0,
-    "image": "/assets/products/computer-06.svg",
+    "image": "/assets/products/computer-06.webp",
     "specs": [
       "رم ۱۶ گیگابایت",
       "SSD ۵۱۲ گیگابایت",
@@ -346,7 +346,7 @@
     "price": 729,
     "rating": 0,
     "reviewCount": 0,
-    "image": "/assets/products/computer-07.svg",
+    "image": "/assets/products/computer-07.webp",
     "specs": [
       "رم ۱۶ گیگابایت",
       "SSD ۵۱۲ گیگابایت",
@@ -367,7 +367,7 @@
     "price": 1199,
     "rating": 0,
     "reviewCount": 0,
-    "image": "/assets/products/computer-08.svg",
+    "image": "/assets/products/computer-08.webp",
     "specs": [
       "رم ۱۶ گیگابایت",
       "SSD ۱ ترابایت",
@@ -388,7 +388,7 @@
     "price": 599,
     "rating": 0,
     "reviewCount": 0,
-    "image": "/assets/products/computer-09.svg",
+    "image": "/assets/products/computer-09.webp",
     "specs": [
       "رم ۸ گیگابایت",
       "SSD ۲۵۶ گیگابایت",
@@ -409,7 +409,7 @@
     "price": 1299,
     "rating": 0,
     "reviewCount": 0,
-    "image": "/assets/products/computer-10.svg",
+    "image": "/assets/products/computer-10.webp",
     "specs": [
       "رم ۸ گیگابایت",
       "SSD ۲۵۶ گیگابایت",
@@ -430,7 +430,7 @@
     "price": 279,
     "rating": 0,
     "reviewCount": 0,
-    "image": "/assets/products/audio-01.svg",
+    "image": "/assets/products/audio-01.webp",
     "specs": [
       "حذف نویز فعال",
       "اتصال بلوتوث",
@@ -451,7 +451,7 @@
     "price": 249,
     "rating": 0,
     "reviewCount": 0,
-    "image": "/assets/products/audio-02.svg",
+    "image": "/assets/products/audio-02.webp",
     "specs": [
       "حذف نویز فعال",
       "حالت شنیدن محیط",
@@ -472,7 +472,7 @@
     "price": 299,
     "rating": 0,
     "reviewCount": 0,
-    "image": "/assets/products/audio-03.svg",
+    "image": "/assets/products/audio-03.webp",
     "specs": [
       "حذف نویز تطبیقی",
       "تنظیم اکولایزر",
@@ -493,7 +493,7 @@
     "price": 129,
     "rating": 0,
     "reviewCount": 0,
-    "image": "/assets/products/audio-04.svg",
+    "image": "/assets/products/audio-04.webp",
     "specs": [
       "حذف نویز تطبیقی",
       "طراحی تاشو",
@@ -514,7 +514,7 @@
     "price": 169,
     "rating": 0,
     "reviewCount": 0,
-    "image": "/assets/products/audio-05.svg",
+    "image": "/assets/products/audio-05.webp",
     "specs": [
       "تراشه Apple H1",
       "اکولایزر تطبیقی",
@@ -535,7 +535,7 @@
     "price": 179,
     "rating": 0,
     "reviewCount": 0,
-    "image": "/assets/products/audio-06.svg",
+    "image": "/assets/products/audio-06.webp",
     "specs": [
       "حذف نویز فعال",
       "حالت صدای محیط",
@@ -556,7 +556,7 @@
     "price": 99,
     "rating": 0,
     "reviewCount": 0,
-    "image": "/assets/products/audio-07.svg",
+    "image": "/assets/products/audio-07.webp",
     "specs": [
       "حذف نویز فعال",
       "بلوتوث ۵٫۲",
@@ -577,7 +577,7 @@
     "price": 119,
     "rating": 0,
     "reviewCount": 0,
-    "image": "/assets/products/audio-08.svg",
+    "image": "/assets/products/audio-08.webp",
     "specs": [
       "اتصال بلوتوث",
       "مقاومت IP67",
@@ -598,7 +598,7 @@
     "price": 149,
     "rating": 0,
     "reviewCount": 0,
-    "image": "/assets/products/audio-09.svg",
+    "image": "/assets/products/audio-09.webp",
     "specs": [
       "اتصال بلوتوث",
       "مقاومت IP67",
@@ -619,7 +619,7 @@
     "price": 99,
     "rating": 0,
     "reviewCount": 0,
-    "image": "/assets/products/audio-10.svg",
+    "image": "/assets/products/audio-10.webp",
     "specs": [
       "پشتیبانی Hi-Res Audio",
       "بلوتوث ۵٫۰",

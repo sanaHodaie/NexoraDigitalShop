@@ -38,7 +38,7 @@ def test_catalog_products_persist_in_cart_and_seed_preserves_inventory(client, e
     assert len(client.get("/api/account/cart").json()) == 5
 
 
-@pytest.mark.parametrize("prefix", ["gaming", "phone", "home"])
+@pytest.mark.parametrize("prefix", ["gaming", "phone", "home", "audio", "computer"])
 def test_photos_replace_only_seed_placeholders(client, engine, prefix):
     with Session(engine) as db, db.begin():
         product = db.get(Product, f"{prefix}-01")

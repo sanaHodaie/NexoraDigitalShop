@@ -9,7 +9,7 @@ from app.config import Settings
 from app.db import make_engine
 from app.models import Product
 
-PHOTO_PRODUCT_IDS = {f"{prefix}-{i:02d}" for prefix in ("gaming", "phone", "home") for i in range(1, 11)}
+PHOTO_PRODUCT_IDS = {f"{prefix}-{i:02d}" for prefix in ("gaming", "phone", "home", "audio", "computer") for i in range(1, 11)}
 
 
 def correct_phone_model(current, product):
