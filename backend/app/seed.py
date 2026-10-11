@@ -9,7 +9,7 @@ from app.config import Settings
 from app.db import make_engine
 from app.models import Product
 
-PHOTO_PRODUCT_IDS = {f"{prefix}-{i:02d}" for prefix in ("gaming", "phone") for i in range(1, 11)}
+PHOTO_PRODUCT_IDS = {f"{prefix}-{i:02d}" for prefix in ("gaming", "phone", "home") for i in range(1, 11)}
 
 
 def correct_phone_model(current, product):
@@ -55,7 +55,7 @@ def seed(engine):
                 )
                 .on_conflict_do_nothing(index_elements=["id"])
             )
-            # Upgrade only the original gaming/phone placeholders, preserving custom images
+            # Upgrade only the original catalogue placeholders, preserving custom images
             # and every other field (including edited prices, stock and descriptions).
             if product["id"] in PHOTO_PRODUCT_IDS:
                 current = db.get(Product, product["id"], with_for_update=True)

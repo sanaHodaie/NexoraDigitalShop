@@ -55,7 +55,7 @@ try {
   const { readdir, stat } = await import('node:fs/promises');
   const sources = [
     ...(await readdir('public/assets')).filter(f => f.endsWith('.jpg')).map(f => ['public/assets/' + f, f.startsWith('hero_') ? 1600 : 800]),
-    ...['smartphones', 'laptops', 'audio', 'gaming'].map(f => ['public/assets/category-heroes/' + f + '.png', 800]),
+    ...['smartphones', 'laptops', 'audio', 'gaming', 'smart-home'].map(f => ['public/assets/category-heroes/' + f + '.png', 800]),
     ...['auth-headphones', 'auth-earbuds', 'account-phone'].map(f => ['src/assets/images/' + f + '.png', 800]),
   ];
   let before = 0, after = 0;

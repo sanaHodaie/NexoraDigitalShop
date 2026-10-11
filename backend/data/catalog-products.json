@@ -838,5 +838,215 @@
     "description": "ماوس گیمینگ لاجیتک G502 HERO؛ حسگر HERO، اتصال سیمی USB و دکمه‌های قابل تنظیم. پیکربندی و قیمت نمونه برای تست فروشگاه.",
     "inStock": true,
     "demo": true
+  },
+  {
+    "id": "home-01",
+    "name": "دوربین هوشمند تی‌پی‌لینک Tapo C200",
+    "nameEn": "TP-Link Tapo C200",
+    "brand": "TP-Link",
+    "category": "smart-home",
+    "categoryFa": "خانه هوشمند",
+    "kindLabel": "دوربین هوشمند",
+    "price": 29,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/home-01.webp",
+    "specs": [
+      "تصویر Full HD 1080p",
+      "چرخش افقی ۳۶۰ درجه",
+      "صدای دوطرفه"
+    ],
+    "description": "دوربین هوشمند تی‌پی‌لینک Tapo C200؛ تصویر Full HD 1080p، چرخش افقی ۳۶۰ درجه و صدای دوطرفه. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "home-02",
+    "name": "دوربین هوشمند تی‌پی‌لینک Tapo C210",
+    "nameEn": "TP-Link Tapo C210",
+    "brand": "TP-Link",
+    "category": "smart-home",
+    "categoryFa": "خانه هوشمند",
+    "kindLabel": "دوربین هوشمند",
+    "price": 39,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/home-02.webp",
+    "specs": [
+      "تصویر ۳ مگاپیکسل",
+      "قابلیت چرخش دوربین",
+      "دید در شب"
+    ],
+    "description": "دوربین هوشمند تی‌پی‌لینک Tapo C210؛ تصویر ۳ مگاپیکسل، قابلیت چرخش دوربین و دید در شب. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "home-03",
+    "name": "دوربین فضای باز تی‌پی‌لینک Tapo C320WS",
+    "nameEn": "TP-Link Tapo C320WS",
+    "brand": "TP-Link",
+    "category": "smart-home",
+    "categoryFa": "خانه هوشمند",
+    "kindLabel": "دوربین فضای باز",
+    "price": 59,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/home-03.webp",
+    "specs": [
+      "مقاومت IP66",
+      "اتصال Wi-Fi یا اترنت",
+      "دید در شب رنگی"
+    ],
+    "description": "دوربین فضای باز تی‌پی‌لینک Tapo C320WS؛ مقاومت IP66، اتصال Wi-Fi یا اترنت و دید در شب رنگی. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "home-04",
+    "name": "پریز هوشمند تی‌پی‌لینک Tapo P100",
+    "nameEn": "TP-Link Tapo P100 (EU)",
+    "brand": "TP-Link",
+    "category": "smart-home",
+    "categoryFa": "خانه هوشمند",
+    "kindLabel": "پریز هوشمند",
+    "price": 15,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/home-04.webp",
+    "specs": [
+      "اتصال Wi-Fi",
+      "زمان‌بندی روشن و خاموش",
+      "نسخهٔ دوشاخهٔ اروپایی"
+    ],
+    "description": "پریز هوشمند تی‌پی‌لینک Tapo P100؛ اتصال Wi-Fi، زمان‌بندی روشن و خاموش و نسخهٔ دوشاخهٔ اروپایی. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "home-05",
+    "name": "پریز هوشمند تی‌پی‌لینک Tapo P110",
+    "nameEn": "TP-Link Tapo P110 (EU)",
+    "brand": "TP-Link",
+    "category": "smart-home",
+    "categoryFa": "خانه هوشمند",
+    "kindLabel": "پریز هوشمند",
+    "price": 19,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/home-05.webp",
+    "specs": [
+      "پایش مصرف انرژی",
+      "کنترل از راه دور",
+      "نسخهٔ دوشاخهٔ اروپایی"
+    ],
+    "description": "پریز هوشمند تی‌پی‌لینک Tapo P110؛ پایش مصرف انرژی، کنترل از راه دور و نسخهٔ دوشاخهٔ اروپایی. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "home-06",
+    "name": "لامپ هوشمند رنگی تی‌پی‌لینک Tapo L530E",
+    "nameEn": "TP-Link Tapo L530E",
+    "brand": "TP-Link",
+    "category": "smart-home",
+    "categoryFa": "خانه هوشمند",
+    "kindLabel": "لامپ هوشمند",
+    "price": 14,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/home-06.webp",
+    "specs": [
+      "سرپیچ E27",
+      "نور رنگی و قابل تنظیم",
+      "بدون نیاز به هاب"
+    ],
+    "description": "لامپ هوشمند رنگی تی‌پی‌لینک Tapo L530E؛ سرپیچ E27، نور رنگی و قابل تنظیم و بدون نیاز به هاب. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "home-07",
+    "name": "نوار نور هوشمند تی‌پی‌لینک Tapo L900-5",
+    "nameEn": "TP-Link Tapo L900-5",
+    "brand": "TP-Link",
+    "category": "smart-home",
+    "categoryFa": "خانه هوشمند",
+    "kindLabel": "نوار نور",
+    "price": 25,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/home-07.webp",
+    "specs": [
+      "طول ۵ متر",
+      "نور چندرنگ",
+      "کنترل با اپلیکیشن"
+    ],
+    "description": "نوار نور هوشمند تی‌پی‌لینک Tapo L900-5؛ طول ۵ متر، نور چندرنگ و کنترل با اپلیکیشن. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "home-08",
+    "name": "سنسور حرکت تی‌پی‌لینک Tapo T100",
+    "nameEn": "TP-Link Tapo T100",
+    "brand": "TP-Link",
+    "category": "smart-home",
+    "categoryFa": "خانه هوشمند",
+    "kindLabel": "سنسور حرکت",
+    "price": 19,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/home-08.webp",
+    "specs": [
+      "تشخیص حرکت",
+      "اعلان در اپلیکیشن",
+      "نیازمند هاب Tapo سازگار"
+    ],
+    "description": "سنسور حرکت تی‌پی‌لینک Tapo T100؛ تشخیص حرکت، اعلان در اپلیکیشن و نیازمند هاب Tapo سازگار. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "home-09",
+    "name": "سنسور در و پنجره تی‌پی‌لینک Tapo T110",
+    "nameEn": "TP-Link Tapo T110",
+    "brand": "TP-Link",
+    "category": "smart-home",
+    "categoryFa": "خانه هوشمند",
+    "kindLabel": "سنسور در و پنجره",
+    "price": 17,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/home-09.webp",
+    "specs": [
+      "تشخیص باز و بسته شدن",
+      "اعلان در اپلیکیشن",
+      "نیازمند هاب Tapo سازگار"
+    ],
+    "description": "سنسور در و پنجره تی‌پی‌لینک Tapo T110؛ تشخیص باز و بسته شدن، اعلان در اپلیکیشن و نیازمند هاب Tapo سازگار. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "home-10",
+    "name": "هاب هوشمند تی‌پی‌لینک Tapo H100",
+    "nameEn": "TP-Link Tapo H100 (EU)",
+    "brand": "TP-Link",
+    "category": "smart-home",
+    "categoryFa": "خانه هوشمند",
+    "kindLabel": "هاب هوشمند",
+    "price": 25,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/home-10.webp",
+    "specs": [
+      "اتصال تا ۶۴ دستگاه سازگار",
+      "زنگ هشدار داخلی",
+      "نسخهٔ دوشاخهٔ اروپایی"
+    ],
+    "description": "هاب هوشمند تی‌پی‌لینک Tapo H100؛ اتصال تا ۶۴ دستگاه سازگار، زنگ هشدار داخلی و نسخهٔ دوشاخهٔ اروپایی. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
   }
 ]

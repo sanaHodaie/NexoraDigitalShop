@@ -11,7 +11,7 @@ from app.seed import seed
 def test_catalog_products_persist_in_cart_and_seed_preserves_inventory(client, engine):
     for category, prefix in (
         ("smartphones", "phone-"), ("laptops", "computer-"),
-        ("audio", "audio-"), ("gaming", "gaming-"),
+        ("audio", "audio-"), ("gaming", "gaming-"), ("smart-home", "home-"),
     ):
         response = client.get("/api/products", params={"category": category})
         selected = [p for p in response.json() if p["id"].startswith(prefix)]
@@ -19,11 +19,11 @@ def test_catalog_products_persist_in_cart_and_seed_preserves_inventory(client, e
         assert all(p["image"].startswith("/assets/products/") for p in selected)
 
     register(client)
-    for pid in ("phone-01", "computer-09", "audio-01", "gaming-01"):
+    for pid in ("phone-01", "computer-09", "audio-01", "gaming-01", "home-01"):
         assert write(client, "PUT", f"/api/account/cart/{pid}", json={"quantity": 1}).status_code == 204
         assert write(client, "PUT", f"/api/account/wishlist/{pid}").status_code == 204
     assert {item["product"]["id"] for item in client.get("/api/account/cart").json()} == {
-        "phone-01", "computer-09", "audio-01", "gaming-01"
+        "phone-01", "computer-09", "audio-01", "gaming-01", "home-01"
     }
     with Session(engine) as db, db.begin():
         product = db.get(Product, "phone-01")
@@ -35,10 +35,10 @@ def test_catalog_products_persist_in_cart_and_seed_preserves_inventory(client, e
         product = db.get(Product, "phone-01")
         assert product.price == Decimal("731.25")
         assert product.stock == 7
-    assert len(client.get("/api/account/cart").json()) == 4
+    assert len(client.get("/api/account/cart").json()) == 5
 
 
-@pytest.mark.parametrize("prefix", ["gaming", "phone"])
+@pytest.mark.parametrize("prefix", ["gaming", "phone", "home"])
 def test_photos_replace_only_seed_placeholders(client, engine, prefix):
     with Session(engine) as db, db.begin():
         product = db.get(Product, f"{prefix}-01")

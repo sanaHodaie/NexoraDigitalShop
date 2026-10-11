@@ -1,5 +1,11 @@
 # Category hero photographs
 
+- `smart-home.png` / `smart-home.webp`: generic smart-camera hero artwork generated
+  with the built-in imagegen tool on a transparent background. This is decorative
+  category artwork, not a photograph of a specific manufacturer's product.
+  The WebP is resized to 800px wide with alpha preserved. CSS supplies motion and shadow.
+  Prompt: [smart-home.prompt.md](smart-home.prompt.md).
+
 Product imagery stored locally to avoid runtime third-party requests.
 Apple assets are manufacturer images, not original Nexora artwork or a claim of an open license.
 

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="360" viewBox="0 0 480 360"><title>Demo home-outdoor illustration</title><defs>
+    <linearGradient id="metal" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f8fafc"/><stop offset=".45" stop-color="#aac5d7"/><stop offset="1" stop-color="#64748b"/></linearGradient>
+    <linearGradient id="screen" x1="0" y1="1" x2="1" y2="0"><stop stop-color="#0b1835"/><stop offset=".48" stop-color="#2563eb"/><stop offset="1" stop-color="#aac5d7"/></linearGradient>
+    <radialGradient id="orb"><stop stop-color="#eff6ff" stop-opacity=".9"/><stop offset="1" stop-color="#60a5fa" stop-opacity="0"/></radialGradient>
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="9"/></filter>
+    <clipPath id="display"><rect x="186" y="50" width="130" height="254" rx="18"/></clipPath>
+    <clipPath id="computer-display"><rect x="100" y="70" width="280" height="172" rx="4"/></clipPath>
+  </defs><ellipse cx="240" cy="309" rx="114" ry="12" fill="#0f172a" opacity=".12" filter="url(#shadow)"/><path d="M184 245 L153 288 H237 L218 245" fill="url(#metal)" stroke="#94a3b8" stroke-width="2"/><path d="M163 112 L138 62 M317 112 L345 62" stroke="#cbd5e1" stroke-width="12" stroke-linecap="round"/><rect x="121" y="99" width="238" height="153" rx="50" fill="url(#metal)" stroke="#94a3b8" stroke-width="2"/><rect x="256" y="108" width="91" height="135" rx="38" fill="#17253a"/><ellipse cx="302" cy="175" rx="29" ry="35" fill="#0f172a" stroke="#64748b" stroke-width="5"/><ellipse cx="296" cy="167" rx="10" ry="12" fill="#60a5fa"/></svg>

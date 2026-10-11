@@ -1,4 +1,12 @@
 export const CATALOG_CATEGORIES = {
+  'smart-home': {
+    title: 'خانه هوشمند',
+    english: 'SMART HOME',
+    description: 'خانه‌ای هماهنگ با زندگی تو؛ روشنایی، امنیت و کنترل وسایل، در یک تجربهٔ ساده و هوشمند.',
+    image: '/assets/category-heroes/smart-home.webp',
+    fallbackImage: '/assets/products/home-01.svg',
+    productIds: Array.from({ length: 10 }, (_, index) => `home-${String(index + 1).padStart(2, '0')}`),
+  },
   audio: {
     title: 'تجهیزات صوتی',
     english: 'AUDIO & SOUND',

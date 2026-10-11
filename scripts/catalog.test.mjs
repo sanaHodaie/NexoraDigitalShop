@@ -30,4 +30,8 @@ test('search, brand, availability and sorting compose without changing source pr
   assert.ok(sorted.every((p, i) => !i || sorted[i - 1].price >= p.price));
   assert.equal(JSON.stringify(products), snapshots);
   assert.deepEqual(selectCatalogProducts(products, 'unknown'), []);
+  assert.deepEqual(selectCatalogProducts(products, 'smart-home', { query: 'P110' }).map(p => p.id), ['home-05']);
+  const home = selectCatalogProducts(products, 'smart-home', { sort: 'price-asc', brand: 'TP-Link' });
+  assert.equal(home.length, 10);
+  assert.ok(home.every((p, i) => !i || home[i - 1].price <= p.price));
 });

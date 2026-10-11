@@ -53,6 +53,19 @@ const gaming = [
   ['ماوس گیمینگ لاجیتک G502 HERO', 'Logitech G502 HERO', 'Logitech', 49, 'حسگر HERO', 'اتصال سیمی USB', 'دکمه‌های قابل تنظیم', '#7e9ac2', 'mouse'],
 ];
 
+const smartHome = [
+  ['دوربین هوشمند تی‌پی‌لینک Tapo C200', 'TP-Link Tapo C200', 'TP-Link', 29, 'تصویر Full HD 1080p', 'چرخش افقی ۳۶۰ درجه', 'صدای دوطرفه', '#b8d5e9', 'home-camera'],
+  ['دوربین هوشمند تی‌پی‌لینک Tapo C210', 'TP-Link Tapo C210', 'TP-Link', 39, 'تصویر ۳ مگاپیکسل', 'قابلیت چرخش دوربین', 'دید در شب', '#b5c7df', 'home-camera'],
+  ['دوربین فضای باز تی‌پی‌لینک Tapo C320WS', 'TP-Link Tapo C320WS', 'TP-Link', 59, 'مقاومت IP66', 'اتصال Wi-Fi یا اترنت', 'دید در شب رنگی', '#aac5d7', 'home-outdoor'],
+  ['پریز هوشمند تی‌پی‌لینک Tapo P100', 'TP-Link Tapo P100 (EU)', 'TP-Link', 15, 'اتصال Wi-Fi', 'زمان‌بندی روشن و خاموش', 'نسخهٔ دوشاخهٔ اروپایی', '#c0d4e8', 'home-plug'],
+  ['پریز هوشمند تی‌پی‌لینک Tapo P110', 'TP-Link Tapo P110 (EU)', 'TP-Link', 19, 'پایش مصرف انرژی', 'کنترل از راه دور', 'نسخهٔ دوشاخهٔ اروپایی', '#b4cfca', 'home-plug'],
+  ['لامپ هوشمند رنگی تی‌پی‌لینک Tapo L530E', 'TP-Link Tapo L530E', 'TP-Link', 14, 'سرپیچ E27', 'نور رنگی و قابل تنظیم', 'بدون نیاز به هاب', '#b3c4f1', 'home-bulb'],
+  ['نوار نور هوشمند تی‌پی‌لینک Tapo L900-5', 'TP-Link Tapo L900-5', 'TP-Link', 25, 'طول ۵ متر', 'نور چندرنگ', 'کنترل با اپلیکیشن', '#b8b6ed', 'home-strip'],
+  ['سنسور حرکت تی‌پی‌لینک Tapo T100', 'TP-Link Tapo T100', 'TP-Link', 19, 'تشخیص حرکت', 'اعلان در اپلیکیشن', 'نیازمند هاب Tapo سازگار', '#bfd9da', 'home-motion'],
+  ['سنسور در و پنجره تی‌پی‌لینک Tapo T110', 'TP-Link Tapo T110', 'TP-Link', 17, 'تشخیص باز و بسته شدن', 'اعلان در اپلیکیشن', 'نیازمند هاب Tapo سازگار', '#b7cedf', 'home-contact'],
+  ['هاب هوشمند تی‌پی‌لینک Tapo H100', 'TP-Link Tapo H100 (EU)', 'TP-Link', 25, 'اتصال تا ۶۴ دستگاه سازگار', 'زنگ هشدار داخلی', 'نسخهٔ دوشاخهٔ اروپایی', '#b8c5de', 'home-hub'],
+];
+
 function illustration(kind, tint, index) {
   const defs = `<defs>
     <linearGradient id="metal" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f8fafc"/><stop offset=".45" stop-color="${tint}"/><stop offset="1" stop-color="#64748b"/></linearGradient>
@@ -65,7 +78,21 @@ function illustration(kind, tint, index) {
   const pattern = `<ellipse cx="256" cy="${148 + index * 3}" rx="140" ry="62" fill="none" stroke="#93c5fd" stroke-width="25" opacity=".35" transform="rotate(-38 256 180)"/><ellipse cx="285" cy="208" rx="125" ry="44" fill="none" stroke="#dbeafe" stroke-width="13" opacity=".45" transform="rotate(-38 285 208)"/>`;
   const wallpaper = kind === 'phone' ? pattern : `<g clip-path="url(#computer-display)">${pattern}</g>`;
   let device;
-  if (kind.startsWith('console')) {
+  if (kind.startsWith('home-')) {
+    const shadow = '<ellipse cx="240" cy="309" rx="114" ry="12" fill="#0f172a" opacity=".12" filter="url(#shadow)"/>';
+    const shell = 'fill="url(#metal)" stroke="#94a3b8" stroke-width="2"';
+    const shapes = {
+      'home-camera': `<ellipse cx="240" cy="284" rx="85" ry="23" ${shell}/><rect x="170" y="151" width="140" height="130" rx="55" ${shell}/><circle cx="240" cy="140" r="85" ${shell}/><ellipse cx="240" cy="139" rx="65" ry="67" fill="#17253a"/><circle cx="240" cy="133" r="32" fill="#0f172a" stroke="#475569" stroke-width="7"/><circle cx="231" cy="124" r="11" fill="#60a5fa" opacity=".7"/><circle cx="240" cy="188" r="3" fill="#4ade80"/>`,
+      'home-outdoor': `<path d="M184 245 L153 288 H237 L218 245" ${shell}/><path d="M163 112 L138 62 M317 112 L345 62" stroke="#cbd5e1" stroke-width="12" stroke-linecap="round"/><rect x="121" y="99" width="238" height="153" rx="50" ${shell}/><rect x="256" y="108" width="91" height="135" rx="38" fill="#17253a"/><ellipse cx="302" cy="175" rx="29" ry="35" fill="#0f172a" stroke="#64748b" stroke-width="5"/><ellipse cx="296" cy="167" rx="10" ry="12" fill="#60a5fa"/>`,
+      'home-plug': `<rect x="162" y="73" width="156" height="224" rx="42" ${shell}/><circle cx="240" cy="161" r="55" fill="#f8fafc" stroke="#cbd5e1" stroke-width="5"/><circle cx="218" cy="161" r="9" fill="#334155"/><circle cx="262" cy="161" r="9" fill="#334155"/><circle cx="240" cy="261" r="11" fill="none" stroke="#64748b" stroke-width="3"/><path d="M240 244 v13" stroke="#64748b" stroke-width="3"/>`,
+      'home-bulb': `<path d="M210 213 Q205 187 180 156 A76 76 0 1 1 300 156 Q275 187 270 213Z" fill="${tint}" stroke="#94a3b8" stroke-width="2"/><path d="M210 210 H270 L263 272 Q240 313 217 272Z" ${shell}/><path d="M214 231 H266 M216 246 H264 M219 260 H261" stroke="#64748b" stroke-width="6"/><ellipse cx="221" cy="103" rx="17" ry="25" fill="#f8fafc" opacity=".65"/>`,
+      'home-strip': `<ellipse cx="225" cy="168" rx="120" ry="86" fill="none" stroke="#e2e8f0" stroke-width="31"/><ellipse cx="225" cy="168" rx="120" ry="86" fill="none" stroke="${tint}" stroke-width="20"/><ellipse cx="225" cy="168" rx="120" ry="86" fill="none" stroke="#fff" stroke-width="5" stroke-dasharray="6 15"/><path d="M329 208 Q391 260 295 277" fill="none" stroke="#94a3b8" stroke-width="9"/><rect x="242" y="259" width="70" height="37" rx="12" ${shell}/>`,
+      'home-motion': `<rect x="170" y="65" width="140" height="225" rx="50" ${shell}/><rect x="187" y="127" width="106" height="127" rx="38" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/><circle cx="240" cy="99" r="5" fill="#60a5fa"/>`,
+      'home-contact': `<rect x="155" y="70" width="107" height="225" rx="30" ${shell}/><rect x="283" y="92" width="45" height="180" rx="19" ${shell}/><circle cx="210" cy="112" r="5" fill="#60a5fa"/><path d="M242 180 h-13 M293 180 h13" stroke="#94a3b8" stroke-width="3"/>`,
+      'home-hub': `<rect x="157" y="67" width="166" height="230" rx="40" ${shell}/><circle cx="240" cy="157" r="49" fill="#dbe4ef" stroke="#94a3b8" stroke-width="2"/>${Array.from({length:7},(_,i)=>`<path d="M207 ${133+i*8} H273" stroke="#64748b" stroke-width="3" stroke-dasharray="2 6"/>`).join('')}<circle cx="240" cy="251" r="6" fill="#60a5fa"/>`,
+    };
+    device = shadow + shapes[kind];
+  } else if (kind.startsWith('console')) {
     const shell = kind === 'console-ps'
       ? '<path d="M187 47 Q242 62 291 43 L300 290 Q244 316 178 289Z" fill="#1e293b"/><path d="M184 46 L200 56 L199 288 L177 302Z M280 49 L300 41 L315 298 L288 289Z" fill="url(#metal)" stroke="#cbd5e1" stroke-width="2"/><path d="M202 60 L202 283" stroke="#60a5fa" stroke-width="3"/>'
       : `<rect x="158" y="62" width="164" height="232" rx="9" fill="url(#metal)" stroke="#64748b"/><rect x="168" y="73" width="143" height="210" rx="4" fill="${kind === 'console-s' ? '#e2e8f0' : '#1e293b'}"/><circle cx="239" cy="139" r="47" fill="#111827"/><circle cx="293" cy="269" r="5" fill="#94a3b8"/>`;
@@ -108,17 +135,18 @@ function illustration(kind, tint, index) {
 const products = [];
 const assets = new URL('../public/assets/products/', import.meta.url);
 await mkdir(assets, { recursive: true });
-const categoryLabels = { smartphones: 'گوشی هوشمند', laptops: 'لپ‌تاپ و پی‌سی', audio: 'تجهیزات صوتی', gaming: 'گیمینگ و کنسول' };
+const categoryLabels = { smartphones: 'گوشی هوشمند', laptops: 'لپ‌تاپ و پی‌سی', audio: 'تجهیزات صوتی', gaming: 'گیمینگ و کنسول', 'smart-home': 'خانه هوشمند' };
 const kindLabels = { phone: 'گوشی هوشمند', laptop: 'لپ‌تاپ', mini: 'مینی پی‌سی', desktop: 'آل‌این‌وان', headphones: 'هدفون', earbuds: 'هندزفری', 'earbuds-stem': 'هندزفری', speaker: 'اسپیکر', 'speaker-round': 'اسپیکر' };
 Object.assign(kindLabels, { 'console-ps': 'کنسول', 'console-x': 'کنسول', 'console-s': 'کنسول', handheld: 'کنسول دستی', gamepad: 'کنترلر', mouse: 'ماوس گیمینگ' });
-for (const [category, rows, prefix] of [['smartphones', phones, 'phone'], ['laptops', computers, 'computer'], ['audio', audio, 'audio'], ['gaming', gaming, 'gaming']]) {
+Object.assign(kindLabels, { 'home-camera': 'دوربین هوشمند', 'home-outdoor': 'دوربین فضای باز', 'home-plug': 'پریز هوشمند', 'home-bulb': 'لامپ هوشمند', 'home-strip': 'نوار نور', 'home-motion': 'سنسور حرکت', 'home-contact': 'سنسور در و پنجره', 'home-hub': 'هاب هوشمند' });
+for (const [category, rows, prefix] of [['smartphones', phones, 'phone'], ['laptops', computers, 'computer'], ['audio', audio, 'audio'], ['gaming', gaming, 'gaming'], ['smart-home', smartHome, 'home']]) {
   for (const [index, row] of rows.entries()) {
     const [name, nameEn, brand, price, ...details] = row;
     const [first, second, third, tint, kind = 'phone'] = details;
     const id = `${prefix}-${String(index + 1).padStart(2, '0')}`;
     const kindLabel = kindLabels[kind];
     products.push({ id, name, nameEn, brand, category, categoryFa: categoryLabels[category], kindLabel,
-      price, rating: 0, reviewCount: 0, image: `/assets/products/${id}.${['gaming', 'smartphones'].includes(category) ? 'webp' : 'svg'}`, specs: [first, second, third],
+      price, rating: 0, reviewCount: 0, image: `/assets/products/${id}.${['gaming', 'smartphones', 'smart-home'].includes(category) ? 'webp' : 'svg'}`, specs: [first, second, third],
       description: `${name}؛ ${first}، ${second} و ${third}. پیکربندی و قیمت نمونه برای تست فروشگاه.`, inStock: true, demo: true });
     await writeFile(new URL(`${id}.svg`, assets), illustration(kind, tint, index), 'utf8');
   }

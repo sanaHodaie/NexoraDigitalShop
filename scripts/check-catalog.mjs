@@ -152,7 +152,7 @@ try {
   await until('location.pathname === "/" && Boolean(document.querySelector("#trending"))');
   await evaluate("document.querySelector('a[href=\"/category/gaming\"]').click()");
   await until('location.pathname === "/category/gaming" && document.querySelectorAll(".catalog-card").length === 10');
-  for (const category of ['gaming', 'smartphones', 'laptops', 'audio']) {
+  for (const category of ['gaming', 'smartphones', 'laptops', 'audio', 'smart-home']) {
     await command('Page.navigate', { url: `${base}/category/${category}` });
     await until(`document.querySelector('.catalog-hero-art img')?.getAttribute('src') === '/assets/category-heroes/${category}.webp' && document.querySelector('.catalog-hero-art img').naturalWidth > 0`);
     assert.equal(await evaluate('document.querySelectorAll(".catalog-switch a").length'), 1);

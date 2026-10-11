@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="360" viewBox="0 0 480 360"><title>Demo home-motion illustration</title><defs>
+    <linearGradient id="metal" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f8fafc"/><stop offset=".45" stop-color="#bfd9da"/><stop offset="1" stop-color="#64748b"/></linearGradient>
+    <linearGradient id="screen" x1="0" y1="1" x2="1" y2="0"><stop stop-color="#0b1835"/><stop offset=".48" stop-color="#2563eb"/><stop offset="1" stop-color="#bfd9da"/></linearGradient>
+    <radialGradient id="orb"><stop stop-color="#eff6ff" stop-opacity=".9"/><stop offset="1" stop-color="#60a5fa" stop-opacity="0"/></radialGradient>
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="9"/></filter>
+    <clipPath id="display"><rect x="186" y="50" width="130" height="254" rx="18"/></clipPath>
+    <clipPath id="computer-display"><rect x="100" y="70" width="280" height="172" rx="4"/></clipPath>
+  </defs><ellipse cx="240" cy="309" rx="114" ry="12" fill="#0f172a" opacity=".12" filter="url(#shadow)"/><rect x="170" y="65" width="140" height="225" rx="50" fill="url(#metal)" stroke="#94a3b8" stroke-width="2"/><rect x="187" y="127" width="106" height="127" rx="38" fill="#f8fafc" stroke="#cbd5e1" stroke-width="2"/><circle cx="240" cy="99" r="5" fill="#60a5fa"/></svg>
