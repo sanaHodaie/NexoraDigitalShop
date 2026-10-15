@@ -74,6 +74,15 @@ def create_app(settings: Settings | None = None, engine=None) -> FastAPI:
                 )
         if path.startswith("/api/"):
             response.headers["Cache-Control"] = "no-store"
+            # The catalogue is identical for all visitors. Cache only successful
+            # public list responses; accounts, tokens, errors and writes stay private.
+            if (path == "/api/products" and request.method == "GET"
+                    and response.status_code == 200
+                    and "authorization" not in request.headers
+                    and "set-cookie" not in response.headers):
+                response.headers["Cache-Control"] = "public, max-age=30"
+                response.headers["Vercel-CDN-Cache-Control"] = "max-age=60, stale-while-revalidate=3600"
+                response.headers["Vercel-Cache-Tag"] = "nexora-catalog"
         response.headers["X-Content-Type-Options"] = "nosniff"
         response.headers["Referrer-Policy"] = "no-referrer"
         response.headers["Permissions-Policy"] = "camera=(), microphone=(), geolocation=(), payment=()"

@@ -66,6 +66,32 @@ const smartHome = [
   ['هاب هوشمند تی‌پی‌لینک Tapo H100', 'TP-Link Tapo H100 (EU)', 'TP-Link', 25, 'اتصال تا ۶۴ دستگاه سازگار', 'زنگ هشدار داخلی', 'نسخهٔ دوشاخهٔ اروپایی', '#b8c5de', 'home-hub'],
 ];
 
+const wearables = [
+  ['اپل واچ سری ۹', 'Apple Watch Series 9 GPS 41mm', 'Apple', 399, 'بدنهٔ ۴۱ میلی‌متری', 'تراشه S9', 'نمایشگر همیشه‌روشن Retina', '#9cabbf', 'watch-square'],
+  ['اپل واچ SE نسل دوم', 'Apple Watch SE (2nd generation) GPS 40mm', 'Apple', 249, 'بدنهٔ ۴۰ میلی‌متری', 'تراشه S8', 'نمایشگر Retina OLED', '#cfbfae', 'watch-square'],
+  ['اپل واچ اولترا ۲', 'Apple Watch Ultra 2 49mm', 'Apple', 799, 'بدنهٔ تیتانیومی ۴۹ میلی‌متری', 'تراشه S9', 'GPS دوفرکانسه', '#d6a477', 'watch-square'],
+  ['سامسونگ گلکسی واچ ۶', 'Samsung Galaxy Watch6 Bluetooth 40mm', 'Samsung', 249, 'بدنهٔ ۴۰ میلی‌متری', 'نمایشگر Super AMOLED', 'اتصال بلوتوث', '#abbcae', 'watch-round'],
+  ['سامسونگ گلکسی واچ ۶ کلاسیک', 'Samsung Galaxy Watch6 Classic Bluetooth 43mm', 'Samsung', 329, 'بدنهٔ ۴۳ میلی‌متری', 'حلقهٔ چرخان', 'نمایشگر Super AMOLED', '#b6c4d4', 'watch-round'],
+  ['سامسونگ گلکسی واچ FE', 'Samsung Galaxy Watch FE Bluetooth 40mm', 'Samsung', 199, 'بدنهٔ ۴۰ میلی‌متری', 'نمایشگر Super AMOLED', 'اتصال بلوتوث', '#a6b1c7', 'watch-round'],
+  ['مچ‌بند شیائومی اسمارت بند ۹', 'Xiaomi Smart Band 9', 'Xiaomi', 49, 'نمایشگر AMOLED ۱٫۶۲ اینچ', 'بلوتوث ۵٫۴', 'بند قابل تعویض', '#adb8d4', 'fitness-band'],
+  ['ساعت شیائومی ردمی واچ ۴', 'Xiaomi Redmi Watch 4', 'Xiaomi', 99, 'نمایشگر AMOLED ۱٫۹۷ اینچ', 'موقعیت‌یابی ماهواره‌ای داخلی', 'مکالمه از طریق بلوتوث', '#b2c6c9', 'watch-square'],
+  ['ساعت شیائومی واچ S3', 'Xiaomi Watch S3', 'Xiaomi', 149, 'نمایشگر AMOLED ۱٫۴۳ اینچ', 'موقعیت‌یابی دوفرکانسه', 'حلقهٔ قابل تعویض', '#a4b9ce', 'watch-round'],
+  ['ساعت امیزفیت بیپ ۵', 'Amazfit Bip 5', 'Amazfit', 89, 'نمایشگر ۱٫۹۱ اینچ', 'GPS داخلی', 'مکالمه از طریق بلوتوث', '#c7b7c6', 'watch-square'],
+];
+
+const accessories = [
+  ['ماوس لاجیتک MX Master 3S', 'Logitech MX Master 3S', 'Logitech', 99, 'اتصال بلوتوث', 'طراحی ارگونومیک', 'باتری قابل شارژ', '#94a3b8', 'accessory-mouse'],
+  ['ماوس لاجیتک Pebble Mouse 2', 'Logitech Pebble Mouse 2 M350s', 'Logitech', 29, 'اتصال بلوتوث', 'جابه‌جایی بین ۳ دستگاه', 'کلیک کم‌صدا', '#c5becd', 'accessory-mouse'],
+  ['کیبورد لاجیتک Pebble Keys 2', 'Logitech Pebble Keys 2 K380s', 'Logitech', 39, 'اتصال بلوتوث', 'طراحی جمع‌وجور', 'کلیدهای گرد', '#c5d2dc', 'accessory-keyboard'],
+  ['کیبورد لاجیتک MX Keys Mini', 'Logitech MX Keys Mini', 'Logitech', 99, 'نور پس‌زمینهٔ هوشمند', 'طراحی بدون بخش اعداد', 'اتصال بی‌سیم', '#9caac0', 'accessory-keyboard'],
+  ['شارژر انکر نانو ۳ سی‌وات', 'Anker 511 Charger Nano 3 30W A2147', 'Anker', 25, 'توان حداکثر ۳۰ وات', 'درگاه USB-C', 'طراحی کوچک', '#b2c5db', 'accessory-charger'],
+  ['پاوربانک انکر ۷۳۷', 'Anker 737 Power Bank 24K A1289', 'Anker', 129, 'ظرفیت ۲۴۰۰۰ میلی‌آمپرساعت', 'خروجی USB-C تا ۱۴۰ وات', 'نمایشگر دیجیتال', '#97a9bf', 'accessory-powerbank'],
+  ['شارژر بیست‌وات اپل', 'Apple 20W USB-C Power Adapter', 'Apple', 19, 'توان ۲۰ وات', 'درگاه USB-C', 'کابل جداگانه', '#e1e6ef', 'accessory-charger'],
+  ['کابل شارژ USB-C اپل', 'Apple 60W USB-C Charge Cable 1m', 'Apple', 19, 'طول ۱ متر', 'دو سر USB-C', 'پشتیبانی از شارژ تا ۶۰ وات', '#d4dce9', 'accessory-cable'],
+  ['اس‌اس‌دی قابل‌حمل سامسونگ T7 Shield', 'Samsung Portable SSD T7 Shield 1TB', 'Samsung', 99, 'ظرفیت ۱ ترابایت', 'رابط USB 3.2 Gen 2', 'بدنهٔ قابل‌حمل', '#98b6d4', 'accessory-ssd'],
+  ['هاب یوگرین Revodok 105', 'UGREEN Revodok 105 5-in-1 USB-C Hub', 'UGREEN', 29, 'هاب ۵ در ۱', 'خروجی HDMI تا 4K/30Hz', 'درگاه شارژ USB-C PD', '#b4c1d1', 'accessory-hub'],
+];
+
 function illustration(kind, tint, index) {
   const defs = `<defs>
     <linearGradient id="metal" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f8fafc"/><stop offset=".45" stop-color="${tint}"/><stop offset="1" stop-color="#64748b"/></linearGradient>
@@ -78,7 +104,29 @@ function illustration(kind, tint, index) {
   const pattern = `<ellipse cx="256" cy="${148 + index * 3}" rx="140" ry="62" fill="none" stroke="#93c5fd" stroke-width="25" opacity=".35" transform="rotate(-38 256 180)"/><ellipse cx="285" cy="208" rx="125" ry="44" fill="none" stroke="#dbeafe" stroke-width="13" opacity=".45" transform="rotate(-38 285 208)"/>`;
   const wallpaper = kind === 'phone' ? pattern : `<g clip-path="url(#computer-display)">${pattern}</g>`;
   let device;
-  if (kind.startsWith('home-')) {
+  if (kind.startsWith('accessory-')) {
+    const shell = 'fill="url(#metal)" stroke="#94a3b8" stroke-width="2"';
+    const shapes = {
+      'accessory-mouse': `<rect x="158" y="61" width="164" height="232" rx="78" ${shell}/><path d="M240 66 v103 M161 162 Q240 181 319 162" fill="none" stroke="#64748b" stroke-width="3"/><rect x="230" y="100" width="20" height="43" rx="10" fill="#334155"/><path d="M183 205 Q178 247 198 265" fill="none" stroke="#f8fafc" stroke-width="4" opacity=".6"/>`,
+      'accessory-keyboard': `<rect x="53" y="98" width="374" height="166" rx="20" ${shell}/>${Array.from({ length: 4 }, (_, row) => Array.from({ length: 12 }, (_, col) => `<rect x="${67 + col * 29}" y="${111 + row * 29}" width="23" height="22" rx="${index === 2 ? 11 : 5}" fill="#f1f5f9" stroke="#94a3b8"/>`).join('')).join('')}<rect x="155" y="231" width="160" height="20" rx="5" fill="#f1f5f9" stroke="#94a3b8"/>`,
+      'accessory-charger': `<path d="M205 98 V55 M265 98 V55" stroke="#94a3b8" stroke-width="14" stroke-linecap="round"/><rect x="153" y="93" width="174" height="194" rx="35" ${shell}/><path d="M160 232 H320" stroke="#94a3b8" stroke-width="2"/><rect x="212" y="250" width="56" height="16" rx="8" fill="#1e293b"/><path d="M250 130 L224 173 H246 L230 207 L265 160 H243Z" fill="#64748b" opacity=".6"/>`,
+      'accessory-powerbank': `<rect x="164" y="54" width="152" height="250" rx="25" ${shell}/><rect x="178" y="70" width="124" height="90" rx="15" fill="#17253a"/><rect x="203" y="95" width="68" height="30" rx="5" fill="none" stroke="#93c5fd" stroke-width="3"/><path d="M209 110 H248" stroke="#93c5fd" stroke-width="15"/><rect x="210" y="276" width="43" height="11" rx="5" fill="#334155"/>`,
+      'accessory-cable': `<path d="M156 101 C52 116 85 280 231 283 C395 289 406 83 273 89 C177 89 166 225 263 233 C331 236 354 158 303 132" fill="none" stroke="${tint}" stroke-width="13" stroke-linecap="round"/><rect x="137" y="64" width="36" height="61" rx="12" ${shell}/><rect x="145" y="45" width="20" height="26" rx="6" fill="#cbd5e1" stroke="#64748b"/><rect x="285" y="103" width="36" height="61" rx="12" ${shell}/><rect x="293" y="84" width="20" height="26" rx="6" fill="#cbd5e1" stroke="#64748b"/>`,
+      'accessory-ssd': `<rect x="137" y="67" width="206" height="227" rx="30" ${shell}/>${Array.from({length:6},(_,i)=>`<path d="M${165+i*30} 91 V265" stroke="#64748b" stroke-width="8" opacity=".5" stroke-linecap="round"/>`).join('')}<rect x="218" y="279" width="44" height="9" rx="4" fill="#1e293b"/>`,
+      'accessory-hub': `<path d="M345 191 C417 169 387 59 262 70 L191 78" fill="none" stroke="#475569" stroke-width="12"/><rect x="136" y="65" width="62" height="28" rx="9" ${shell}/><rect x="117" y="71" width="25" height="16" rx="5" fill="#cbd5e1" stroke="#64748b"/><rect x="87" y="168" width="306" height="110" rx="23" ${shell}/><rect x="109" y="226" width="47" height="20" rx="3" fill="#1e293b"/><rect x="173" y="226" width="47" height="20" rx="3" fill="#1e293b"/><path d="M239 226 H294 L286 246 H247Z" fill="#1e293b"/><rect x="315" y="230" width="40" height="12" rx="6" fill="#1e293b"/>`,
+    };
+    device = `<ellipse cx="240" cy="319" rx="135" ry="10" fill="#0f172a" opacity=".12" filter="url(#shadow)"/><g transform="rotate(-9 240 180)">${shapes[kind]}</g>`;
+  } else if (kind.startsWith('watch-') || kind === 'fitness-band') {
+    const round = kind === 'watch-round';
+    const band = kind === 'fitness-band';
+    const face = round
+      ? '<circle cx="240" cy="176" r="76" fill="url(#metal)" stroke="#64748b" stroke-width="3"/><circle cx="240" cy="176" r="66" fill="#0b1835"/><circle cx="240" cy="176" r="55" fill="none" stroke="#64748b" stroke-width="3" stroke-dasharray="2 26"/>'
+      : `<rect x="${band ? 196 : 162}" y="91" width="${band ? 88 : 156}" height="170" rx="${band ? 44 : 37}" fill="url(#metal)" stroke="#64748b" stroke-width="3"/><rect x="${band ? 203 : 169}" y="98" width="${band ? 74 : 142}" height="156" rx="${band ? 37 : 31}" fill="#0b1835"/>`;
+    const dial = band
+      ? '<path d="M224 148 h32 M224 161 h22" stroke="#e2e8f0" stroke-width="7" stroke-linecap="round"/><circle cx="240" cy="207" r="17" fill="none" stroke="#60a5fa" stroke-width="5" stroke-dasharray="80 27"/>'
+      : '<circle cx="240" cy="176" r="44" fill="none" stroke="#60a5fa" stroke-width="6" opacity=".65" stroke-dasharray="212 65" transform="rotate(-90 240 176)"/><path d="M213 148 L240 176 L267 161" fill="none" stroke="#f8fafc" stroke-width="5" stroke-linecap="round"/><circle cx="240" cy="176" r="5" fill="#93c5fd"/>';
+    device = `<ellipse cx="240" cy="327" rx="91" ry="9" fill="#0f172a" opacity=".12" filter="url(#shadow)"/><g transform="rotate(-12 240 180)"><rect x="${band ? 208 : 197}" y="28" width="${band ? 64 : 86}" height="291" rx="24" fill="${tint}" stroke="#94a3b8" stroke-width="2"/><path d="M226 48 H254 M226 62 H254 M229 289 H251 M229 303 H251" stroke="#475569" stroke-width="4" stroke-linecap="round" opacity=".5"/>${band ? '' : '<rect x="315" y="148" width="11" height="24" rx="5" fill="url(#metal)"/>'}${face}${dial}</g>`;
+  } else if (kind.startsWith('home-')) {
     const shadow = '<ellipse cx="240" cy="309" rx="114" ry="12" fill="#0f172a" opacity=".12" filter="url(#shadow)"/>';
     const shell = 'fill="url(#metal)" stroke="#94a3b8" stroke-width="2"';
     const shapes = {
@@ -139,14 +187,19 @@ const categoryLabels = { smartphones: 'گوشی هوشمند', laptops: 'لپ‌
 const kindLabels = { phone: 'گوشی هوشمند', laptop: 'لپ‌تاپ', mini: 'مینی پی‌سی', desktop: 'آل‌این‌وان', headphones: 'هدفون', earbuds: 'هندزفری', 'earbuds-stem': 'هندزفری', speaker: 'اسپیکر', 'speaker-round': 'اسپیکر' };
 Object.assign(kindLabels, { 'console-ps': 'کنسول', 'console-x': 'کنسول', 'console-s': 'کنسول', handheld: 'کنسول دستی', gamepad: 'کنترلر', mouse: 'ماوس گیمینگ' });
 Object.assign(kindLabels, { 'home-camera': 'دوربین هوشمند', 'home-outdoor': 'دوربین فضای باز', 'home-plug': 'پریز هوشمند', 'home-bulb': 'لامپ هوشمند', 'home-strip': 'نوار نور', 'home-motion': 'سنسور حرکت', 'home-contact': 'سنسور در و پنجره', 'home-hub': 'هاب هوشمند' });
-for (const [category, rows, prefix] of [['smartphones', phones, 'phone'], ['laptops', computers, 'computer'], ['audio', audio, 'audio'], ['gaming', gaming, 'gaming'], ['smart-home', smartHome, 'home']]) {
+categoryLabels.wearables = 'پوشیدنی‌ها';
+Object.assign(kindLabels, { 'watch-square': 'ساعت هوشمند', 'watch-round': 'ساعت هوشمند', 'fitness-band': 'مچ‌بند هوشمند' });
+categoryLabels.accessories = 'لوازم جانبی';
+Object.assign(kindLabels, { 'accessory-mouse': 'ماوس', 'accessory-keyboard': 'کیبورد', 'accessory-charger': 'شارژر', 'accessory-powerbank': 'پاوربانک', 'accessory-cable': 'کابل', 'accessory-ssd': 'حافظهٔ قابل‌حمل', 'accessory-hub': 'هاب USB-C' });
+for (const [category, rows, prefix] of [['smartphones', phones, 'phone'], ['laptops', computers, 'computer'], ['audio', audio, 'audio'], ['gaming', gaming, 'gaming'], ['smart-home', smartHome, 'home'], ['wearables', wearables, 'watch'], ['accessories', accessories, 'accessory']]) {
   for (const [index, row] of rows.entries()) {
     const [name, nameEn, brand, price, ...details] = row;
     const [first, second, third, tint, kind = 'phone'] = details;
     const id = `${prefix}-${String(index + 1).padStart(2, '0')}`;
     const kindLabel = kindLabels[kind];
+    const hasPhoto = ['gaming', 'smartphones', 'smart-home', 'audio', 'laptops', 'wearables'].includes(category);
     products.push({ id, name, nameEn, brand, category, categoryFa: categoryLabels[category], kindLabel,
-      price, rating: 0, reviewCount: 0, image: `/assets/products/${id}.${['gaming', 'smartphones', 'smart-home', 'audio', 'laptops'].includes(category) ? 'webp' : 'svg'}`, specs: [first, second, third],
+      price, rating: 0, reviewCount: 0, image: `/assets/products/${id}.${hasPhoto ? 'webp' : 'svg'}`, specs: [first, second, third],
       description: `${name}؛ ${first}، ${second} و ${third}. پیکربندی و قیمت نمونه برای تست فروشگاه.`, inStock: true, demo: true });
     await writeFile(new URL(`${id}.svg`, assets), illustration(kind, tint, index), 'utf8');
   }

@@ -35,13 +35,39 @@ test('expired memory refresh keeps cards visible and updates price from API', as
   assert.equal(cache.getSnapshot().products[0].price, 200);
 });
 
-test('recent public catalogue survives reload; cache older than five minutes is ignored', async () => {
+test('public catalogue survives returning visits; cache older than a day is ignored', async () => {
   const saved = storage(); let time = 100_000;
   const options = { storage: saved, now: () => time, fetchProducts: async () => products };
   await createProductResource(options).load();
   assert.deepEqual(createProductResource(options).getSnapshot().products, products);
-  time += 300_001;
+  time += 86_400_001;
   assert.equal(createProductResource(options).getSnapshot().status, 'loading');
+});
+
+test('returning visitors see cached cards immediately while a cold API is pending', async () => {
+  const saved = storage(); let time = 100_000;
+  await createProductResource({ storage: saved, now: () => time, fetchProducts: async () => products }).load();
+  time += 3_600_000;
+  let resolve;
+  const cache = createProductResource({ storage: saved, now: () => time,
+    fetchProducts: () => new Promise(r => { resolve = r; }) });
+  assert.equal(cache.getSnapshot().status, 'ready');
+  assert.equal(cache.getSnapshot().stale, true);
+  const pending = cache.load(); await Promise.resolve();
+  assert.deepEqual(cache.getSnapshot().products, products);
+  assert.equal(cache.getSnapshot().refreshing, true);
+  resolve(products.map(p => ({ ...p, price: 456 })));
+  await pending;
+  assert.equal(cache.getSnapshot().products[0].price, 456);
+  assert.equal(cache.getSnapshot().stale, false);
+});
+
+test('invalid and future cache timestamps do not display old products', () => {
+  for (const updatedAt of ['100', null, 200_000]) {
+    const cache = createProductResource({ now: () => 100_000, fetchProducts: async () => products,
+      storage: { getItem: () => JSON.stringify({ products, updatedAt }) } });
+    assert.equal(cache.getSnapshot().status, 'loading');
+  }
 });
 
 test('network failure retains existing cards with an explicit stale-data flag and supports retry', async () => {

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="360" viewBox="0 0 480 360"><title>Demo fitness-band illustration</title><defs>
+    <linearGradient id="metal" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f8fafc"/><stop offset=".45" stop-color="#adb8d4"/><stop offset="1" stop-color="#64748b"/></linearGradient>
+    <linearGradient id="screen" x1="0" y1="1" x2="1" y2="0"><stop stop-color="#0b1835"/><stop offset=".48" stop-color="#2563eb"/><stop offset="1" stop-color="#adb8d4"/></linearGradient>
+    <radialGradient id="orb"><stop stop-color="#eff6ff" stop-opacity=".9"/><stop offset="1" stop-color="#60a5fa" stop-opacity="0"/></radialGradient>
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="9"/></filter>
+    <clipPath id="display"><rect x="186" y="50" width="130" height="254" rx="18"/></clipPath>
+    <clipPath id="computer-display"><rect x="100" y="70" width="280" height="172" rx="4"/></clipPath>
+  </defs><ellipse cx="240" cy="327" rx="91" ry="9" fill="#0f172a" opacity=".12" filter="url(#shadow)"/><g transform="rotate(-12 240 180)"><rect x="208" y="28" width="64" height="291" rx="24" fill="#adb8d4" stroke="#94a3b8" stroke-width="2"/><path d="M226 48 H254 M226 62 H254 M229 289 H251 M229 303 H251" stroke="#475569" stroke-width="4" stroke-linecap="round" opacity=".5"/><rect x="196" y="91" width="88" height="170" rx="44" fill="url(#metal)" stroke="#64748b" stroke-width="3"/><rect x="203" y="98" width="74" height="156" rx="37" fill="#0b1835"/><path d="M224 148 h32 M224 161 h22" stroke="#e2e8f0" stroke-width="7" stroke-linecap="round"/><circle cx="240" cy="207" r="17" fill="none" stroke="#60a5fa" stroke-width="5" stroke-dasharray="80 27"/></g></svg>

@@ -10,7 +10,7 @@ export const ShopProvider = ({ children }) => {
   const navigate = useNavigate();
   const [cart, setCart] = useState([]);
   const [wishlist, setWishlist] = useState([]);
-  const { products: allProducts, status: productsStatus, refreshError: productsRefreshError } = useSyncExternalStore(productsResource.subscribe, productsResource.getSnapshot);
+  const { products: allProducts, status: productsStatus, refreshError: productsRefreshError, refreshing: productsRefreshing, stale: productsStale } = useSyncExternalStore(productsResource.subscribe, productsResource.getSnapshot);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState(null);
   const [authStatus, setAuthStatus] = useState('loading');
@@ -136,7 +136,7 @@ export const ShopProvider = ({ children }) => {
   };
   const toPersianDigits = num => String(num ?? '').replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[Number(d)]);
   const formatPrice = amount => `${toPersianDigits(Math.round((amount || 0) * RIAL_RATE).toLocaleString('en-US'))} ریال`;
-  return <ShopContext.Provider value={{ cart, wishlist, allProducts, productsStatus, productsRefreshError, reloadProducts, user, setUser, authStatus, accountStatus, refreshAccount, logout, isLoggedIn, isAuthOpen, setIsAuthOpen, authenticate, authenticateGoogle, toggleLogin,
+  return <ShopContext.Provider value={{ cart, wishlist, allProducts, productsStatus, productsRefreshError, productsRefreshing, productsStale, reloadProducts, user, setUser, authStatus, accountStatus, refreshAccount, logout, isLoggedIn, isAuthOpen, setIsAuthOpen, authenticate, authenticateGoogle, toggleLogin,
     addToCart, removeFromCart, updateQuantity, clearCart, toggleWishlist, isInWishlist: id => wishlist.some(x => x.id === id),
     totalCartCount: cart.reduce((sum, x) => sum + x.quantity, 0), totalWishlistCount: wishlist.length,
     cartSubtotal: cart.reduce((sum, x) => sum + x.product.price * x.quantity, 0),

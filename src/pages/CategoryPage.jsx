@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router-dom';
-import { ArrowLeft, ChevronLeft, Gamepad2, Headphones, House, Laptop, Search, Smartphone, X } from 'lucide-react';
+import { ArrowLeft, Cable, ChevronLeft, Gamepad2, Headphones, House, Laptop, Search, Smartphone, Watch, X } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
 import { CATALOG_CATEGORIES, selectCatalogProducts } from '../data/catalog';
 import CatalogProductCard from '../components/Products/CatalogProductCard';
@@ -12,7 +12,7 @@ export default function CategoryPage() {
   const { categoryId } = useParams();
   const [params, setParams] = useSearchParams();
   const category = CATALOG_CATEGORIES[categoryId];
-  const { allProducts, productsStatus, productsRefreshError, reloadProducts, toPersianDigits } = useShop();
+  const { allProducts, productsStatus, productsRefreshError, productsRefreshing, productsStale, reloadProducts, toPersianDigits } = useShop();
   const query = params.get('q') || '';
   const brand = params.get('brand') || '';
   const sort = ['price-asc', 'price-desc'].includes(params.get('sort')) ? params.get('sort') : 'featured';
@@ -45,7 +45,7 @@ export default function CategoryPage() {
   }, [category, categoryId]);
 
   if (!category) return <section className="catalog-page catalog-empty" dir="rtl"><h1>این دسته‌بندی پیدا نشد</h1><Link to="/">بازگشت به خانه</Link></section>;
-  const Icon = { smartphones: Smartphone, laptops: Laptop, audio: Headphones, gaming: Gamepad2, 'smart-home': House }[categoryId];
+  const Icon = { smartphones: Smartphone, laptops: Laptop, audio: Headphones, gaming: Gamepad2, 'smart-home': House, wearables: Watch, accessories: Cable }[categoryId];
   return <div className="catalog-page" dir="rtl">
     <nav className="catalog-breadcrumb" aria-label="مسیر صفحه"><Link to="/">خانه</Link><ChevronLeft size={14} aria-hidden="true" /><span aria-current="page">{category.title}</span></nav>
     <header className="catalog-hero">
@@ -76,6 +76,7 @@ export default function CategoryPage() {
         <p role="status" aria-live="polite">{productsStatus === 'loading' ? 'در حال دریافت محصولات…' : productsStatus === 'ready' ? `${toPersianDigits(products.length)} محصول${filtered ? ` از ${toPersianDigits(collection.length)}` : ' منتخب'}` : 'دریافت محصولات انجام نشد'}</p>
         {filtered && <button onClick={() => setParams({}, { replace: true })}><X size={14} />پاک کردن فیلترها</button>}
       </div>
+      {productsRefreshing && productsStale && allProducts.length > 0 && <p role="status" className="catalog-demo-note">آخرین اطلاعات محصولات نمایش داده می‌شود؛ در حال به‌روزرسانی قیمت و موجودی…</p>}
       {productsRefreshError && allProducts.length > 0 && <p role="status" className="catalog-demo-note">آخرین اطلاعات دریافت‌شده نمایش داده می‌شود؛ به‌روزرسانی انجام نشد. <button onClick={reloadProducts}>تلاش مجدد</button></p>}
       {productsStatus === 'loading' ? <div className="catalog-grid" aria-hidden="true">{Array.from({ length: 8 }, (_, i) => <div className="catalog-skeleton" key={i}><div /><span /><span /></div>)}</div>
         : productsStatus === 'error' ? <div className="catalog-empty"><h2>محصولات بارگذاری نشدند</h2><p>اتصال به فروشگاه را بررسی کنید و دوباره تلاش کنید.</p><button onClick={reloadProducts}>تلاش مجدد</button></div>

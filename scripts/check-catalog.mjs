@@ -5,6 +5,7 @@ import { spawn } from 'node:child_process';
 import { mkdtemp, readFile, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { CATALOG_CATEGORIES } from '../src/data/catalog.js';
 const base = process.env.NEXORA_UI_URL || 'http://127.0.0.1:3002';
 assert.ok(['localhost', '127.0.0.1'].includes(new URL(base).hostname));
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
@@ -152,9 +153,12 @@ try {
   await until('location.pathname === "/" && Boolean(document.querySelector("#trending"))');
   await evaluate("document.querySelector('a[href=\"/category/gaming\"]').click()");
   await until('location.pathname === "/category/gaming" && document.querySelectorAll(".catalog-card").length === 10');
-  for (const category of ['gaming', 'smartphones', 'laptops', 'audio', 'smart-home']) {
+  for (const category of ['gaming', 'smartphones', 'laptops', 'audio', 'smart-home', 'wearables', 'accessories']) {
     await command('Page.navigate', { url: `${base}/category/${category}` });
-    await until(`document.querySelector('.catalog-hero-art img')?.getAttribute('src') === '/assets/category-heroes/${category}.webp' && document.querySelector('.catalog-hero-art img').naturalWidth > 0`);
+    await until(`document.querySelector('.catalog-hero-art img')?.getAttribute('src') === ${JSON.stringify(CATALOG_CATEGORIES[category].image)} && document.querySelector('.catalog-hero-art img').naturalWidth > 0`);
+    await until('document.querySelectorAll(".catalog-card").length === 10');
+    await evaluate('[...document.querySelectorAll(".catalog-card img")].forEach(img => img.loading = "eager")');
+    await until('!document.querySelector(".catalog-image-fallback") && [...document.querySelectorAll(".catalog-card img")].every(img => img.complete && img.naturalWidth > 0)');
     assert.equal(await evaluate('document.querySelectorAll(".catalog-switch a").length'), 1);
     for (const width of [320, 375, 480, 768, 1024, 1440]) {
       await command('Emulation.setDeviceMetricsOverride', { width, height: 1000, deviceScaleFactor: 1, mobile: false });
@@ -174,6 +178,37 @@ try {
       await writeFile(join(output, `${category}-${width}.png`), Buffer.from(screenshot.data, 'base64'));
     }
   }
+  await evaluate("document.querySelector('.catalog-breadcrumb a').click()");
+  await until('location.pathname === "/" && Boolean(document.querySelector("#trending"))');
+  await evaluate('window.__wearablesNavigationCheck = 1');
+  await evaluate("document.querySelector('a[href=\"/category/wearables\"]').click()");
+  await until('location.pathname === "/category/wearables" && document.querySelectorAll(".catalog-card").length === 10');
+  assert.equal(await evaluate('window.__wearablesNavigationCheck'), 1);
+  await evaluate("[...document.querySelectorAll('.catalog-brands button')].find(b => b.textContent === 'Samsung').click()");
+  await until('document.querySelectorAll(".catalog-card").length === 3');
+  await evaluate("document.querySelector('.catalog-detail').click()");
+  await until('document.querySelectorAll(".fixed.inset-0.z-50").length > 0');
   assert.deepEqual(errors, []);
-  console.log(`PASS: 10 products/category, 6 widths, light/dark, router/back/reload, real hero photos, reduced motion, brand filter and quick view. Screenshots: ${output}`);
+  await command('Page.navigate', { url: base });
+  await until('location.pathname === "/" && Boolean(document.querySelector("#trending"))');
+  await evaluate('window.__accessoriesNavigationCheck = 1');
+  await evaluate("document.querySelector('a[href=\"/category/accessories\"]').click()");
+  await until('location.pathname === "/category/accessories" && document.querySelectorAll(".catalog-card").length === 10');
+  assert.equal(await evaluate('window.__accessoriesNavigationCheck'), 1);
+  const alpha = await evaluate(`(() => {
+    const img = document.querySelector('.catalog-hero-art img');
+    const canvas = document.createElement('canvas'); canvas.width = img.naturalWidth; canvas.height = img.naturalHeight;
+    const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0);
+    const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+    let clear = 0; for (let i = 3; i < pixels.length; i += 4) if (pixels[i] === 0) clear++;
+    return { corner: pixels[3], clearFraction: clear / (canvas.width * canvas.height) };
+  })()`);
+  assert.equal(alpha.corner, 0);
+  assert.ok(alpha.clearFraction > .3, 'Accessories hero has a real transparent background');
+  await evaluate("[...document.querySelectorAll('.catalog-brands button')].find(b => b.textContent === 'Logitech').click()");
+  await until('document.querySelectorAll(".catalog-card").length === 4');
+  await evaluate("document.querySelector('.catalog-detail').click()");
+  await until('document.querySelectorAll(".fixed.inset-0.z-50").length > 0');
+  assert.deepEqual(errors, []);
+  console.log(`PASS: 10 products/category, 6 widths, light/dark, router/back/reload, hero images/alpha, reduced motion, brand filter and quick view. Screenshots: ${output}`);
 } finally { socket?.close(); browser.kill(); }

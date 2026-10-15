@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Logo } from '../Header/Logo';
 import { Instagram, Youtube, Twitter, Facebook, Globe, Smartphone, Download } from 'lucide-react';
 
@@ -145,7 +146,7 @@ export const Footer = () => {
               <li><a href="/#audio" className="hover:text-blue-400 transition-colors">تجهیزات صوتی</a></li>
               <li><a href="/#gaming" className="hover:text-blue-400 transition-colors">گیمینگ و کنسول</a></li>
               <li><a href="/#smart-home" className="hover:text-blue-400 transition-colors">خانه هوشمند</a></li>
-              <li><a href="/#wearables" className="hover:text-blue-400 transition-colors">ساعت و پوشیدنی</a></li>
+              <li><Link to="/category/wearables" className="hover:text-blue-400 transition-colors">ساعت و پوشیدنی</Link></li>
             </ul>
           </div>
 

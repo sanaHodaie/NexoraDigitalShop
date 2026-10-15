@@ -226,5 +226,8 @@ drop unique `nexora_test_*` schemas; never supply production credentials.
 
 At the repository root: `npm run build`, `npm run lint`, and
 `node --test scripts/api-client.test.mjs scripts/vercel-config.test.mjs`.
+Catalogue caching, cold-start limits and deployment verification are documented in
+[CATALOG_PERFORMANCE.fa.md](backend/CATALOG_PERFORMANCE.fa.md). Deploy both the API
+and frontend for the public catalogue CDN cache to take effect.
 `scripts/check-auth.mjs` defaults to API port 8000 and UI port 3001;
 `NEXORA_SKIP_API=1` runs only its mocked browser tests, not live API validation.

@@ -5,7 +5,7 @@ import { useShop } from '../../context/ShopContext';
 
 export const TrendingSection = () => {
   const [activeCategory, setActiveCategory] = useState('all');
-  const { addToCart, toggleWishlist, isInWishlist, setQuickViewProduct, formatPrice, toPersianDigits, allProducts, productsStatus, productsRefreshError, reloadProducts } = useShop();
+  const { addToCart, toggleWishlist, isInWishlist, setQuickViewProduct, formatPrice, toPersianDigits, allProducts, productsStatus, productsRefreshError, productsRefreshing, productsStale, reloadProducts } = useShop();
 
   const categories = [
     { id: 'all', label: 'همه داغ‌ترین‌ها' },
@@ -55,6 +55,7 @@ export const TrendingSection = () => {
         </div>
       </div>
 
+      {productsRefreshing && productsStale && allProducts.length > 0 && <p role="status" className="mb-5 text-sm text-slate-500 dark:text-slate-400">آخرین اطلاعات محصولات نمایش داده می‌شود؛ در حال به‌روزرسانی قیمت و موجودی…</p>}
       {productsRefreshError && (
         <div role="status" className="mb-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 text-sm text-slate-600 dark:text-slate-300">
           <p>{allProducts.length ? 'آخرین اطلاعات دریافت‌شده نمایش داده می‌شود؛ به‌روزرسانی انجام نشد.' : 'در حال حاضر امکان دریافت محصولات نیست. لطفاً دوباره تلاش کنید.'}</p>

@@ -2,7 +2,7 @@ from ipaddress import ip_network
 from typing import Literal
 from urllib.parse import urlsplit
 
-from pydantic import Field, SecretStr, model_validator
+from pydantic import Field, SecretStr, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -35,6 +35,31 @@ class Settings(BaseSettings):
     login_account_limit: int = 5
     email_account_limit: int = 3
     notify_password_change: bool = True
+
+    @field_validator("redis_url")
+    @classmethod
+    def validate_redis_url(cls, value: SecretStr | None) -> SecretStr | None:
+        if not value or not value.get_secret_value():
+            return None
+        raw = value.get_secret_value()
+        message = (
+            "REDIS_URL must be a Redis connection URL (redis:// or rediss://), "
+            "or a unix:/// socket URL. Copy the TCP connection URL, not an HTTPS REST URL, "
+            "API token, or redis-cli command."
+        )
+        try:
+            parts = urlsplit(raw)
+            valid = (
+                parts.scheme in {"redis", "rediss"}
+                and bool(parts.hostname)
+                and (parts.port is None or parts.port > 0)
+            ) or (parts.scheme == "unix" and not parts.netloc and parts.path.startswith("/"))
+            if not valid or parts.fragment or any(char.isspace() for char in raw):
+                raise ValueError(message)
+        except ValueError:
+            # URL parser exceptions can contain credentials; never propagate their text.
+            raise ValueError(message) from None
+        return value
 
     @model_validator(mode="after")
     def production_configuration(self):

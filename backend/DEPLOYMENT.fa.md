@@ -4,6 +4,36 @@
 مستقل قابل اجرا هستند. این فایل سرویس آنلاین ایجاد نمی‌کند. تنظیمات قبلی فقط با
 `DATABASE_URL` دیگر برای Production کافی نیست.
 
+## رفع خطاهای شروع Render
+
+اگر لاگ `Redis URL must specify one of the following schemes` را نشان می‌دهد، در
+**Render → nexora-api → Environment** مقدار `REDIS_URL` را اصلاح کنید. این برنامه
+به اتصال Redis از نوع TCP نیاز دارد؛ آدرس REST با `https://`، توکن تنها، یا دستور
+کامل `redis-cli` قابل استفاده نیست. نمونهٔ قالب اتصال امن:
+
+```text
+rediss://USERNAME:URL_ENCODED_PASSWORD@HOST:PORT
+```
+
+مقادیر واقعی را از ارائه‌دهندهٔ Redis بگیرید. در Upstash بخش **Connect → TCP** را
+انتخاب کنید؛ REST URL و REST Token جایگزین این اتصال نیستند.
+[راهنمای اتصال Upstash](https://upstash.com/docs/redis/troubleshooting/no_auth).
+مقدار را بدون کوتیشن و بدون پیشوند `REDIS_URL=` در فیلد Value بگذارید. تغییر
+`backend/.env` روی کامپیوتر، تنظیمات Render را تغییر نمی‌دهد. رمز یا URL کامل را
+در گیت یا پیام عمومی قرار ندهید. پس از ذخیره، سرویس را دوباره Deploy کنید.
+
+اگر `Can't locate revision identified by '0003'` دیده شد، نسخهٔ کد مستقرشده با
+نسخهٔ ثبت‌شدهٔ دیتابیس سازگار نیست. فایل
+`backend/alembic/versions/0003_security_reservations.py` در ریپو وجود دارد و
+Dockerfile پوشهٔ `alembic` را کپی می‌کند. commit و branch دیپلوی را بررسی کنید و
+نسخهٔ جدید دارای این فایل را Deploy کنید. لاگ‌های اجراهای قبلی را از آخرین Deploy
+جدا بررسی کنید. جدول `alembic_version` را دست‌کاری نکنید و برای رفع این خطا دیتابیس
+را پاک یا `stamp` نکنید.
+
+پس از وضعیت Live، پاسخ `/health` و JSON مسیر `/api/products` را بررسی کنید؛ سپس
+ورود به حساب را برای بررسی عملی اتصال Redis امتحان کنید. اعتبارسنجی قالب URL به
+تنهایی دسترسی شبکه یا صحیح بودن رمز را تأیید نمی‌کند.
+
 ## ارتقای سایت موجود
 
 از دیتابیس backup بگیرید و بازیابی آن را روی دیتابیس جدا امتحان کنید. migration

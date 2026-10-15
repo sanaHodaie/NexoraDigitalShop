@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="480" height="360" viewBox="0 0 480 360"><title>Demo accessory-hub illustration</title><defs>
+    <linearGradient id="metal" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f8fafc"/><stop offset=".45" stop-color="#b4c1d1"/><stop offset="1" stop-color="#64748b"/></linearGradient>
+    <linearGradient id="screen" x1="0" y1="1" x2="1" y2="0"><stop stop-color="#0b1835"/><stop offset=".48" stop-color="#2563eb"/><stop offset="1" stop-color="#b4c1d1"/></linearGradient>
+    <radialGradient id="orb"><stop stop-color="#eff6ff" stop-opacity=".9"/><stop offset="1" stop-color="#60a5fa" stop-opacity="0"/></radialGradient>
+    <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="9"/></filter>
+    <clipPath id="display"><rect x="186" y="50" width="130" height="254" rx="18"/></clipPath>
+    <clipPath id="computer-display"><rect x="100" y="70" width="280" height="172" rx="4"/></clipPath>
+  </defs><ellipse cx="240" cy="319" rx="135" ry="10" fill="#0f172a" opacity=".12" filter="url(#shadow)"/><g transform="rotate(-9 240 180)"><path d="M345 191 C417 169 387 59 262 70 L191 78" fill="none" stroke="#475569" stroke-width="12"/><rect x="136" y="65" width="62" height="28" rx="9" fill="url(#metal)" stroke="#94a3b8" stroke-width="2"/><rect x="117" y="71" width="25" height="16" rx="5" fill="#cbd5e1" stroke="#64748b"/><rect x="87" y="168" width="306" height="110" rx="23" fill="url(#metal)" stroke="#94a3b8" stroke-width="2"/><rect x="109" y="226" width="47" height="20" rx="3" fill="#1e293b"/><rect x="173" y="226" width="47" height="20" rx="3" fill="#1e293b"/><path d="M239 226 H294 L286 246 H247Z" fill="#1e293b"/><rect x="315" y="230" width="40" height="12" rx="6" fill="#1e293b"/></g></svg>

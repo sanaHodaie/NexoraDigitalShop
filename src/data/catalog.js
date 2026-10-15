@@ -1,4 +1,20 @@
 export const CATALOG_CATEGORIES = {
+  accessories: {
+    title: 'لوازم جانبی',
+    english: 'TECH ACCESSORIES',
+    description: 'جزئیات کوچک، تجربه‌ای بهتر؛ از شارژ و اتصال تا ابزارهای کاربردی میز کار و همراه‌های روزانه.',
+    image: '/assets/category-heroes/accessories.webp',
+    fallbackImage: '/assets/products/accessory-10.svg',
+    productIds: Array.from({ length: 10 }, (_, index) => `accessory-${String(index + 1).padStart(2, '0')}`),
+  },
+  wearables: {
+    title: 'پوشیدنی‌ها',
+    english: 'WATCHES & WEARABLES',
+    description: 'همراه سبک روزهای پرتحرک تو؛ ساعت‌های هوشمند و مچ‌بندهایی برای ارتباط، ورزش و برنامه‌های روزانه.',
+    image: '/assets/category-heroes/wearables.webp',
+    fallbackImage: '/assets/products/watch-01.svg',
+    productIds: Array.from({ length: 10 }, (_, index) => `watch-${String(index + 1).padStart(2, '0')}`),
+  },
   'smart-home': {
     title: 'خانه هوشمند',
     english: 'SMART HOME',

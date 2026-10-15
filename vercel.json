@@ -4,6 +4,12 @@
   "outputDirectory": "dist",
   "headers": [
     {
+      "source": "/api/products",
+      "headers": [
+        { "key": "x-vercel-enable-rewrite-caching", "value": "1" }
+      ]
+    },
+    {
       "source": "/(.*)",
       "headers": [
         {
