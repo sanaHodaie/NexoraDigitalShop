@@ -153,12 +153,34 @@ try {
   await until('location.pathname === "/" && Boolean(document.querySelector("#trending"))');
   await evaluate("document.querySelector('a[href=\"/category/gaming\"]').click()");
   await until('location.pathname === "/category/gaming" && document.querySelectorAll(".catalog-card").length === 10');
-  for (const category of ['gaming', 'smartphones', 'laptops', 'audio', 'smart-home', 'wearables', 'accessories']) {
+  for (const category of Object.keys(CATALOG_CATEGORIES)) {
     await command('Page.navigate', { url: `${base}/category/${category}` });
     await until(`document.querySelector('.catalog-hero-art img')?.getAttribute('src') === ${JSON.stringify(CATALOG_CATEGORIES[category].image)} && document.querySelector('.catalog-hero-art img').naturalWidth > 0`);
-    await until('document.querySelectorAll(".catalog-card").length === 10');
+    await until(`document.querySelectorAll(".catalog-card").length === ${CATALOG_CATEGORIES[category].productIds.length}`);
     await evaluate('[...document.querySelectorAll(".catalog-card img")].forEach(img => img.loading = "eager")');
+    if (category === 'drones') {
+      assert.ok(await evaluate(`(() => {
+        const img = document.querySelector('.catalog-hero-art img');
+        const canvas = document.createElement('canvas'); canvas.width = img.naturalWidth; canvas.height = img.naturalHeight;
+        const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0);
+        const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+        let clear = 0; for (let i = 3; i < pixels.length; i += 4) if (pixels[i] === 0) clear++;
+        return pixels[3] === 0 && clear / (canvas.width * canvas.height) > .3;
+      })()`), 'Drone hero has real transparency');
+    }
     await until('!document.querySelector(".catalog-image-fallback") && [...document.querySelectorAll(".catalog-card img")].every(img => img.complete && img.naturalWidth > 0)');
+    if (category === 'accessories') {
+      for (const id of ['02', '07', '08', '09']) {
+        assert.ok(await evaluate(`(() => {
+          const img = [...document.querySelectorAll('.catalog-card img')].find(i => i.src.endsWith('accessory-${id}.webp'));
+          const canvas = document.createElement('canvas'); canvas.width = img.naturalWidth; canvas.height = img.naturalHeight;
+          const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0);
+          const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+          let clear = 0; for (let i = 3; i < data.length; i += 4) if (data[i] === 0) clear++;
+          return clear / (canvas.width * canvas.height) > .5;
+        })()`), `Accessory ${id} background is transparent`);
+      }
+    }
     assert.equal(await evaluate('document.querySelectorAll(".catalog-switch a").length'), 1);
     for (const width of [320, 375, 480, 768, 1024, 1440]) {
       await command('Emulation.setDeviceMetricsOverride', { width, height: 1000, deviceScaleFactor: 1, mobile: false });
@@ -169,7 +191,7 @@ try {
       }
     }
     await command('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] });
-    await until('getComputedStyle(document.querySelector(".catalog-device-float")).animationName === "none"');
+    await until('Boolean(document.querySelector(".catalog-device-float")) && getComputedStyle(document.querySelector(".catalog-device-float")).animationName === "none"');
     await command('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'no-preference' }] });
     for (const width of [375, 1440]) {
       await command('Emulation.setDeviceMetricsOverride', { width, height: 1000, deviceScaleFactor: 1, mobile: false });
@@ -210,5 +232,36 @@ try {
   await evaluate("document.querySelector('.catalog-detail').click()");
   await until('document.querySelectorAll(".fixed.inset-0.z-50").length > 0');
   assert.deepEqual(errors, []);
-  console.log(`PASS: 10 products/category, 6 widths, light/dark, router/back/reload, hero images/alpha, reduced motion, brand filter and quick view. Screenshots: ${output}`);
+  await command('Page.navigate', { url: base });
+  await until('location.pathname === "/" && Boolean(document.querySelector("#trending"))');
+  await evaluate('window.__camerasNavigationCheck = 1');
+  await evaluate("document.querySelector('a[href=\"/category/cameras\"]').click()");
+  await until('location.pathname === "/category/cameras" && document.querySelectorAll(".catalog-card").length === 10');
+  assert.equal(await evaluate('window.__camerasNavigationCheck'), 1);
+  await until('document.querySelector(".catalog-hero-art img").naturalWidth > 0');
+  assert.ok(await evaluate(`(() => {
+    const img = document.querySelector('.catalog-hero-art img');
+    const canvas = document.createElement('canvas'); canvas.width = img.naturalWidth; canvas.height = img.naturalHeight;
+    const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0);
+    const pixels = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+    let clear = 0; for (let i = 3; i < pixels.length; i += 4) if (pixels[i] === 0) clear++;
+    return pixels[3] === 0 && clear / (canvas.width * canvas.height) > .3;
+  })()`), 'Camera hero has a real transparent background');
+  await evaluate("[...document.querySelectorAll('.catalog-brands button')].find(b => b.textContent === 'Canon').click()");
+  await until('document.querySelectorAll(".catalog-card").length === 3');
+  await evaluate("document.querySelector('.catalog-detail').click()");
+  await until('document.querySelectorAll(".fixed.inset-0.z-50").length > 0');
+  assert.deepEqual(errors, []);
+  await command('Page.navigate', { url: base });
+  await until('location.pathname === "/" && Boolean(document.querySelector("#trending"))');
+  await evaluate('window.__dronesNavigationCheck = 1');
+  await evaluate("document.querySelector('a[href=\"/category/drones\"]').click()");
+  await until('location.pathname === "/category/drones" && document.querySelectorAll(".catalog-card").length === 9');
+  assert.equal(await evaluate('window.__dronesNavigationCheck'), 1);
+  await evaluate("[...document.querySelectorAll('.catalog-brands button')].find(b => b.textContent === 'Autel').click()");
+  await until('document.querySelectorAll(".catalog-card").length === 1');
+  await evaluate("document.querySelector('.catalog-detail').click()");
+  await until('document.querySelectorAll(".fixed.inset-0.z-50").length > 0');
+  assert.deepEqual(errors, []);
+  console.log(`PASS: configured products/category, 6 widths, light/dark, router/back/reload, hero images/alpha, reduced motion, brand filter and quick view. Screenshots: ${output}`);
 } finally { socket?.close(); browser.kill(); }

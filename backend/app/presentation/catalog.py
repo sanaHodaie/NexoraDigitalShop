@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, Request, Response
 
+from app.application.shopping import CATALOG_LIMIT
 from app.infrastructure.rate_limit import enforce
 from app.presentation.dependencies import services
 from app.presentation.schemas import EmailInput
@@ -8,7 +9,7 @@ router = APIRouter(prefix="/api", tags=["catalog"])
 
 
 @router.get("/products")
-def products(q: str | None = None, category: str | None = None, limit: int = 100, svc=Depends(services)):
+def products(q: str | None = None, category: str | None = None, limit: int = CATALOG_LIMIT, svc=Depends(services)):
     return [p.public() for p in svc.shopping.products(q, category, limit)]
 
 

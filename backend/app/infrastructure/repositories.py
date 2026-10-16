@@ -5,6 +5,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session, selectinload
 
 from app.domain import entities as e
+from app.domain.catalog import RETIRED_PRODUCT_IDS
 from app.domain.errors import Conflict
 from app.infrastructure import models as m
 
@@ -74,16 +75,20 @@ class Products:
         )
 
     def get(self, pid):
+        if pid in RETIRED_PRODUCT_IDS:
+            return None
         return self.entity(self.db.get(m.Product, pid))
 
     def get_many(self, ids):
         return {
             row.id: self.entity(row)
-            for row in self.db.scalars(select(m.Product).where(m.Product.id.in_(ids)))
+            for row in self.db.scalars(select(m.Product).where(
+                m.Product.id.in_(ids), m.Product.id.not_in(RETIRED_PRODUCT_IDS)
+            ))
         }
 
     def search(self, query, category, limit):
-        q = select(m.Product)
+        q = select(m.Product).where(m.Product.id.not_in(RETIRED_PRODUCT_IDS))
         if query:
             q = q.where(
                 or_(
@@ -104,7 +109,7 @@ class Cart:
         return list(
             self.db.execute(
                 select(m.CartItem.product_id, m.CartItem.quantity)
-                .where(m.CartItem.user_id == uid)
+                .where(m.CartItem.user_id == uid, m.CartItem.product_id.not_in(RETIRED_PRODUCT_IDS))
                 .order_by(m.CartItem.product_id)
             )
         )
@@ -145,6 +150,8 @@ class Inventory:
         self.db = db
 
     def reserve(self, pid, quantity):
+        if pid in RETIRED_PRODUCT_IDS:
+            return False
         return (
             self.db.execute(
                 update(m.Product)

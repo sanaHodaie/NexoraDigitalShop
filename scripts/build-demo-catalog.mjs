@@ -92,6 +92,31 @@ const accessories = [
   ['هاب یوگرین Revodok 105', 'UGREEN Revodok 105 5-in-1 USB-C Hub', 'UGREEN', 29, 'هاب ۵ در ۱', 'خروجی HDMI تا 4K/30Hz', 'درگاه شارژ USB-C PD', '#b4c1d1', 'accessory-hub'],
 ];
 
+const cameras = [
+  ['دوربین کانن EOS R50 با لنز ۱۸–۴۵', 'Canon EOS R50 + RF-S 18-45mm F4.5-6.3 IS STM', 'Canon', 749, 'حسگر APS-C با ۲۴٫۲ مگاپیکسل', 'لنز کیت RF-S 18-45mm', 'مانت Canon RF', '#9baec6', 'camera-kit'],
+  ['دوربین کانن EOS R10 با لنز ۱۸–۴۵', 'Canon EOS R10 + RF-S 18-45mm F4.5-6.3 IS STM', 'Canon', 999, 'حسگر APS-C با ۲۴٫۲ مگاپیکسل', 'لنز کیت RF-S 18-45mm', 'مانت Canon RF', '#a5b8cc', 'camera-kit'],
+  ['دوربین سونی ZV-E10 با لنز ۱۶–۵۰', 'Sony ZV-E10 + E PZ 16-50mm F3.5-5.6 OSS', 'Sony', 699, 'حسگر APS-C با ۲۴٫۲ مگاپیکسل', 'لنز کیت E PZ 16-50mm OSS', 'مانت Sony E', '#9cabc2', 'camera-kit'],
+  ['دوربین سونی آلفا a6400 با لنز ۱۶–۵۰', 'Sony Alpha a6400 + E PZ 16-50mm F3.5-5.6 OSS', 'Sony', 899, 'حسگر APS-C با ۲۴٫۲ مگاپیکسل', 'لنز کیت E PZ 16-50mm OSS', 'مانت Sony E', '#b1bfd0', 'camera-kit'],
+  ['دوربین نیکون Z50 با لنز ۱۶–۵۰', 'Nikon Z50 + NIKKOR Z DX 16-50mm f/3.5-6.3 VR', 'Nikon', 949, 'حسگر DX با ۲۰٫۹ مگاپیکسل', 'لنز کیت Z DX 16-50mm VR', 'مانت Nikon Z', '#a7b8c5', 'camera-kit'],
+  ['دوربین فوجی‌فیلم X-S20 بدنه', 'Fujifilm X-S20 Body Only', 'Fujifilm', 1299, 'حسگر APS-C با ۲۶٫۱ مگاپیکسل', 'لرزش‌گیر داخلی بدنه', 'مانت Fujifilm X؛ بدون لنز', '#adb7ca', 'camera-body'],
+  ['لنز کانن RF 50mm F1.8 STM', 'Canon RF 50mm F1.8 STM', 'Canon', 199, 'فاصلهٔ کانونی ۵۰ میلی‌متر', 'دیافراگم f/1.8', 'مانت Canon RF', '#a6bbcf', 'camera-lens'],
+  ['لنز سونی FE 50mm F1.8', 'Sony FE 50mm F1.8 SEL50F18F', 'Sony', 249, 'فاصلهٔ کانونی ۵۰ میلی‌متر', 'دیافراگم f/1.8', 'مانت Sony E؛ پوشش فول‌فریم', '#9cacc5', 'camera-lens'],
+  ['لنز سیگما 30mm F1.4 DC DN برای سونی', 'Sigma 30mm F1.4 DC DN Contemporary Sony E', 'Sigma', 339, 'فاصلهٔ کانونی ۳۰ میلی‌متر', 'دیافراگم f/1.4', 'مانت Sony E؛ ویژهٔ APS-C', '#b4c3d0', 'camera-lens'],
+  ['لنز نیکون NIKKOR Z 40mm f/2', 'Nikon NIKKOR Z 40mm f/2', 'Nikon', 279, 'فاصلهٔ کانونی ۴۰ میلی‌متر', 'دیافراگم f/2', 'مانت Nikon Z؛ پوشش فول‌فریم', '#a7bad1', 'camera-lens'],
+];
+
+const drones = [
+  ['پهپاد دی‌جی‌آی Mini 4 Pro', 'DJI Mini 4 Pro', 'DJI', 759, 'حسگر ۱/۱٫۳ اینچ', 'فیلم‌برداری 4K', 'گیمبال سه‌محوره', '#bac9d8', 'drone-folding'],
+  ['پهپاد دی‌جی‌آی Mini 3', 'DJI Mini 3', 'DJI', 469, 'فیلم‌برداری 4K HDR', 'تصویربرداری عمودی واقعی', 'گیمبال سه‌محوره', '#c5d0da', 'drone-folding'],
+  ['پهپاد دی‌جی‌آی Mini 4K', 'DJI Mini 4K', 'DJI', 299, 'فیلم‌برداری 4K/30fps', 'گیمبال سه‌محوره', 'بازوهای تاشو', '#b7c5d6', 'drone-folding'],
+  ['پهپاد دی‌جی‌آی Air 3', 'DJI Air 3', 'DJI', 1099, 'دو دوربین واید و تله', 'عکاسی ۴۸ مگاپیکسل', 'گیمبال سه‌محوره', '#9eaec2', 'drone-folding'],
+  ['پهپاد دی‌جی‌آی Air 3S', 'DJI Air 3S', 'DJI', 1199, 'حسگر اصلی یک اینچ', 'دو دوربین واید و تله', 'فیلم‌برداری 4K HDR', '#a6b6cb', 'drone-folding'],
+  ['پهپاد دی‌جی‌آی Neo', 'DJI Neo', 'DJI', 199, 'وزن حدود ۱۳۵ گرم', 'فیلم‌برداری 4K/30fps', 'بدنهٔ جمع‌وجور', '#d1dbe3', 'drone-guarded'],
+  ['پهپاد دی‌جی‌آی Flip', 'DJI Flip', 'DJI', 439, 'حسگر ۱/۱٫۳ اینچ', 'فیلم‌برداری 4K/60fps HDR', 'محافظ کامل ملخ‌ها', '#bbc9d8', 'drone-guarded'],
+  ['پهپاد دی‌جی‌آی Avata 2', 'DJI Avata 2', 'DJI', 489, 'پهپاد FPV', 'فیلم‌برداری 4K/60fps', 'محافظ یکپارچهٔ ملخ‌ها', '#9cacc0', 'drone-guarded'],
+  ['پهپاد اتل EVO Nano پلاس', 'Autel EVO Nano+ Orange', 'Autel', 649, 'دوربین ۵۰ مگاپیکسل', 'فیلم‌برداری 4K/30fps', 'بازوهای تاشو', '#e2ab7b', 'drone-folding'],
+];
+
 function illustration(kind, tint, index) {
   const defs = `<defs>
     <linearGradient id="metal" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#f8fafc"/><stop offset=".45" stop-color="${tint}"/><stop offset="1" stop-color="#64748b"/></linearGradient>
@@ -104,7 +129,20 @@ function illustration(kind, tint, index) {
   const pattern = `<ellipse cx="256" cy="${148 + index * 3}" rx="140" ry="62" fill="none" stroke="#93c5fd" stroke-width="25" opacity=".35" transform="rotate(-38 256 180)"/><ellipse cx="285" cy="208" rx="125" ry="44" fill="none" stroke="#dbeafe" stroke-width="13" opacity=".45" transform="rotate(-38 285 208)"/>`;
   const wallpaper = kind === 'phone' ? pattern : `<g clip-path="url(#computer-display)">${pattern}</g>`;
   let device;
-  if (kind.startsWith('accessory-')) {
+  if (kind.startsWith('drone-')) {
+    const rotors = [[111, 112], [369, 112], [103, 253], [377, 253]];
+    const arms = '<path d="M211 155 L111 112 M269 155 L369 112 M209 216 L103 253 M271 216 L377 253" fill="none" stroke="#64748b" stroke-width="24" stroke-linecap="round"/>';
+    const blades = rotors.map(([x, y], i) => `<g transform="translate(${x} ${y})">${kind === 'drone-guarded' ? '<ellipse rx="70" ry="44" fill="none" stroke="#94a3b8" stroke-width="7"/>' : ''}<ellipse rx="19" ry="15" fill="#334155"/><g transform="rotate(${i % 2 ? -24 : 24})"><ellipse rx="67" ry="9" fill="#1e293b"/><ellipse rx="8" ry="7" fill="#94a3b8"/></g></g>`).join('');
+    device = `<ellipse cx="240" cy="323" rx="143" ry="9" fill="#0f172a" opacity=".12" filter="url(#shadow)"/><g transform="rotate(-6 240 180)">${arms}<path d="M213 98 Q240 85 267 98 L293 209 Q294 242 267 254 H213 Q186 242 187 209Z" fill="url(#metal)" stroke="#94a3b8" stroke-width="2"/><path d="M216 118 H264 L274 193 H206Z" fill="${tint}"/><rect x="219" y="232" width="42" height="39" rx="12" fill="#334155"/><circle cx="240" cy="253" r="12" fill="#0f172a" stroke="#64748b" stroke-width="3"/><circle cx="237" cy="250" r="4" fill="#60a5fa"/>${blades}</g>`;
+  } else if (kind.startsWith('camera-')) {
+    const glass = '<circle cx="256" cy="192" r="59" fill="#0b1835" stroke="#64748b" stroke-width="8"/><circle cx="256" cy="192" r="43" fill="url(#screen)"/><circle cx="244" cy="179" r="16" fill="#93c5fd" opacity=".35"/><circle cx="256" cy="192" r="23" fill="#0f172a" opacity=".7"/>';
+    const body = '<path d="M91 124 H178 L195 97 H274 L291 124 H375 Q394 124 394 145 V273 Q394 291 375 291 H91 Q73 291 73 273 V145 Q73 124 91 124Z" fill="#334155" stroke="#64748b" stroke-width="3"/><rect x="90" y="135" width="70" height="142" rx="21" fill="#1e293b"/><rect x="108" y="113" width="39" height="12" rx="4" fill="url(#metal)"/><rect x="207" y="107" width="52" height="17" rx="4" fill="#0f172a"/><circle cx="354" cy="148" r="6" fill="#cbd5e1"/>';
+    const lens = kind === 'camera-body'
+      ? '<circle cx="256" cy="201" r="68" fill="#94a3b8"/><circle cx="256" cy="201" r="57" fill="#111827"/><rect x="221" y="177" width="70" height="47" rx="3" fill="url(#screen)"/>'
+      : `<circle cx="256" cy="192" r="82" fill="#1e293b" stroke="${tint}" stroke-width="4"/><circle cx="256" cy="192" r="72" fill="none" stroke="#475569" stroke-width="8" stroke-dasharray="3 5"/>${glass}`;
+    const standalone = `<path d="M174 85 H306 L329 236 Q329 277 240 277 Q151 277 151 236Z" fill="#334155" stroke="#64748b" stroke-width="3"/><path d="M164 155 H316 M159 187 H321 M155 217 H325" stroke="#94a3b8" stroke-width="5"/><ellipse cx="240" cy="86" rx="66" ry="27" fill="#0f172a" stroke="${tint}" stroke-width="5"/><ellipse cx="240" cy="86" rx="51" ry="19" fill="url(#screen)"/>`;
+    device = `<ellipse cx="240" cy="315" rx="136" ry="9" fill="#0f172a" opacity=".12" filter="url(#shadow)"/><g transform="rotate(-8 240 180)">${kind === 'camera-lens' ? standalone : body + lens}</g>`;
+  } else if (kind.startsWith('accessory-')) {
     const shell = 'fill="url(#metal)" stroke="#94a3b8" stroke-width="2"';
     const shapes = {
       'accessory-mouse': `<rect x="158" y="61" width="164" height="232" rx="78" ${shell}/><path d="M240 66 v103 M161 162 Q240 181 319 162" fill="none" stroke="#64748b" stroke-width="3"/><rect x="230" y="100" width="20" height="43" rx="10" fill="#334155"/><path d="M183 205 Q178 247 198 265" fill="none" stroke="#f8fafc" stroke-width="4" opacity=".6"/>`,
@@ -181,6 +219,20 @@ function illustration(kind, tint, index) {
 }
 
 const products = [];
+// Uploaded filenames do not always match catalogue IDs; preserve the original
+// files and map the visually checked models to their corresponding products.
+const photoFiles = {
+  'accessory-03': 'accessory-04',
+  'accessory-04': 'accessory-03',
+  'camera-01': 'camera-02',
+  'camera-02': 'camera-01',
+  'camera-03': 'camera-04',
+  'camera-04': 'camera-06',
+  'camera-05': 'camera-03',
+  'camera-06': 'camera-05',
+  'drone-08': 'drone-09',
+  'drone-09': 'drone-08',
+};
 const assets = new URL('../public/assets/products/', import.meta.url);
 await mkdir(assets, { recursive: true });
 const categoryLabels = { smartphones: 'گوشی هوشمند', laptops: 'لپ‌تاپ و پی‌سی', audio: 'تجهیزات صوتی', gaming: 'گیمینگ و کنسول', 'smart-home': 'خانه هوشمند' };
@@ -191,15 +243,19 @@ categoryLabels.wearables = 'پوشیدنی‌ها';
 Object.assign(kindLabels, { 'watch-square': 'ساعت هوشمند', 'watch-round': 'ساعت هوشمند', 'fitness-band': 'مچ‌بند هوشمند' });
 categoryLabels.accessories = 'لوازم جانبی';
 Object.assign(kindLabels, { 'accessory-mouse': 'ماوس', 'accessory-keyboard': 'کیبورد', 'accessory-charger': 'شارژر', 'accessory-powerbank': 'پاوربانک', 'accessory-cable': 'کابل', 'accessory-ssd': 'حافظهٔ قابل‌حمل', 'accessory-hub': 'هاب USB-C' });
-for (const [category, rows, prefix] of [['smartphones', phones, 'phone'], ['laptops', computers, 'computer'], ['audio', audio, 'audio'], ['gaming', gaming, 'gaming'], ['smart-home', smartHome, 'home'], ['wearables', wearables, 'watch'], ['accessories', accessories, 'accessory']]) {
+categoryLabels.cameras = 'دوربین و لنز';
+Object.assign(kindLabels, { 'camera-kit': 'دوربین با لنز کیت', 'camera-body': 'بدنهٔ دوربین', 'camera-lens': 'لنز' });
+categoryLabels.drones = 'پهپاد و کوادکوپتر';
+Object.assign(kindLabels, { 'drone-folding': 'پهپاد دوربین‌دار', 'drone-guarded': 'کوادکوپتر کامپکت' });
+for (const [category, rows, prefix] of [['smartphones', phones, 'phone'], ['laptops', computers, 'computer'], ['audio', audio, 'audio'], ['gaming', gaming, 'gaming'], ['smart-home', smartHome, 'home'], ['wearables', wearables, 'watch'], ['accessories', accessories, 'accessory'], ['cameras', cameras, 'camera'], ['drones', drones, 'drone']]) {
   for (const [index, row] of rows.entries()) {
     const [name, nameEn, brand, price, ...details] = row;
     const [first, second, third, tint, kind = 'phone'] = details;
     const id = `${prefix}-${String(index + 1).padStart(2, '0')}`;
     const kindLabel = kindLabels[kind];
-    const hasPhoto = ['gaming', 'smartphones', 'smart-home', 'audio', 'laptops', 'wearables'].includes(category);
+    const imageId = photoFiles[id] ?? id;
     products.push({ id, name, nameEn, brand, category, categoryFa: categoryLabels[category], kindLabel,
-      price, rating: 0, reviewCount: 0, image: `/assets/products/${id}.${hasPhoto ? 'webp' : 'svg'}`, specs: [first, second, third],
+      price, rating: 0, reviewCount: 0, image: `/assets/products/${imageId}.webp`, specs: [first, second, third],
       description: `${name}؛ ${first}، ${second} و ${third}. پیکربندی و قیمت نمونه برای تست فروشگاه.`, inStock: true, demo: true });
     await writeFile(new URL(`${id}.svg`, assets), illustration(kind, tint, index), 'utf8');
   }

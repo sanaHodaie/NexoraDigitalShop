@@ -1270,7 +1270,7 @@
     "price": 99,
     "rating": 0,
     "reviewCount": 0,
-    "image": "/assets/products/accessory-01.svg",
+    "image": "/assets/products/accessory-01.webp",
     "specs": [
       "اتصال بلوتوث",
       "طراحی ارگونومیک",
@@ -1291,7 +1291,7 @@
     "price": 29,
     "rating": 0,
     "reviewCount": 0,
-    "image": "/assets/products/accessory-02.svg",
+    "image": "/assets/products/accessory-02.webp",
     "specs": [
       "اتصال بلوتوث",
       "جابه‌جایی بین ۳ دستگاه",
@@ -1312,7 +1312,7 @@
     "price": 39,
     "rating": 0,
     "reviewCount": 0,
-    "image": "/assets/products/accessory-03.svg",
+    "image": "/assets/products/accessory-04.webp",
     "specs": [
       "اتصال بلوتوث",
       "طراحی جمع‌وجور",
@@ -1333,7 +1333,7 @@
     "price": 99,
     "rating": 0,
     "reviewCount": 0,
-    "image": "/assets/products/accessory-04.svg",
+    "image": "/assets/products/accessory-03.webp",
     "specs": [
       "نور پس‌زمینهٔ هوشمند",
       "طراحی بدون بخش اعداد",
@@ -1354,7 +1354,7 @@
     "price": 25,
     "rating": 0,
     "reviewCount": 0,
-    "image": "/assets/products/accessory-05.svg",
+    "image": "/assets/products/accessory-05.webp",
     "specs": [
       "توان حداکثر ۳۰ وات",
       "درگاه USB-C",
@@ -1375,7 +1375,7 @@
     "price": 129,
     "rating": 0,
     "reviewCount": 0,
-    "image": "/assets/products/accessory-06.svg",
+    "image": "/assets/products/accessory-06.webp",
     "specs": [
       "ظرفیت ۲۴۰۰۰ میلی‌آمپرساعت",
       "خروجی USB-C تا ۱۴۰ وات",
@@ -1396,7 +1396,7 @@
     "price": 19,
     "rating": 0,
     "reviewCount": 0,
-    "image": "/assets/products/accessory-07.svg",
+    "image": "/assets/products/accessory-07.webp",
     "specs": [
       "توان ۲۰ وات",
       "درگاه USB-C",
@@ -1417,7 +1417,7 @@
     "price": 19,
     "rating": 0,
     "reviewCount": 0,
-    "image": "/assets/products/accessory-08.svg",
+    "image": "/assets/products/accessory-08.webp",
     "specs": [
       "طول ۱ متر",
       "دو سر USB-C",
@@ -1438,7 +1438,7 @@
     "price": 99,
     "rating": 0,
     "reviewCount": 0,
-    "image": "/assets/products/accessory-09.svg",
+    "image": "/assets/products/accessory-09.webp",
     "specs": [
       "ظرفیت ۱ ترابایت",
       "رابط USB 3.2 Gen 2",
@@ -1459,13 +1459,412 @@
     "price": 29,
     "rating": 0,
     "reviewCount": 0,
-    "image": "/assets/products/accessory-10.svg",
+    "image": "/assets/products/accessory-10.webp",
     "specs": [
       "هاب ۵ در ۱",
       "خروجی HDMI تا 4K/30Hz",
       "درگاه شارژ USB-C PD"
     ],
     "description": "هاب یوگرین Revodok 105؛ هاب ۵ در ۱، خروجی HDMI تا 4K/30Hz و درگاه شارژ USB-C PD. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "camera-01",
+    "name": "دوربین کانن EOS R50 با لنز ۱۸–۴۵",
+    "nameEn": "Canon EOS R50 + RF-S 18-45mm F4.5-6.3 IS STM",
+    "brand": "Canon",
+    "category": "cameras",
+    "categoryFa": "دوربین و لنز",
+    "kindLabel": "دوربین با لنز کیت",
+    "price": 749,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/camera-02.webp",
+    "specs": [
+      "حسگر APS-C با ۲۴٫۲ مگاپیکسل",
+      "لنز کیت RF-S 18-45mm",
+      "مانت Canon RF"
+    ],
+    "description": "دوربین کانن EOS R50 با لنز ۱۸–۴۵؛ حسگر APS-C با ۲۴٫۲ مگاپیکسل، لنز کیت RF-S 18-45mm و مانت Canon RF. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "camera-02",
+    "name": "دوربین کانن EOS R10 با لنز ۱۸–۴۵",
+    "nameEn": "Canon EOS R10 + RF-S 18-45mm F4.5-6.3 IS STM",
+    "brand": "Canon",
+    "category": "cameras",
+    "categoryFa": "دوربین و لنز",
+    "kindLabel": "دوربین با لنز کیت",
+    "price": 999,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/camera-01.webp",
+    "specs": [
+      "حسگر APS-C با ۲۴٫۲ مگاپیکسل",
+      "لنز کیت RF-S 18-45mm",
+      "مانت Canon RF"
+    ],
+    "description": "دوربین کانن EOS R10 با لنز ۱۸–۴۵؛ حسگر APS-C با ۲۴٫۲ مگاپیکسل، لنز کیت RF-S 18-45mm و مانت Canon RF. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "camera-03",
+    "name": "دوربین سونی ZV-E10 با لنز ۱۶–۵۰",
+    "nameEn": "Sony ZV-E10 + E PZ 16-50mm F3.5-5.6 OSS",
+    "brand": "Sony",
+    "category": "cameras",
+    "categoryFa": "دوربین و لنز",
+    "kindLabel": "دوربین با لنز کیت",
+    "price": 699,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/camera-04.webp",
+    "specs": [
+      "حسگر APS-C با ۲۴٫۲ مگاپیکسل",
+      "لنز کیت E PZ 16-50mm OSS",
+      "مانت Sony E"
+    ],
+    "description": "دوربین سونی ZV-E10 با لنز ۱۶–۵۰؛ حسگر APS-C با ۲۴٫۲ مگاپیکسل، لنز کیت E PZ 16-50mm OSS و مانت Sony E. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "camera-04",
+    "name": "دوربین سونی آلفا a6400 با لنز ۱۶–۵۰",
+    "nameEn": "Sony Alpha a6400 + E PZ 16-50mm F3.5-5.6 OSS",
+    "brand": "Sony",
+    "category": "cameras",
+    "categoryFa": "دوربین و لنز",
+    "kindLabel": "دوربین با لنز کیت",
+    "price": 899,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/camera-06.webp",
+    "specs": [
+      "حسگر APS-C با ۲۴٫۲ مگاپیکسل",
+      "لنز کیت E PZ 16-50mm OSS",
+      "مانت Sony E"
+    ],
+    "description": "دوربین سونی آلفا a6400 با لنز ۱۶–۵۰؛ حسگر APS-C با ۲۴٫۲ مگاپیکسل، لنز کیت E PZ 16-50mm OSS و مانت Sony E. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "camera-05",
+    "name": "دوربین نیکون Z50 با لنز ۱۶–۵۰",
+    "nameEn": "Nikon Z50 + NIKKOR Z DX 16-50mm f/3.5-6.3 VR",
+    "brand": "Nikon",
+    "category": "cameras",
+    "categoryFa": "دوربین و لنز",
+    "kindLabel": "دوربین با لنز کیت",
+    "price": 949,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/camera-03.webp",
+    "specs": [
+      "حسگر DX با ۲۰٫۹ مگاپیکسل",
+      "لنز کیت Z DX 16-50mm VR",
+      "مانت Nikon Z"
+    ],
+    "description": "دوربین نیکون Z50 با لنز ۱۶–۵۰؛ حسگر DX با ۲۰٫۹ مگاپیکسل، لنز کیت Z DX 16-50mm VR و مانت Nikon Z. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "camera-06",
+    "name": "دوربین فوجی‌فیلم X-S20 بدنه",
+    "nameEn": "Fujifilm X-S20 Body Only",
+    "brand": "Fujifilm",
+    "category": "cameras",
+    "categoryFa": "دوربین و لنز",
+    "kindLabel": "بدنهٔ دوربین",
+    "price": 1299,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/camera-05.webp",
+    "specs": [
+      "حسگر APS-C با ۲۶٫۱ مگاپیکسل",
+      "لرزش‌گیر داخلی بدنه",
+      "مانت Fujifilm X؛ بدون لنز"
+    ],
+    "description": "دوربین فوجی‌فیلم X-S20 بدنه؛ حسگر APS-C با ۲۶٫۱ مگاپیکسل، لرزش‌گیر داخلی بدنه و مانت Fujifilm X؛ بدون لنز. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "camera-07",
+    "name": "لنز کانن RF 50mm F1.8 STM",
+    "nameEn": "Canon RF 50mm F1.8 STM",
+    "brand": "Canon",
+    "category": "cameras",
+    "categoryFa": "دوربین و لنز",
+    "kindLabel": "لنز",
+    "price": 199,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/camera-07.webp",
+    "specs": [
+      "فاصلهٔ کانونی ۵۰ میلی‌متر",
+      "دیافراگم f/1.8",
+      "مانت Canon RF"
+    ],
+    "description": "لنز کانن RF 50mm F1.8 STM؛ فاصلهٔ کانونی ۵۰ میلی‌متر، دیافراگم f/1.8 و مانت Canon RF. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "camera-08",
+    "name": "لنز سونی FE 50mm F1.8",
+    "nameEn": "Sony FE 50mm F1.8 SEL50F18F",
+    "brand": "Sony",
+    "category": "cameras",
+    "categoryFa": "دوربین و لنز",
+    "kindLabel": "لنز",
+    "price": 249,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/camera-08.webp",
+    "specs": [
+      "فاصلهٔ کانونی ۵۰ میلی‌متر",
+      "دیافراگم f/1.8",
+      "مانت Sony E؛ پوشش فول‌فریم"
+    ],
+    "description": "لنز سونی FE 50mm F1.8؛ فاصلهٔ کانونی ۵۰ میلی‌متر، دیافراگم f/1.8 و مانت Sony E؛ پوشش فول‌فریم. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "camera-09",
+    "name": "لنز سیگما 30mm F1.4 DC DN برای سونی",
+    "nameEn": "Sigma 30mm F1.4 DC DN Contemporary Sony E",
+    "brand": "Sigma",
+    "category": "cameras",
+    "categoryFa": "دوربین و لنز",
+    "kindLabel": "لنز",
+    "price": 339,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/camera-09.webp",
+    "specs": [
+      "فاصلهٔ کانونی ۳۰ میلی‌متر",
+      "دیافراگم f/1.4",
+      "مانت Sony E؛ ویژهٔ APS-C"
+    ],
+    "description": "لنز سیگما 30mm F1.4 DC DN برای سونی؛ فاصلهٔ کانونی ۳۰ میلی‌متر، دیافراگم f/1.4 و مانت Sony E؛ ویژهٔ APS-C. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "camera-10",
+    "name": "لنز نیکون NIKKOR Z 40mm f/2",
+    "nameEn": "Nikon NIKKOR Z 40mm f/2",
+    "brand": "Nikon",
+    "category": "cameras",
+    "categoryFa": "دوربین و لنز",
+    "kindLabel": "لنز",
+    "price": 279,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/camera-10.webp",
+    "specs": [
+      "فاصلهٔ کانونی ۴۰ میلی‌متر",
+      "دیافراگم f/2",
+      "مانت Nikon Z؛ پوشش فول‌فریم"
+    ],
+    "description": "لنز نیکون NIKKOR Z 40mm f/2؛ فاصلهٔ کانونی ۴۰ میلی‌متر، دیافراگم f/2 و مانت Nikon Z؛ پوشش فول‌فریم. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "drone-01",
+    "name": "پهپاد دی‌جی‌آی Mini 4 Pro",
+    "nameEn": "DJI Mini 4 Pro",
+    "brand": "DJI",
+    "category": "drones",
+    "categoryFa": "پهپاد و کوادکوپتر",
+    "kindLabel": "پهپاد دوربین‌دار",
+    "price": 759,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/drone-01.webp",
+    "specs": [
+      "حسگر ۱/۱٫۳ اینچ",
+      "فیلم‌برداری 4K",
+      "گیمبال سه‌محوره"
+    ],
+    "description": "پهپاد دی‌جی‌آی Mini 4 Pro؛ حسگر ۱/۱٫۳ اینچ، فیلم‌برداری 4K و گیمبال سه‌محوره. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "drone-02",
+    "name": "پهپاد دی‌جی‌آی Mini 3",
+    "nameEn": "DJI Mini 3",
+    "brand": "DJI",
+    "category": "drones",
+    "categoryFa": "پهپاد و کوادکوپتر",
+    "kindLabel": "پهپاد دوربین‌دار",
+    "price": 469,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/drone-02.webp",
+    "specs": [
+      "فیلم‌برداری 4K HDR",
+      "تصویربرداری عمودی واقعی",
+      "گیمبال سه‌محوره"
+    ],
+    "description": "پهپاد دی‌جی‌آی Mini 3؛ فیلم‌برداری 4K HDR، تصویربرداری عمودی واقعی و گیمبال سه‌محوره. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "drone-03",
+    "name": "پهپاد دی‌جی‌آی Mini 4K",
+    "nameEn": "DJI Mini 4K",
+    "brand": "DJI",
+    "category": "drones",
+    "categoryFa": "پهپاد و کوادکوپتر",
+    "kindLabel": "پهپاد دوربین‌دار",
+    "price": 299,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/drone-03.webp",
+    "specs": [
+      "فیلم‌برداری 4K/30fps",
+      "گیمبال سه‌محوره",
+      "بازوهای تاشو"
+    ],
+    "description": "پهپاد دی‌جی‌آی Mini 4K؛ فیلم‌برداری 4K/30fps، گیمبال سه‌محوره و بازوهای تاشو. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "drone-04",
+    "name": "پهپاد دی‌جی‌آی Air 3",
+    "nameEn": "DJI Air 3",
+    "brand": "DJI",
+    "category": "drones",
+    "categoryFa": "پهپاد و کوادکوپتر",
+    "kindLabel": "پهپاد دوربین‌دار",
+    "price": 1099,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/drone-04.webp",
+    "specs": [
+      "دو دوربین واید و تله",
+      "عکاسی ۴۸ مگاپیکسل",
+      "گیمبال سه‌محوره"
+    ],
+    "description": "پهپاد دی‌جی‌آی Air 3؛ دو دوربین واید و تله، عکاسی ۴۸ مگاپیکسل و گیمبال سه‌محوره. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "drone-05",
+    "name": "پهپاد دی‌جی‌آی Air 3S",
+    "nameEn": "DJI Air 3S",
+    "brand": "DJI",
+    "category": "drones",
+    "categoryFa": "پهپاد و کوادکوپتر",
+    "kindLabel": "پهپاد دوربین‌دار",
+    "price": 1199,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/drone-05.webp",
+    "specs": [
+      "حسگر اصلی یک اینچ",
+      "دو دوربین واید و تله",
+      "فیلم‌برداری 4K HDR"
+    ],
+    "description": "پهپاد دی‌جی‌آی Air 3S؛ حسگر اصلی یک اینچ، دو دوربین واید و تله و فیلم‌برداری 4K HDR. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "drone-06",
+    "name": "پهپاد دی‌جی‌آی Neo",
+    "nameEn": "DJI Neo",
+    "brand": "DJI",
+    "category": "drones",
+    "categoryFa": "پهپاد و کوادکوپتر",
+    "kindLabel": "کوادکوپتر کامپکت",
+    "price": 199,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/drone-06.webp",
+    "specs": [
+      "وزن حدود ۱۳۵ گرم",
+      "فیلم‌برداری 4K/30fps",
+      "بدنهٔ جمع‌وجور"
+    ],
+    "description": "پهپاد دی‌جی‌آی Neo؛ وزن حدود ۱۳۵ گرم، فیلم‌برداری 4K/30fps و بدنهٔ جمع‌وجور. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "drone-07",
+    "name": "پهپاد دی‌جی‌آی Flip",
+    "nameEn": "DJI Flip",
+    "brand": "DJI",
+    "category": "drones",
+    "categoryFa": "پهپاد و کوادکوپتر",
+    "kindLabel": "کوادکوپتر کامپکت",
+    "price": 439,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/drone-07.webp",
+    "specs": [
+      "حسگر ۱/۱٫۳ اینچ",
+      "فیلم‌برداری 4K/60fps HDR",
+      "محافظ کامل ملخ‌ها"
+    ],
+    "description": "پهپاد دی‌جی‌آی Flip؛ حسگر ۱/۱٫۳ اینچ، فیلم‌برداری 4K/60fps HDR و محافظ کامل ملخ‌ها. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "drone-08",
+    "name": "پهپاد دی‌جی‌آی Avata 2",
+    "nameEn": "DJI Avata 2",
+    "brand": "DJI",
+    "category": "drones",
+    "categoryFa": "پهپاد و کوادکوپتر",
+    "kindLabel": "کوادکوپتر کامپکت",
+    "price": 489,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/drone-09.webp",
+    "specs": [
+      "پهپاد FPV",
+      "فیلم‌برداری 4K/60fps",
+      "محافظ یکپارچهٔ ملخ‌ها"
+    ],
+    "description": "پهپاد دی‌جی‌آی Avata 2؛ پهپاد FPV، فیلم‌برداری 4K/60fps و محافظ یکپارچهٔ ملخ‌ها. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "drone-09",
+    "name": "پهپاد اتل EVO Nano پلاس",
+    "nameEn": "Autel EVO Nano+ Orange",
+    "brand": "Autel",
+    "category": "drones",
+    "categoryFa": "پهپاد و کوادکوپتر",
+    "kindLabel": "پهپاد دوربین‌دار",
+    "price": 649,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/drone-08.webp",
+    "specs": [
+      "دوربین ۵۰ مگاپیکسل",
+      "فیلم‌برداری 4K/30fps",
+      "بازوهای تاشو"
+    ],
+    "description": "پهپاد اتل EVO Nano پلاس؛ دوربین ۵۰ مگاپیکسل، فیلم‌برداری 4K/30fps و بازوهای تاشو. پیکربندی و قیمت نمونه برای تست فروشگاه.",
     "inStock": true,
     "demo": true
   }

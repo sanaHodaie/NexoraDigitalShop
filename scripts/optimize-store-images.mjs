@@ -55,11 +55,14 @@ try {
   const { readdir, stat } = await import('node:fs/promises');
   const sources = [
     ...(await readdir('public/assets')).filter(f => f.endsWith('.jpg')).map(f => ['public/assets/' + f, f.startsWith('hero_') ? 1600 : 800]),
-    ...['smartphones', 'laptops', 'audio', 'gaming', 'smart-home', 'wearables', 'accessories'].map(f => ['public/assets/category-heroes/' + f + '.png', 800]),
+    ...['smartphones', 'laptops', 'audio', 'gaming', 'smart-home', 'wearables', 'accessories', 'cameras', 'drones'].map(f => ['public/assets/category-heroes/' + f + '.png', 800]),
     ...['auth-headphones', 'auth-earbuds', 'account-phone'].map(f => ['src/assets/images/' + f + '.png', 800]),
   ];
   let before = 0, after = 0;
-  for (const [file, maxWidth] of sources) {
+  // Optional exact source path limits conversion to a newly added asset.
+  const selected = process.argv[2] ? sources.filter(([file]) => file === process.argv[2]) : sources;
+  assert.ok(selected.length, 'No matching image source');
+  for (const [file, maxWidth] of selected) {
     const source = await readFile(file);
     const type = file.endsWith('.png') ? 'png' : 'jpeg';
     const encoded = await evaluate(`(async () => {

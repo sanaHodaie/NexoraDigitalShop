@@ -1,16 +1,18 @@
 from app.domain.errors import BusinessError, Conflict
 
+CATALOG_LIMIT = 200
+
 
 class Shopping:
     def __init__(self, uow):
         self.uow = uow
 
-    def products(self, query=None, category=None, limit=100):
+    def products(self, query=None, category=None, limit=CATALOG_LIMIT):
         query = query.strip() if query else None
         if query and len(query) > 100:
             raise BusinessError(400, "Search too long")
         with self.uow() as tx:
-            return tx.products.search(query, category, max(1, min(limit, 100)))
+            return tx.products.search(query, category, max(1, min(limit, CATALOG_LIMIT)))
 
     def product(self, pid):
         with self.uow() as tx:

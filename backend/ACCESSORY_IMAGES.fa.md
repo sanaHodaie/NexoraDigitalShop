@@ -1,14 +1,17 @@
 # تصاویر لوازم جانبی
 
 مسیر صفحه: `/category/accessories`. ده محصول با قیمت نمونه برای تست ثبت شده‌اند.
-عکس‌ها را با نام دقیق زیر در `public/assets/products/` قرار دهید:
+هر ده عکس متصل‌اند. نگاشت فعلی فایل‌های آپلودشده در `public/assets/products/`:
+
+پس‌زمینهٔ عکس‌های ۰۲، ۰۷، ۰۸ و ۰۹ حذف شده و آلفای شفاف دارند؛ در کارت‌ها
+روی زمینهٔ سفید نمایش داده می‌شوند. شرح ویرایش در `accessory-cutouts.prompt.md` است.
 
 | محصول | نام فایل |
 | --- | --- |
 | Logitech MX Master 3S | `accessory-01.webp` |
 | Logitech Pebble Mouse 2 M350s | `accessory-02.webp` |
-| Logitech Pebble Keys 2 K380s | `accessory-03.webp` |
-| Logitech MX Keys Mini | `accessory-04.webp` |
+| Logitech Pebble Keys 2 K380s | `accessory-04.webp` |
+| Logitech MX Keys Mini | `accessory-03.webp` |
 | Anker 511 Charger Nano 3 30W A2147 | `accessory-05.webp` |
 | Anker 737 Power Bank 24K A1289 | `accessory-06.webp` |
 | Apple 20W USB-C Power Adapter | `accessory-07.webp` |
@@ -23,10 +26,10 @@
 شارژ به دستگاه، کابل و آداپتور سازگار وابسته است. قیمت‌های سایت قیمت روز نیستند.
 تغییر پسوند JPEG به WebP کافی نیست؛ تصویر باید واقعاً به WebP تبدیل شود.
 
-فعلاً کارت‌ها به SVGهای محلی اشاره می‌کنند. پس از آماده‌شدن عکس‌ها، مسیر
-در `scripts/build-demo-catalog.mjs` و داده‌های تولیدشده، به‌علاوهٔ فهرست
-`PHOTO_PRODUCT_IDS` در `backend/app/seed.py` به‌روز می‌شود؛ مکانیزم فعلی
-seed فقط تصویر جایگزین اولیه را تغییر می‌دهد و قیمت و موجودی حفظ می‌شود.
+فایل دو کیبورد جابه‌جا نام‌گذاری شده بود؛ نگاشت در `photoFiles` فایل
+`scripts/build-demo-catalog.mjs` اصلاح شده و فایل‌های اصلی تغییر نکرده‌اند.
+مسیرهای WebP در داده‌های تولیدشده و `PHOTO_PRODUCT_IDS` ثبت شده‌اند.
+اجرای seed فقط تصویر SVG اولیه را ارتقا می‌دهد؛ قیمت، موجودی و عکس سفارشی حفظ می‌شود.
 هیرو تصویر نمایشی بدون برند از هاب USB-C است و عکس محصول مشخصی محسوب نمی‌شود.
 
 منابع مشخصات پایه:

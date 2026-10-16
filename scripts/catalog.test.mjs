@@ -6,11 +6,11 @@ import { CATALOG_CATEGORIES, categoryHref, selectCatalogProducts } from '../src/
 const products = JSON.parse(await readFile(new URL('../backend/data/catalog-products.json', import.meta.url), 'utf8'));
 const existing = JSON.parse(await readFile(new URL('../backend/data/products.json', import.meta.url), 'utf8'));
 
-test('each category has ten distinct purchasable seed products with local artwork', async () => {
+test('each category has its configured purchasable seed products with local artwork', async () => {
   assert.equal(new Set([...products, ...existing].map(p => p.id)).size, products.length + existing.length);
   for (const id of Object.keys(CATALOG_CATEGORIES)) {
     const selected = selectCatalogProducts([...existing, ...products], id);
-    assert.equal(selected.length, 10);
+    assert.equal(selected.length, CATALOG_CATEGORIES[id].productIds.length);
     assert.ok(selected.every(p => p.category === id && p.price > 0 && p.specs.length === 3));
     for (const product of selected) await access(new URL(`../public${product.image}`, import.meta.url));
     for (const asset of [CATALOG_CATEGORIES[id].image, CATALOG_CATEGORIES[id].fallbackImage]) {
@@ -44,4 +44,12 @@ test('search, brand, availability and sorting compose without changing source pr
   const accessories = selectCatalogProducts(products, 'accessories', { sort: 'price-desc' });
   assert.equal(accessories[0].id, 'accessory-06');
   assert.equal(selectCatalogProducts(unavailable, 'accessories', { available: true }).length, 0);
+  assert.deepEqual(selectCatalogProducts(products, 'cameras', { query: 'Sigma', brand: 'Sigma' }).map(p => p.id), ['camera-09']);
+  assert.equal(selectCatalogProducts(products, 'cameras', { brand: 'Canon' }).length, 3);
+  assert.equal(selectCatalogProducts(products, 'cameras', { sort: 'price-asc' })[0].id, 'camera-07');
+  assert.equal(selectCatalogProducts(unavailable, 'cameras', { available: true }).length, 0);
+  assert.deepEqual(selectCatalogProducts(products, 'drones', { query: 'Air 3S', brand: 'DJI' }).map(p => p.id), ['drone-05']);
+  assert.equal(selectCatalogProducts(products, 'drones', { brand: 'Autel' }).length, 1);
+  assert.equal(selectCatalogProducts(products, 'drones', { sort: 'price-asc' })[0].id, 'drone-06');
+  assert.equal(selectCatalogProducts(unavailable, 'drones', { available: true }).length, 0);
 });

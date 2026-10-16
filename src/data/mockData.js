@@ -8,7 +8,7 @@ export const CATEGORIES = [
   { id: 'smart-home', name: 'خانه هوشمند', icon: 'Home', count: 53, image: '/assets/collection_smart_home_1790528023441.webp' },
   { id: 'wearables', name: 'پوشیدنی‌ها', icon: 'Watch', count: 64, image: '/assets/collection_wearables_watch_1790528102322.webp' },
   { id: 'accessories', name: 'لوازم جانبی', icon: 'Cable', count: 140, image: '/assets/article_productivity_setup_1790528034532.webp' },
-  { id: 'cameras', name: 'دوربین و لنز', icon: 'Camera', count: 42, image: '/assets/article_gaming_future_1790528125558.webp' },
+  { id: 'cameras', name: 'دوربین و لنز', icon: 'Camera', count: 10, image: '/assets/article_gaming_future_1790528125558.webp' },
   { id: 'drones', name: 'پهپاد و کوادکوپتر', icon: 'Radio', count: 28, image: '/assets/hero_devices_showcase_1790527984816.webp' },
   { id: 'more', name: 'سایر دسته‌ها', icon: 'LayoutGrid', count: 190, image: '/assets/article_smart_home_1790528113494.webp' },
 ];

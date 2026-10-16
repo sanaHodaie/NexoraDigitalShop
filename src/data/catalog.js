@@ -1,4 +1,20 @@
 export const CATALOG_CATEGORIES = {
+  drones: {
+    title: 'پهپاد و کوادکوپتر',
+    english: 'DRONES & QUADCOPTERS',
+    description: 'دنیا را از زاویه‌ای تازه ببین؛ پهپادهای دوربین‌دار برای ثبت منظره‌ها، سفر و تجربهٔ پرواز.',
+    image: '/assets/category-heroes/drones.webp',
+    fallbackImage: '/assets/products/drone-01.svg',
+    productIds: Array.from({ length: 9 }, (_, index) => `drone-${String(index + 1).padStart(2, '0')}`),
+  },
+  cameras: {
+    title: 'دوربین و لنز',
+    english: 'CAMERAS & LENSES',
+    description: 'لحظه‌ها را از نگاه خودت ثبت کن؛ دوربین‌ها و لنزهای منتخب برای عکاسی، سفر و ساختن روایت‌های تازه.',
+    image: '/assets/category-heroes/cameras.webp',
+    fallbackImage: '/assets/products/camera-01.svg',
+    productIds: Array.from({ length: 10 }, (_, index) => `camera-${String(index + 1).padStart(2, '0')}`),
+  },
   accessories: {
     title: 'لوازم جانبی',
     english: 'TECH ACCESSORIES',
