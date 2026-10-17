@@ -1867,5 +1867,215 @@
     "description": "پهپاد اتل EVO Nano پلاس؛ دوربین ۵۰ مگاپیکسل، فیلم‌برداری 4K/30fps و بازوهای تاشو. پیکربندی و قیمت نمونه برای تست فروشگاه.",
     "inStock": true,
     "demo": true
+  },
+  {
+    "id": "extra-01",
+    "name": "روتر تی‌پی‌لینک Archer AX55",
+    "nameEn": "TP-Link Archer AX55",
+    "brand": "TP-Link",
+    "category": "more",
+    "categoryFa": "سایر دسته‌ها",
+    "kindLabel": "روتر",
+    "price": 109,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/extra-01.webp",
+    "specs": [
+      "Wi-Fi 6 دو بانده",
+      "ردهٔ AX3000",
+      "درگاه USB 3.0"
+    ],
+    "description": "روتر تی‌پی‌لینک Archer AX55؛ Wi-Fi 6 دو بانده، ردهٔ AX3000 و درگاه USB 3.0. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "extra-02",
+    "name": "سیستم مش تی‌پی‌لینک Deco X20",
+    "nameEn": "TP-Link Deco X20 3-Pack",
+    "brand": "TP-Link",
+    "category": "more",
+    "categoryFa": "سایر دسته‌ها",
+    "kindLabel": "شبکهٔ مش",
+    "price": 199,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/extra-02.webp",
+    "specs": [
+      "بستهٔ سه‌تایی",
+      "Wi-Fi 6",
+      "ردهٔ AX1800"
+    ],
+    "description": "سیستم مش تی‌پی‌لینک Deco X20؛ بستهٔ سه‌تایی، Wi-Fi 6 و ردهٔ AX1800. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "extra-03",
+    "name": "مانیتور دل P2422H",
+    "nameEn": "Dell P2422H 23.8-inch",
+    "brand": "Dell",
+    "category": "more",
+    "categoryFa": "سایر دسته‌ها",
+    "kindLabel": "مانیتور",
+    "price": 189,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/extra-03.webp",
+    "specs": [
+      "نمایشگر ۲۳٫۸ اینچ",
+      "وضوح Full HD",
+      "نرخ نوسازی ۶۰ هرتز"
+    ],
+    "description": "مانیتور دل P2422H؛ نمایشگر ۲۳٫۸ اینچ، وضوح Full HD و نرخ نوسازی ۶۰ هرتز. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "extra-04",
+    "name": "چاپگر اپسون EcoTank ET-2850",
+    "nameEn": "Epson EcoTank ET-2850",
+    "brand": "Epson",
+    "category": "more",
+    "categoryFa": "سایر دسته‌ها",
+    "kindLabel": "چاپگر",
+    "price": 299,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/extra-04.webp",
+    "specs": [
+      "چاپ، اسکن و کپی",
+      "مخزن جوهر قابل‌پرکردن",
+      "چاپ دوروی خودکار"
+    ],
+    "description": "چاپگر اپسون EcoTank ET-2850؛ چاپ، اسکن و کپی، مخزن جوهر قابل‌پرکردن و چاپ دوروی خودکار. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "extra-05",
+    "name": "پروژکتور قابل‌حمل بنکیو GV30",
+    "nameEn": "BenQ GV30",
+    "brand": "BenQ",
+    "category": "more",
+    "categoryFa": "سایر دسته‌ها",
+    "kindLabel": "پروژکتور",
+    "price": 399,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/extra-05.webp",
+    "specs": [
+      "وضوح بومی 720p",
+      "روشنایی ۳۰۰ ANSI لومن",
+      "طراحی قابل‌حمل"
+    ],
+    "description": "پروژکتور قابل‌حمل بنکیو GV30؛ وضوح بومی 720p، روشنایی ۳۰۰ ANSI لومن و طراحی قابل‌حمل. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "extra-06",
+    "name": "وب‌کم لاجیتک C920s",
+    "nameEn": "Logitech C920s HD Pro Webcam",
+    "brand": "Logitech",
+    "category": "more",
+    "categoryFa": "سایر دسته‌ها",
+    "kindLabel": "وب‌کم",
+    "price": 69,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/extra-07.webp",
+    "specs": [
+      "ویدئوی 1080p با ۳۰ فریم",
+      "درپوش حریم خصوصی",
+      "میکروفون استریو"
+    ],
+    "description": "وب‌کم لاجیتک C920s؛ ویدئوی 1080p با ۳۰ فریم، درپوش حریم خصوصی و میکروفون استریو. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "extra-07",
+    "name": "میکروفون الگاتو Wave Neo",
+    "nameEn": "Elgato Wave Neo",
+    "brand": "Elgato",
+    "category": "more",
+    "categoryFa": "سایر دسته‌ها",
+    "kindLabel": "میکروفون",
+    "price": 89,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/extra-06.webp",
+    "specs": [
+      "اتصال USB",
+      "پایهٔ رومیزی",
+      "کلید لمسی قطع صدا"
+    ],
+    "description": "میکروفون الگاتو Wave Neo؛ اتصال USB، پایهٔ رومیزی و کلید لمسی قطع صدا. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "extra-08",
+    "name": "کتاب‌خوان کوبو Clara BW",
+    "nameEn": "Kobo Clara BW 16GB",
+    "brand": "Kobo",
+    "category": "more",
+    "categoryFa": "سایر دسته‌ها",
+    "kindLabel": "کتاب‌خوان",
+    "price": 129,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/extra-08.webp",
+    "specs": [
+      "نمایشگر ۶ اینچ",
+      "جوهر الکترونیک سیاه‌وسفید",
+      "حافظهٔ ۱۶ گیگابایت"
+    ],
+    "description": "کتاب‌خوان کوبو Clara BW؛ نمایشگر ۶ اینچ، جوهر الکترونیک سیاه‌وسفید و حافظهٔ ۱۶ گیگابایت. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "extra-09",
+    "name": "قلم نوری وان بای وکام Small",
+    "nameEn": "One by Wacom Small CTL-472",
+    "brand": "Wacom",
+    "category": "more",
+    "categoryFa": "سایر دسته‌ها",
+    "kindLabel": "قلم نوری",
+    "price": 59,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/extra-09.webp",
+    "specs": [
+      "۲۰۴۸ سطح فشار",
+      "قلم بدون باتری",
+      "سایز Small"
+    ],
+    "description": "قلم نوری وان بای وکام Small؛ ۲۰۴۸ سطح فشار، قلم بدون باتری و سایز Small. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
+  },
+  {
+    "id": "extra-10",
+    "name": "فلش سن‌دیسک Ultra Dual Drive Go",
+    "nameEn": "SanDisk Ultra Dual Drive Go 128GB",
+    "brand": "SanDisk",
+    "category": "more",
+    "categoryFa": "سایر دسته‌ها",
+    "kindLabel": "فلش مموری",
+    "price": 19,
+    "rating": 0,
+    "reviewCount": 0,
+    "image": "/assets/products/extra-10.webp",
+    "specs": [
+      "ظرفیت ۱۲۸ گیگابایت",
+      "دو رابط USB-C و USB-A",
+      "طراحی چرخشی"
+    ],
+    "description": "فلش سن‌دیسک Ultra Dual Drive Go؛ ظرفیت ۱۲۸ گیگابایت، دو رابط USB-C و USB-A و طراحی چرخشی. پیکربندی و قیمت نمونه برای تست فروشگاه.",
+    "inStock": true,
+    "demo": true
   }
 ]

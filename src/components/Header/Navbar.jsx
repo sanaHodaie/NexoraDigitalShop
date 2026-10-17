@@ -54,7 +54,7 @@ export const Navbar = () => {
     { label: 'برندها', href: '/#collections' },
     { label: 'تخفیف‌ها', href: '/#deals', isDeal: true },
     { label: 'پرفروش‌ترین‌ها', href: '/#trending' },
-    { label: 'مجله فناوری', href: '/#articles' },
+    { label: 'مجله فناوری', href: '/magazine' },
     { label: 'پشتیبانی', href: '/#footer' },
   ];
 

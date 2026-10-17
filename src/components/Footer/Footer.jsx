@@ -174,7 +174,7 @@ export const Footer = () => {
               <li><a href="#" className="hover:text-blue-400 transition-colors">داستان ما</a></li>
               <li><a href="#" className="hover:text-blue-400 transition-colors">فرصت‌های شغلی</a></li>
               <li><a href="#" className="hover:text-blue-400 transition-colors">روابط عمومی و اخبار</a></li>
-              <li><a href="/#articles" className="hover:text-blue-400 transition-colors">مجله تخصصی</a></li>
+              <li><Link to="/magazine" className="hover:text-blue-400 transition-colors">مجله تخصصی</Link></li>
             </ul>
 
             <div className="pt-1 flex flex-col items-center md:items-start">

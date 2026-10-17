@@ -14,6 +14,7 @@ PHOTO_PRODUCT_IDS.update(f"watch-{i:02d}" for i in range(1, 11))
 PHOTO_PRODUCT_IDS.update(f"{prefix}-{i:02d}" for prefix in ("accessory", "camera") for i in range(1, 11))
 # EVO Lite+ (drone-10) has been retired from the catalogue.
 PHOTO_PRODUCT_IDS.update(f"drone-{i:02d}" for i in range(1, 10))
+PHOTO_PRODUCT_IDS.update(f"extra-{i:02d}" for i in range(1, 11))
 
 
 def correct_phone_model(current, product):

@@ -55,6 +55,7 @@ def test_catalog_products_persist_in_cart_and_seed_preserves_inventory(client, e
         ("accessories", "accessory-"),
         ("cameras", "camera-"),
         ("drones", "drone-"),
+        ("more", "extra-"),
     ):
         response = client.get("/api/products", params={"category": category})
         selected = [p for p in response.json() if p["id"].startswith(prefix)]
@@ -62,11 +63,11 @@ def test_catalog_products_persist_in_cart_and_seed_preserves_inventory(client, e
         assert all(p["image"].startswith("/assets/products/") for p in selected)
 
     register(client)
-    for pid in ("phone-01", "computer-09", "audio-01", "gaming-01", "home-01", "watch-01", "accessory-10", "camera-10", "drone-09"):
+    for pid in ("phone-01", "computer-09", "audio-01", "gaming-01", "home-01", "watch-01", "accessory-10", "camera-10", "drone-09", "extra-01"):
         assert write(client, "PUT", f"/api/account/cart/{pid}", json={"quantity": 1}).status_code == 204
         assert write(client, "PUT", f"/api/account/wishlist/{pid}").status_code == 204
     assert {item["product"]["id"] for item in client.get("/api/account/cart").json()} == {
-        "phone-01", "computer-09", "audio-01", "gaming-01", "home-01", "watch-01", "accessory-10", "camera-10", "drone-09"
+        "phone-01", "computer-09", "audio-01", "gaming-01", "home-01", "watch-01", "accessory-10", "camera-10", "drone-09", "extra-01"
     }
     with Session(engine) as db, db.begin():
         product = db.get(Product, "phone-01")
@@ -78,7 +79,8 @@ def test_catalog_products_persist_in_cart_and_seed_preserves_inventory(client, e
         product = db.get(Product, "phone-01")
         assert product.price == Decimal("731.25")
         assert product.stock == 7
-    assert len(client.get("/api/account/cart").json()) == 9
+    assert len(client.get("/api/account/cart").json()) == 10
+    assert "extra-01" in {p["id"] for p in client.get("/api/account/wishlist").json()}
     assert "watch-01" in {p["id"] for p in client.get("/api/account/wishlist").json()}
     assert "accessory-10" in {p["id"] for p in client.get("/api/account/wishlist").json()}
     assert "camera-10" in {p["id"] for p in client.get("/api/account/wishlist").json()}
@@ -105,7 +107,7 @@ def test_default_catalogue_does_not_truncate_existing_categories(client):
     assert "drone-10" not in {p["id"] for p in drones}
 
 
-@pytest.mark.parametrize("prefix", ["gaming", "phone", "home", "audio", "computer", "watch", "accessory", "camera", "drone"])
+@pytest.mark.parametrize("prefix", ["gaming", "phone", "home", "audio", "computer", "watch", "accessory", "camera", "drone", "extra"])
 def test_photos_replace_only_seed_placeholders(client, engine, prefix):
     expected_image = client.get(f"/api/products/{prefix}-01").json()["image"]
     assert expected_image.endswith(".webp")

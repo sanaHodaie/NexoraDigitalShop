@@ -1,0 +1,66 @@
+.editorial { --paper:#fff; --ink:#142238; --muted:#52647a; --line:#dce5ef; --soft:#edf4fc; max-width:1280px; margin:auto; padding:26px 28px 80px; color:var(--ink); font-family:'Vazirmatn',Tahoma,Arial,sans-serif; }
+.dark .editorial { --paper:#111c2e; --ink:#edf3fc; --muted:#a5b6cd; --line:#293b53; --soft:#162b49; }
+.editorial a:focus-visible { outline:3px solid #60a5fa; outline-offset:5px; border-radius:5px; }
+.editorial-crumb { display:flex; flex-wrap:wrap; align-items:center; gap:12px; color:var(--muted); font-size:12px; margin:0 0 42px; }
+.editorial-crumb a:hover { color:#3b82f6; }
+.editorial-kicker { display:flex; align-items:center; gap:8px; color:#2563eb; font-size:12px; font-weight:700; line-height:1.8; }
+.dark .editorial-kicker { color:#93c5fd; }
+.magazine-heading { max-width:780px; margin-bottom:42px; }
+.magazine-heading h1 { font-size:clamp(30px,4vw,54px); font-weight:900; line-height:1.65; margin:14px 0; }
+.magazine-heading h1 span { display:block; font-size:17px; letter-spacing:0; color:var(--muted); font-weight:500; }
+.magazine-heading p,.magazine-feature p,.magazine-card p,.article-heading>p { color:var(--muted); line-height:2.1; }
+.magazine-feature { display:grid; grid-template-columns:1.15fr 1fr; border:1px solid var(--line); border-radius:28px; overflow:hidden; background:var(--paper); }
+.magazine-feature>img { width:100%; height:100%; min-height:340px; object-fit:cover; }
+.magazine-feature>div { padding:clamp(24px,4vw,54px); align-self:center; }
+.magazine-feature h2 { font-size:clamp(23px,2.8vw,34px); line-height:1.8; font-weight:800; margin:12px 0; }
+.editorial-link { display:flex; align-items:center; gap:10px; color:#2563eb; font-weight:700; margin-top:22px; font-size:13px; }
+.dark .editorial-link { color:#93c5fd; }
+.editorial-meta { display:flex; flex-wrap:wrap; gap:18px; align-items:center; color:var(--muted); font-size:12px; margin-top:20px; }
+.editorial-meta>span { display:inline-flex; gap:7px; align-items:center; }
+.editorial-section-title { font-size:24px; font-weight:800; margin:50px 0 24px; }
+.magazine-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:24px; }
+.magazine-card { min-width:0; display:block; border:1px solid var(--line); border-radius:22px; overflow:hidden; background:var(--paper); transition:transform .2s,border-color .2s; }
+.magazine-card:hover { transform:translateY(-4px); border-color:#60a5fa; }
+.magazine-card>img { width:100%; aspect-ratio:3/2; object-fit:cover; }
+.magazine-card>div { padding:24px; }
+.magazine-card h3 { margin:12px 0; font-size:18px; font-weight:800; line-height:1.9; }
+.magazine-card p { font-size:13px; }
+.article-heading { max-width:900px; margin:0 auto 35px; text-align:center; }
+.article-heading .editorial-kicker,.article-heading .editorial-meta { justify-content:center; }
+.article-heading h1 { font-size:clamp(27px,3.7vw,46px); font-weight:900; line-height:1.75; margin:18px 0; }
+.article-cover { margin:0 0 44px; }
+.article-cover img { width:100%; height:clamp(230px,38vw,510px); object-fit:cover; border-radius:26px; }
+.editorial figcaption { color:var(--muted); font-size:11px; line-height:1.9; text-align:center; margin-top:10px; padding:0 10px; }
+.article-layout { display:grid; grid-template-columns:250px minmax(0,760px); gap:64px; justify-content:center; align-items:start; }
+.article-sidebar { position:sticky; top:110px; }
+.article-sidebar nav { border:1px solid var(--line); background:var(--paper); border-radius:20px; padding:24px; display:grid; gap:17px; }
+.article-sidebar nav a { font-size:12px; line-height:1.9; color:var(--muted); }
+.article-sidebar nav a:hover { color:#3b82f6; }
+.article-shop { margin-top:20px; display:grid; gap:13px; padding:24px; background:var(--soft); border-radius:20px; }
+.article-shop span { font-size:11px; color:var(--muted); }
+.article-shop strong { font-size:15px; }
+.article-body { min-width:0; }
+.article-body p { font-size:16px; line-height:2.35; margin:0 0 20px; overflow-wrap:anywhere; }
+.article-body .article-lead { font-size:18px; }
+.article-takeaway { padding:26px; background:var(--soft); border-inline-start:3px solid #3b82f6; border-radius:16px; margin:30px 0 42px; }
+.article-takeaway span { font-size:12px; font-weight:800; color:#3b82f6; }
+.article-takeaway p { margin:10px 0 0; }
+.article-section,.article-checklist { scroll-margin-top:120px; }
+.article-section h2,.article-checklist h2 { font-size:24px; line-height:1.9; font-weight:800; margin:40px 0 20px; }
+.article-sources { font-size:12px; line-height:2; color:var(--muted); margin:10px 0 24px; }
+.article-sources a { color:#2563eb; text-decoration:underline; text-underline-offset:4px; overflow-wrap:anywhere; }
+.dark .article-sources a { color:#93c5fd; }
+.article-figure { margin:32px 0 42px; }
+.article-figure img { width:100%; aspect-ratio:3/2; object-fit:cover; border-radius:20px; }
+.article-figure.contain img { object-fit:contain; padding:25px; background:#fff; }
+.article-checklist { border:1px solid var(--line); border-radius:20px; padding:8px 28px 28px; background:var(--paper); }
+.article-checklist h2 { font-size:21px; margin-top:20px; }
+.article-checklist ul { display:grid; gap:16px; }
+.article-checklist li { display:flex; align-items:baseline; gap:10px; font-size:14px; line-height:1.9; }
+.article-checklist svg { color:#3b82f6; flex:none; align-self:center; }
+.article-body .article-note { font-size:12px; color:var(--muted); margin-top:28px; }
+.editorial-missing { padding-block:100px; text-align:center; }
+.editorial-missing h1 { font-size:28px; margin-bottom:20px; }
+@media(max-width:1000px) { .article-layout { grid-template-columns:210px minmax(0,1fr); gap:28px; } .magazine-grid { gap:16px; } .magazine-card>div { padding:18px; } }
+@media(max-width:760px) { .editorial { padding:20px 18px 55px; } .editorial-crumb { margin-bottom:26px; } .magazine-feature { grid-template-columns:1fr; } .magazine-feature>img { min-height:0; height:250px; } .magazine-grid { grid-template-columns:1fr; } .magazine-card>img { max-height:270px; } .article-layout { grid-template-columns:1fr; gap:28px; } .article-sidebar { position:static; } .article-sidebar nav { gap:12px; padding:20px; } .article-shop { display:none; } .article-heading h1 { font-size:27px; } .article-body p { font-size:15px; } .article-body .article-lead { font-size:16px; } .article-section h2 { font-size:21px; } .article-checklist { padding-inline:20px; } .article-heading .editorial-meta { gap:12px; } }
+@media(prefers-reduced-motion:reduce) { .magazine-card { transition:none; } .magazine-card:hover { transform:none; } .editorial { scroll-behavior:auto; } }

@@ -1,6 +1,7 @@
 import React from 'react';
 import { ArrowLeft, BookOpen, Clock } from 'lucide-react';
-import { ARTICLES } from '../../data/mockData';
+import { Link } from 'react-router-dom';
+import { ARTICLES, articleHref } from '../../data/article-index';
 
 export const InspirationSection = () => {
   return (
@@ -16,26 +17,28 @@ export const InspirationSection = () => {
           </p>
         </div>
 
-        <a
-          href="#"
+        <Link
+          to="/magazine"
           className="inline-flex items-center gap-1 text-xs sm:text-sm font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 transition-colors group"
         >
           <span>مشاهده همه مقالات</span>
           <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-        </a>
+        </Link>
       </div>
 
       {/* 4 Article Cards Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {ARTICLES.map((article) => (
-          <article
+          <Link
+            to={articleHref(article)}
             key={article.id}
-            className="group relative rounded-2xl overflow-hidden bg-slate-900 h-64 sm:h-72 flex flex-col justify-end p-4 shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer"
+            className="group relative rounded-2xl overflow-hidden bg-slate-900 h-64 sm:h-72 flex flex-col justify-end p-4 shadow-md hover:shadow-xl transition-all duration-300 cursor-pointer focus-visible:outline-2 focus-visible:outline-blue-500 focus-visible:outline-offset-4"
           >
             {/* Background Image with Scrim Gradient */}
             <img loading="lazy" decoding="async"
               src={article.image}
-              alt={article.title}
+              alt={article.imageAlt}
+              width="600" height="400"
               className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-70 group-hover:opacity-60"
               referrerPolicy="no-referrer"
             />
@@ -68,7 +71,7 @@ export const InspirationSection = () => {
                 </span>
               </div>
             </div>
-          </article>
+          </Link>
         ))}
       </div>
     </section>

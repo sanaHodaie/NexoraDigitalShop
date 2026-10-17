@@ -14,6 +14,18 @@ const phones = [
   ['سامسونگ گلکسی A35', 'Samsung Galaxy A35 5G', 'Samsung', 349, '۱۲۸ گیگابایت', 'رم ۶ گیگابایت', 'دوربین ۵۰ مگاپیکسل', '#ced6a5'],
   ['سامسونگ گلکسی S23 FE', 'Samsung Galaxy S23 FE', 'Samsung', 599, '۲۵۶ گیگابایت', 'رم ۸ گیگابایت', 'دوربین ۵۰ مگاپیکسل', '#a1c8bf'],
 ];
+const extras = [
+  ['روتر تی‌پی‌لینک Archer AX55', 'TP-Link Archer AX55', 'TP-Link', 109, 'Wi-Fi 6 دو بانده', 'ردهٔ AX3000', 'درگاه USB 3.0', '#a9bfd5', 'extra-router'],
+  ['سیستم مش تی‌پی‌لینک Deco X20', 'TP-Link Deco X20 3-Pack', 'TP-Link', 199, 'بستهٔ سه‌تایی', 'Wi-Fi 6', 'ردهٔ AX1800', '#c7d6e2', 'extra-mesh'],
+  ['مانیتور دل P2422H', 'Dell P2422H 23.8-inch', 'Dell', 189, 'نمایشگر ۲۳٫۸ اینچ', 'وضوح Full HD', 'نرخ نوسازی ۶۰ هرتز', '#a6bdd4', 'extra-monitor'],
+  ['چاپگر اپسون EcoTank ET-2850', 'Epson EcoTank ET-2850', 'Epson', 299, 'چاپ، اسکن و کپی', 'مخزن جوهر قابل‌پرکردن', 'چاپ دوروی خودکار', '#adbcd0', 'extra-printer'],
+  ['پروژکتور قابل‌حمل بنکیو GV30', 'BenQ GV30', 'BenQ', 399, 'وضوح بومی 720p', 'روشنایی ۳۰۰ ANSI لومن', 'طراحی قابل‌حمل', '#ccd5e2', 'extra-projector'],
+  ['وب‌کم لاجیتک C920s', 'Logitech C920s HD Pro Webcam', 'Logitech', 69, 'ویدئوی 1080p با ۳۰ فریم', 'درپوش حریم خصوصی', 'میکروفون استریو', '#a1b3c7', 'extra-webcam'],
+  ['میکروفون الگاتو Wave Neo', 'Elgato Wave Neo', 'Elgato', 89, 'اتصال USB', 'پایهٔ رومیزی', 'کلید لمسی قطع صدا', '#d1dce7', 'extra-mic'],
+  ['کتاب‌خوان کوبو Clara BW', 'Kobo Clara BW 16GB', 'Kobo', 129, 'نمایشگر ۶ اینچ', 'جوهر الکترونیک سیاه‌وسفید', 'حافظهٔ ۱۶ گیگابایت', '#b1c4d5', 'extra-reader'],
+  ['قلم نوری وان بای وکام Small', 'One by Wacom Small CTL-472', 'Wacom', 59, '۲۰۴۸ سطح فشار', 'قلم بدون باتری', 'سایز Small', '#beafc5', 'extra-tablet'],
+  ['فلش سن‌دیسک Ultra Dual Drive Go', 'SanDisk Ultra Dual Drive Go 128GB', 'SanDisk', 19, 'ظرفیت ۱۲۸ گیگابایت', 'دو رابط USB-C و USB-A', 'طراحی چرخشی', '#a3bdd0', 'extra-flash'],
+];
 const computers = [
   ['اپل مک‌بوک ایر M3', 'Apple MacBook Air M3 13-inch', 'Apple', 1099, 'رم ۱۶ گیگابایت', 'SSD ۲۵۶ گیگابایت', 'تراشه Apple M3', '#a2b6ce', 'laptop'],
   ['اپل مک‌بوک پرو M3', 'Apple MacBook Pro M3 14-inch', 'Apple', 1599, 'رم ۱۶ گیگابایت', 'SSD ۵۱۲ گیگابایت', 'تراشه Apple M3', '#959fad', 'laptop'],
@@ -129,7 +141,21 @@ function illustration(kind, tint, index) {
   const pattern = `<ellipse cx="256" cy="${148 + index * 3}" rx="140" ry="62" fill="none" stroke="#93c5fd" stroke-width="25" opacity=".35" transform="rotate(-38 256 180)"/><ellipse cx="285" cy="208" rx="125" ry="44" fill="none" stroke="#dbeafe" stroke-width="13" opacity=".45" transform="rotate(-38 285 208)"/>`;
   const wallpaper = kind === 'phone' ? pattern : `<g clip-path="url(#computer-display)">${pattern}</g>`;
   let device;
-  if (kind.startsWith('drone-')) {
+  if (kind.startsWith('extra-')) {
+    const drawings = {
+      'extra-router': '<path d="M120 215V80M190 215V60M290 215V60M360 215V80" stroke="#334155" stroke-width="16" stroke-linecap="round"/><rect x="90" y="205" width="300" height="90" rx="23"/><path d="M125 256h30m18 0h20" stroke="#60a5fa" stroke-width="5"/>',
+      'extra-mesh': '<rect x="75" y="135" width="100" height="160" rx="30"/><rect x="190" y="65" width="100" height="230" rx="30"/><rect x="305" y="135" width="100" height="160" rx="30"/><path d="M111 265h28m87 0h28m87 0h28" stroke="#60a5fa" stroke-width="5"/>',
+      'extra-monitor': '<rect x="65" y="58" width="350" height="230" rx="12"/><rect x="77" y="70" width="326" height="193" rx="4" fill="#172b4a"/><path d="M240 288v35m-60 0h120" stroke="#64748b" stroke-width="12"/>',
+      'extra-printer': '<rect x="115" y="105" width="250" height="90" rx="12"/><rect x="80" y="165" width="320" height="125" rx="24"/><rect x="137" y="208" width="206" height="90" rx="8" fill="#334155"/><path d="M160 260h160v65H160z" fill="#f8fafc"/><circle cx="370" cy="194" r="7" fill="#60a5fa"/>',
+      'extra-projector': '<circle cx="240" cy="176" r="113"/><rect x="203" y="105" width="74" height="74" rx="18" fill="#334155"/><circle cx="240" cy="142" r="25" fill="#60a5fa"/><path d="M190 225h100m-100 14h100m-85 60h70" stroke="#64748b" stroke-width="8"/>',
+      'extra-webcam': '<path d="M170 220v65h140v-65" stroke="#475569" stroke-width="18" fill="none"/><rect x="75" y="100" width="330" height="130" rx="35"/><circle cx="240" cy="165" r="48" fill="#1e293b"/><circle cx="240" cy="165" r="30" fill="#60a5fa"/>',
+      'extra-mic': '<rect x="195" y="48" width="90" height="180" rx="44"/><path d="M170 170v25a70 70 0 0 0 140 0v-25M240 265v45m-65 0h130" fill="none" stroke="#64748b" stroke-width="12"/><path d="M211 85h58m-58 20h58m-58 20h58" stroke="#64748b" stroke-width="5"/>',
+      'extra-reader': '<rect x="140" y="35" width="200" height="290" rx="22"/><rect x="155" y="53" width="170" height="245" rx="6" fill="#f1f5f9"/><path d="M178 105h125m-125 26h110m-110 26h125m-125 26h100m-100 26h125m-125 26h110" stroke="#94a3b8" stroke-width="5"/>',
+      'extra-tablet': '<rect x="55" y="85" width="330" height="220" rx="17"/><rect x="78" y="108" width="284" height="173" rx="8" fill="#334155"/><path d="M410 85v200" stroke="#64748b" stroke-width="13" stroke-linecap="round"/><path d="M410 285v18" stroke="#94a3b8" stroke-width="5"/>',
+      'extra-flash': '<g transform="rotate(-25 240 180)"><rect x="108" y="139" width="240" height="95" rx="25"/><path d="M348 155h55v62h-55" fill="#cbd5e1" stroke="#64748b" stroke-width="3"/><circle cx="148" cy="186" r="21" fill="#475569"/><path d="M205 165h95m-95 20h95" stroke="#64748b" stroke-width="5"/></g>',
+    };
+    device = `<g fill="url(#metal)" stroke="#94a3b8" stroke-width="2">${drawings[kind]}</g>`;
+  } else if (kind.startsWith('drone-')) {
     const rotors = [[111, 112], [369, 112], [103, 253], [377, 253]];
     const arms = '<path d="M211 155 L111 112 M269 155 L369 112 M209 216 L103 253 M271 216 L377 253" fill="none" stroke="#64748b" stroke-width="24" stroke-linecap="round"/>';
     const blades = rotors.map(([x, y], i) => `<g transform="translate(${x} ${y})">${kind === 'drone-guarded' ? '<ellipse rx="70" ry="44" fill="none" stroke="#94a3b8" stroke-width="7"/>' : ''}<ellipse rx="19" ry="15" fill="#334155"/><g transform="rotate(${i % 2 ? -24 : 24})"><ellipse rx="67" ry="9" fill="#1e293b"/><ellipse rx="8" ry="7" fill="#94a3b8"/></g></g>`).join('');
@@ -222,6 +248,8 @@ const products = [];
 // Uploaded filenames do not always match catalogue IDs; preserve the original
 // files and map the visually checked models to their corresponding products.
 const photoFiles = {
+  'extra-06': 'extra-07',
+  'extra-07': 'extra-06',
   'accessory-03': 'accessory-04',
   'accessory-04': 'accessory-03',
   'camera-01': 'camera-02',
@@ -246,16 +274,19 @@ Object.assign(kindLabels, { 'accessory-mouse': 'ماوس', 'accessory-keyboard':
 categoryLabels.cameras = 'دوربین و لنز';
 Object.assign(kindLabels, { 'camera-kit': 'دوربین با لنز کیت', 'camera-body': 'بدنهٔ دوربین', 'camera-lens': 'لنز' });
 categoryLabels.drones = 'پهپاد و کوادکوپتر';
+categoryLabels.more = 'سایر دسته‌ها';
+Object.assign(kindLabels, { 'extra-router': 'روتر', 'extra-mesh': 'شبکهٔ مش', 'extra-monitor': 'مانیتور', 'extra-printer': 'چاپگر', 'extra-projector': 'پروژکتور', 'extra-webcam': 'وب‌کم', 'extra-mic': 'میکروفون', 'extra-reader': 'کتاب‌خوان', 'extra-tablet': 'قلم نوری', 'extra-flash': 'فلش مموری' });
 Object.assign(kindLabels, { 'drone-folding': 'پهپاد دوربین‌دار', 'drone-guarded': 'کوادکوپتر کامپکت' });
-for (const [category, rows, prefix] of [['smartphones', phones, 'phone'], ['laptops', computers, 'computer'], ['audio', audio, 'audio'], ['gaming', gaming, 'gaming'], ['smart-home', smartHome, 'home'], ['wearables', wearables, 'watch'], ['accessories', accessories, 'accessory'], ['cameras', cameras, 'camera'], ['drones', drones, 'drone']]) {
+for (const [category, rows, prefix] of [['smartphones', phones, 'phone'], ['laptops', computers, 'computer'], ['audio', audio, 'audio'], ['gaming', gaming, 'gaming'], ['smart-home', smartHome, 'home'], ['wearables', wearables, 'watch'], ['accessories', accessories, 'accessory'], ['cameras', cameras, 'camera'], ['drones', drones, 'drone'], ['more', extras, 'extra']]) {
   for (const [index, row] of rows.entries()) {
     const [name, nameEn, brand, price, ...details] = row;
     const [first, second, third, tint, kind = 'phone'] = details;
     const id = `${prefix}-${String(index + 1).padStart(2, '0')}`;
     const kindLabel = kindLabels[kind];
     const imageId = photoFiles[id] ?? id;
+    const extension = 'webp';
     products.push({ id, name, nameEn, brand, category, categoryFa: categoryLabels[category], kindLabel,
-      price, rating: 0, reviewCount: 0, image: `/assets/products/${imageId}.webp`, specs: [first, second, third],
+      price, rating: 0, reviewCount: 0, image: `/assets/products/${imageId}.${extension}`, specs: [first, second, third],
       description: `${name}؛ ${first}، ${second} و ${third}. پیکربندی و قیمت نمونه برای تست فروشگاه.`, inStock: true, demo: true });
     await writeFile(new URL(`${id}.svg`, assets), illustration(kind, tint, index), 'utf8');
   }

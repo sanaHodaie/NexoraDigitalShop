@@ -201,13 +201,13 @@ export const MobileMenu = ({ isOpen, onClose }) => {
                   </span>
                 </a>
 
-                <a
-                  href="/#articles"
+                <Link
+                  to="/magazine"
                   onClick={onClose}
                   className="flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-semibold text-slate-800 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800/60 transition-colors"
                 >
                   <span>مجله تخصصی فناوری</span>
-                </a>
+                </Link>
 
                 <a
                   href="/#footer"

@@ -9,6 +9,8 @@ import { BrowserRouter, Link, Route, Routes, useLocation } from 'react-router-do
 
 const HomePage = lazy(() => import('./pages/HomePage'));
 const CategoryPage = lazy(() => import('./pages/CategoryPage'));
+const MagazinePage = lazy(() => import('./pages/MagazinePage'));
+const ArticlePage = lazy(() => import('./pages/ArticlePage'));
 const AccountPage = lazy(() => import('./pages/AccountPage'));
 const ResetPasswordPage = lazy(() => import('./pages/ResetPasswordPage'));
 const VerifyEmailPage = lazy(() => import('./pages/VerifyEmailPage'));
@@ -52,6 +54,8 @@ function Storefront() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/category/:categoryId" element={<CategoryPage />} />
+          <Route path="/magazine" element={<MagazinePage />} />
+          <Route path="/magazine/:slug" element={<ArticlePage />} />
           <Route path="/account" element={<AccountPage />} />
           <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route path="/verify-email" element={<VerifyEmailPage />} />

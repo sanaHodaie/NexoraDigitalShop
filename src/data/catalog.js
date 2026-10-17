@@ -1,4 +1,10 @@
 export const CATALOG_CATEGORIES = {
+  more: {
+    title: 'سایر دسته‌ها', english: 'MORE TO EXPLORE',
+    description: 'برای ساختن، متصل‌شدن و کشف‌کردن؛ از تجهیزات شبکه تا ابزارهای کار و خلاقیت.',
+    image: '/assets/category-heroes/more.webp', fallbackImage: '/assets/products/extra-01.webp',
+    productIds: Array.from({ length: 10 }, (_, index) => `extra-${String(index + 1).padStart(2, '0')}`),
+  },
   drones: {
     title: 'پهپاد و کوادکوپتر',
     english: 'DRONES & QUADCOPTERS',

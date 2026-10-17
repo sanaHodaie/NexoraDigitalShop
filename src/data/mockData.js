@@ -203,44 +203,7 @@ export const FLASH_DEALS = [
   },
 ];
 
-export const ARTICLES = [
-  {
-    id: 'art-1',
-    tag: 'راهنما',
-    tagColor: 'bg-blue-600',
-    title: 'راهنمای چیدمان برترین میز کاری و محیط بهره‌وری',
-    readTime: '۸ دقیقه مطالعه',
-    image: '/assets/article_productivity_setup_1790528034532.webp',
-    date: 'مهر ۱۴۰۳',
-  },
-  {
-    id: 'art-2',
-    tag: 'ترند بازار',
-    tagColor: 'bg-emerald-600',
-    title: '۴ گجت نوآورانه که سبک روزمره شما را متحول می‌کنند',
-    readTime: '۶ دقیقه مطالعه',
-    image: '/assets/collection_smart_home_1790528023441.webp',
-    date: 'مهر ۱۴۰۳',
-  },
-  {
-    id: 'art-3',
-    tag: 'سبک زندگی',
-    tagColor: 'bg-amber-600',
-    title: 'خانه‌های هوشمند؛ تلفیق آرامش، امنیت و زندگی مدرن',
-    readTime: '۷ دقیقه مطالعه',
-    image: '/assets/article_smart_home_1790528113494.webp',
-    date: 'شهریور ۱۴۰۳',
-  },
-  {
-    id: 'art-4',
-    tag: 'گیمینگ',
-    tagColor: 'bg-purple-600',
-    title: 'جهش تکنولوژی گیمینگ در سال ۲۰۲۵: آینده در دستان شما',
-    readTime: '۵ دقیقه مطالعه',
-    image: '/assets/article_gaming_future_1790528125558.webp',
-    date: 'شهریور ۱۴۰۳',
-  },
-];
+export { ARTICLES } from './article-index';
 
 export const RECOMMENDED_PRODUCTS = [
   {
