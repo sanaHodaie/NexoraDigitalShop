@@ -6,7 +6,10 @@
     {
       "source": "/api/products",
       "headers": [
-        { "key": "x-vercel-enable-rewrite-caching", "value": "1" }
+        {
+          "key": "x-vercel-enable-rewrite-caching",
+          "value": "1"
+        }
       ]
     },
     {
@@ -89,12 +92,29 @@
           "value": "private, no-store"
         }
       ]
+    },
+    {
+      "source": "/admin/:path*",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "private, no-store"
+        }
+      ]
     }
   ],
   "rewrites": [
     {
       "source": "/api/:path*",
       "destination": "https://nexora-api-s2q3.onrender.com/api/:path*"
+    },
+    {
+      "source": "/admin/:path*",
+      "destination": "/AdminPanel/index.html"
     },
     {
       "source": "/(.*)",

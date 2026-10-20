@@ -1,12 +1,15 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, BookOpen, Clock } from 'lucide-react';
-import { ARTICLES, articleHref } from '../data/article-index';
+import { articleHref } from '../data/article-index';
+import { useContent } from '../context/ContentContext';
 import EditorialMeta from '../components/Articles/EditorialMeta';
 import './editorial.css';
 
 export default function MagazinePage() {
+  const {articles: ARTICLES} = useContent();
   const [featured, ...rest] = ARTICLES;
+  if (!featured) return <section className="editorial" dir="rtl"><h1>مجله فناوری</h1><p>مقاله‌ای منتشر نشده است.</p></section>;
   return <div className="editorial" dir="rtl">
     <EditorialMeta title="مجله فناوری" description="راهنماهای کاربردی نکسورا دربارهٔ میز کار، گجت‌های روزمره، خانهٔ هوشمند و دنیای بازی." path="/magazine" image={featured.image} />
     <nav className="editorial-crumb" aria-label="مسیر صفحه"><Link to="/">خانه</Link><span>/</span><span aria-current="page">مجله فناوری</span></nav>

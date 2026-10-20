@@ -2,8 +2,10 @@ import { optimizedImage } from '../../data/imageAssets';
 import React, { useState } from 'react';
 import { Heart, Plus, Users, Award, Flame } from 'lucide-react';
 import { useShop } from '../../context/ShopContext';
+import { useContent } from '../../context/ContentContext';
 
 export const TrendingSection = () => {
+  const {home} = useContent();
   const [activeCategory, setActiveCategory] = useState('all');
   const { addToCart, toggleWishlist, isInWishlist, setQuickViewProduct, formatPrice, toPersianDigits, allProducts, productsStatus, productsRefreshError, productsRefreshing, productsStale, reloadProducts } = useShop();
 
@@ -17,8 +19,8 @@ export const TrendingSection = () => {
 
   const filteredProducts =
     activeCategory === 'all'
-      ? allProducts.filter(p => p.id.startsWith('trend-'))
-      : allProducts.filter(p => p.id.startsWith('trend-')).filter((p) => p.category === activeCategory);
+      ? allProducts.filter(p => home.trendingIds.includes(p.id))
+      : allProducts.filter(p => home.trendingIds.includes(p.id)).filter((p) => p.category === activeCategory);
 
   return (
     <section id="trending" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">

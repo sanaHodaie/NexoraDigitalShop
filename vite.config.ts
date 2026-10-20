@@ -5,7 +5,19 @@ import {defineConfig} from 'vite';
 
 export default defineConfig(() => {
   return {
-    plugins: [react(), tailwindcss()],
+    plugins: [react(), tailwindcss(), {
+      name: 'nexora-admin-entry',
+      configureServer(server) {
+        server.middlewares.use((req, _res, next) => {
+          if (req.url?.split('?')[0].match(/^\/admin\/?$/)) req.url = '/AdminPanel/index.html';
+          next();
+        });
+      },
+    }],
+    build: { rollupOptions: { input: {
+      storefront: fileURLToPath(new URL('./index.html', import.meta.url)),
+      admin: fileURLToPath(new URL('./AdminPanel/index.html', import.meta.url)),
+    } } },
     resolve: {
       alias: {
         '@': fileURLToPath(new URL('.', import.meta.url)),

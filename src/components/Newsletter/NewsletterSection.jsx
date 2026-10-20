@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Mail, Send, CheckCircle2 } from 'lucide-react';
 import { api } from '../../api/client';
 import { useShop } from '../../context/ShopContext';
@@ -6,16 +6,25 @@ import { useShop } from '../../context/ShopContext';
 export const NewsletterSection = () => {
   const [email, setEmail] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const { addToast } = useShop();
+  const [busy, setBusy] = useState(false);
+  const { addToast, isLoggedIn, setIsAuthOpen, authStatus, user } = useShop();
+  useEffect(() => { setIsSubmitted(false); }, [user?.id, user?.email]);
+  const requestLogin = () => { setIsAuthOpen(true); };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!isLoggedIn) { requestLogin(); return; }
+    if (busy) return;
     if (!email || !email.includes('@')) return;
+    setBusy(true);
     try {
       await api('/newsletter', { method: 'POST', body: JSON.stringify({ email }) });
       setIsSubmitted(true);
       addToast('ایمیل شما در خبرنامه ثبت شد.');
-    } catch (error) { addToast(error.message); }
+    } catch (error) {
+      if (error.status === 401) { setIsAuthOpen(true); }
+      addToast(error.message);
+    } finally { setBusy(false); }
   };
 
   return (
@@ -40,6 +49,7 @@ export const NewsletterSection = () => {
 
           {/* Form */}
           <div className="w-full lg:max-w-md">
+            {!isLoggedIn && <p className="text-xs leading-6 text-blue-700 dark:text-blue-300 mb-3">برای عضویت در خبرنامه، ابتدا وارد حساب کاربری خود شوید.</p>}
             {isSubmitted ? (
               <div className="flex items-center gap-2 p-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 text-xs font-semibold">
                 <CheckCircle2 className="w-4 h-4 shrink-0" />
@@ -49,18 +59,24 @@ export const NewsletterSection = () => {
               <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                 <input
                   type="email"
-                  required
+                  aria-label="ایمیل عضویت در خبرنامه"
+                  autoComplete="email"
+                  maxLength={254}
+                  required={isLoggedIn}
+                  disabled={busy}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="آدرس ایمیل خود را وارد نمایید..."
                   className="min-w-0 w-full sm:flex-1 h-11 px-4 text-xs sm:text-sm bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 text-slate-800 dark:text-slate-100 placeholder:text-slate-400"
                 />
                 <button
-                  type="submit"
-                  className="h-11 shrink-0 px-6 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5 transition-all shadow-md shadow-blue-500/20 active:scale-95 cursor-pointer whitespace-nowrap"
+                  type={isLoggedIn ? 'submit' : 'button'}
+                  onClick={isLoggedIn ? undefined : requestLogin}
+                  disabled={busy || authStatus === 'loading'}
+                  className="h-11 shrink-0 px-6 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5 transition-all shadow-md shadow-blue-500/20 active:scale-95 cursor-pointer whitespace-nowrap disabled:opacity-60 disabled:cursor-wait"
                 >
                   <Send className="w-3.5 h-3.5 rotate-180" />
-                  <span>عضویت</span>
+                  <span>{busy ? 'در حال ثبت…' : isLoggedIn ? 'عضویت' : 'ورود و عضویت'}</span>
                 </button>
               </form>
             )}

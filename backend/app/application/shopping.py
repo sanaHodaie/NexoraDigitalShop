@@ -67,10 +67,12 @@ class Shopping:
             tx.wishlist.remove(uid, pid)
             tx.commit()
 
-    def newsletter(self, email):
+    def newsletter(self, uid, email):
         try:
             with self.uow() as tx:
-                tx.subscribe(email)
+                if tx.users.get(uid, lock=True) is None:
+                    raise BusinessError(401, 'ابتدا وارد حساب کاربری شوید.')
+                tx.subscribe(uid, email)
                 tx.commit()
         except Conflict:
             pass

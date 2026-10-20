@@ -3,6 +3,8 @@
 from app.application.identity import Identity, IdentityPolicy
 from app.application.orders import Orders
 from app.application.shopping import Shopping
+from app.application.management import Management
+from app.application.assistant import Assistant
 from app.infrastructure.crypto import Cipher, PasswordAdapter, TokenAdapter
 from app.infrastructure.google import GoogleAdapter
 from app.infrastructure.repositories import SqlUnitOfWork
@@ -24,4 +26,6 @@ class Services:
             self.uow, PasswordAdapter(), TokenAdapter(), policy, GoogleAdapter(settings.google_client_id)
         )
         self.shopping = Shopping(self.uow)
+        self.management = Management(self.uow, settings.session_idle_seconds)
+        self.assistant = Assistant(self.uow)
         self.orders = Orders(self.uow, settings.reservation_minutes, settings.require_verified_email)

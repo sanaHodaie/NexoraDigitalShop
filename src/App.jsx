@@ -1,8 +1,10 @@
 import React, { lazy, Suspense, useEffect, useState } from 'react';
 import { ThemeProvider } from './context/ThemeContext';
+import { ContentProvider } from './context/ContentContext';
 import { ShopProvider, useShop } from './context/ShopContext';
 import { Navbar } from './components/Header/Navbar';
 import { Footer } from './components/Footer/Footer';
+import AssistantLauncher from './components/Assistant/AssistantLauncher';
 import { ToastContainer } from './components/Modals/ToastContainer';
 import { usePathname } from './navigation';
 import { BrowserRouter, Link, Route, Routes, useLocation } from 'react-router-dom';
@@ -65,6 +67,7 @@ function Storefront() {
       </Suspense>
     </main>
     <Footer />
+    <AssistantLauncher />
     <DeferredModal active={isCartOpen}><CartDrawer /></DeferredModal>
     <DeferredModal active={isWishlistModalOpen}><WishlistModal /></DeferredModal>
     <DeferredModal active={Boolean(quickViewProduct)}><QuickViewModal /></DeferredModal>
@@ -74,5 +77,5 @@ function Storefront() {
 }
 
 export default function App() {
-  return <BrowserRouter><ThemeProvider><ShopProvider><Storefront /></ShopProvider></ThemeProvider></BrowserRouter>;
+  return <BrowserRouter><ThemeProvider><ContentProvider><ShopProvider><Storefront /></ShopProvider></ContentProvider></ThemeProvider></BrowserRouter>;
 }

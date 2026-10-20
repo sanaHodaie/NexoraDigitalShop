@@ -1,9 +1,11 @@
 import React from 'react';
+import {useContent} from '../../context/ContentContext';
 import { Link } from 'react-router-dom';
 import { Logo } from '../Header/Logo';
 import { Instagram, Youtube, Twitter, Facebook, Globe, Smartphone, Download } from 'lucide-react';
 
 export const Footer = () => {
+  const {settings} = useContent();
   const setupThumbnails = [
     '/assets/article_productivity_setup_1790528034532.jpg',
     '/assets/collection_audio_headphones_1790528002919.jpg',
@@ -168,7 +170,7 @@ export const Footer = () => {
           {/* Column 4: درباره نکسورا و روش‌های پرداخت */}
           <div className="flex flex-col items-center md:items-start">
             <h5 className="text-xs font-bold text-white uppercase tracking-wider mb-4 text-center md:text-right">
-              درباره نکسورا
+              درباره {settings.storeName}
             </h5>
             <ul className="space-y-2.5 text-xs mb-6 text-center md:text-right">
               <li><a href="#" className="hover:text-blue-400 transition-colors">داستان ما</a></li>
@@ -194,7 +196,9 @@ export const Footer = () => {
         {/* Bottom Bar: Copyright & Terms */}
         <div className="pt-8 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-center sm:text-right">
           <p className="text-slate-500">
-            © ۲۰۲۵ تمامی حقوق برای فروشگاه تکنولوژی نکسورا (Nexora Tech) محفوظ است.
+            © {new Date().getFullYear()} {settings.storeName} — {settings.description}
+            {settings.supportEmail && <span className="block" dir="ltr">{settings.supportEmail}</span>}
+            {settings.supportPhone && <span className="block" dir="ltr">{settings.supportPhone}</span>}
           </p>
 
           <div className="flex items-center justify-center gap-4 text-slate-400">

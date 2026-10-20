@@ -15,6 +15,8 @@ dependencies = [
   "google-auth[requests]>=2.38,<3",
   "redis>=5,<8",
   "cryptography>=46,<51",
+  "pillow==13.0.0",
+  "httpx>=0.28,<1",
 ]
 
 [dependency-groups]

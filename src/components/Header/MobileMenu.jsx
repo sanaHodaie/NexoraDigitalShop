@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, ChevronDown, Smartphone, Laptop, Headphones, Gamepad2, Home, Watch, Cable, Camera, Radio, ShieldCheck } from 'lucide-react';
 import { Logo } from './Logo';
-import { CATEGORIES } from '../../data/mockData';
+import { useContent } from '../../context/ContentContext';
 import { Link } from 'react-router-dom';
 import { CATALOG_CATEGORIES, categoryHref } from '../../data/catalog';
 import { useShop } from '../../context/ShopContext';
@@ -21,6 +21,7 @@ const iconMap = {
 };
 
 export const MobileMenu = ({ isOpen, onClose }) => {
+  const {categoryList: CATEGORIES} = useContent();
   const [categoriesExpanded, setCategoriesExpanded] = useState(false);
   const [brandsExpanded, setBrandsExpanded] = useState(false);
   const { isLoggedIn, user, toggleLogin } = useShop();
@@ -127,7 +128,7 @@ export const MobileMenu = ({ isOpen, onClose }) => {
                               <span>{cat.name}</span>
                             </span>
                             <span className="text-[10px] text-slate-400">
-                              {CATALOG_CATEGORIES[cat.id] ? '۱۰ محصول منتخب' : `${cat.count}+ کالا`}
+                              مشاهده محصولات
                             </span>
                           </Link>
                         ))}

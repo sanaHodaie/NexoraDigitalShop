@@ -2,8 +2,10 @@ import { optimizedImage } from '../../data/imageAssets';
 import React from 'react';
 import { Zap, Mail, Star, Heart, ShieldCheck } from 'lucide-react';
 import { useShop } from '../../context/ShopContext';
+import { useContent } from '../../context/ContentContext';
 
 export const FlashDeals = () => {
+  const {home} = useContent();
   const { addToCart, setQuickViewProduct, formatPrice, toPersianDigits, toggleWishlist, isInWishlist, allProducts } = useShop();
 
   return (
@@ -49,7 +51,7 @@ export const FlashDeals = () => {
               - All texts, verified badge, stats and action pill button intact
           */}
           <div className="lg:col-span-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4.5">
-            {allProducts.filter(p => p.id.startsWith('flash-')).slice(0, 3).map((deal) => {
+            {allProducts.filter(p => home.dealIds.includes(p.id)).slice(0, 3).map((deal) => {
               const isFavorited = isInWishlist(deal.id);
 
               return (

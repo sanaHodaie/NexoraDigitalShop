@@ -88,10 +88,10 @@ export function selectCatalogProducts(products, categoryId, { query = '', brand 
   const category = CATALOG_CATEGORIES[categoryId];
   if (!category) return [];
   const term = normalize(query);
-  const selected = products.filter(product => category.productIds.includes(product.id) && product.category === categoryId
+  const selected = products.filter(product => product.category === categoryId && !/^(trend|rec|flash)-/.test(product.id)
     && (!brand || product.brand === brand) && (!available || product.inStock)
     && (!term || normalize(`${product.name} ${product.nameEn} ${(product.specs || []).join(' ')}`).includes(term)));
   return selected.sort((a, b) => sort === 'price-asc' ? a.price - b.price
     : sort === 'price-desc' ? b.price - a.price
-      : category.productIds.indexOf(a.id) - category.productIds.indexOf(b.id));
+      : (category.productIds.indexOf(a.id) < 0 ? 9999 : category.productIds.indexOf(a.id)) - (category.productIds.indexOf(b.id) < 0 ? 9999 : category.productIds.indexOf(b.id)));
 }

@@ -79,6 +79,7 @@ class Identity:
                 user = tx.users.by_email(email, lock=True)
                 if user is None:
                     user = tx.users.save(User(None, email, hashed, name or ""))
+                    tx.audit("REGISTER_SUCCESS", user.id)
                 if self.policy.email_enabled and user.email_verified_at is None:
                     tx.enqueue("verification_request", {"email": email})
                 tx.commit()
@@ -231,6 +232,7 @@ class Identity:
                         email_verified_at=self.clock(),
                     )
                 )
+                tx.audit("REGISTER_SUCCESS", user.id)
             else:
                 user = tx.users.get(user.id, lock=True)
                 if user.email == identity["email"] and user.email_verified_at is None:

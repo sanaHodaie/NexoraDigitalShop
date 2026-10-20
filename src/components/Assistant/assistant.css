@@ -1,0 +1,5 @@
+.nexora-assistant-backdrop { position: fixed; inset: 0; z-index: 65; background: #02061766; display: flex; align-items: flex-end; justify-content: flex-end; padding: 20px; }
+.nexora-assistant { display: flex; flex-direction: column; width: min(440px, 100%); height: min(730px, calc(100dvh - 40px)); border-radius: 24px; overflow: hidden; box-shadow: 0 24px 70px #02061744; animation: assistant-rise .24s ease-out; }
+@keyframes assistant-rise { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+@media (max-width: 640px) { .nexora-assistant-backdrop { padding: 0; } .nexora-assistant { width: 100%; height: 92dvh; border-radius: 24px 24px 0 0; padding-bottom: env(safe-area-inset-bottom); } }
+@media (prefers-reduced-motion: reduce) { .nexora-assistant { animation: none; } }

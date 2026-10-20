@@ -1,10 +1,11 @@
 import React from 'react';
 import { ArrowLeft } from 'lucide-react';
-import { FEATURED_COLLECTIONS } from '../../data/mockData';
+import { useContent } from '../../context/ContentContext';
 import { Link } from 'react-router-dom';
 import { categoryHref } from '../../data/catalog';
 
 export const FeaturedCollections = () => {
+  const {home: {collections: FEATURED_COLLECTIONS}} = useContent();
   return (
     <section id="collections" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
       {/* Section Header */}

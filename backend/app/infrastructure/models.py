@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 from decimal import Decimal
 
-from sqlalchemy import JSON, CheckConstraint, DateTime, ForeignKey, Integer, Numeric, String, Text
+from sqlalchemy import JSON, Boolean, CheckConstraint, DateTime, ForeignKey, Integer, LargeBinary, Numeric, String, Text, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.infrastructure.database import Base
@@ -46,9 +46,24 @@ class Product(Base):
     name: Mapped[str] = mapped_column(Text)
     name_en: Mapped[str] = mapped_column(Text)
     category: Mapped[str] = mapped_column(String(100), index=True)
-    price: Mapped[Decimal] = mapped_column(Numeric(18, 2))
+    price: Mapped[Decimal] = mapped_column(Numeric(30, 12))
     stock: Mapped[int] = mapped_column(default=100)
     payload: Mapped[dict] = mapped_column(JSON)
+    is_active: Mapped[bool] = mapped_column(Boolean, default=True, server_default="true")
+
+
+class ProductMedia(Base):
+    __tablename__ = 'product_media'
+    key: Mapped[str] = mapped_column(String(64), primary_key=True)
+    content: Mapped[bytes] = mapped_column(LargeBinary)
+
+
+class SiteDocument(Base):
+    __tablename__ = "site_documents"
+    key: Mapped[str] = mapped_column(String(40), primary_key=True)
+    data: Mapped[dict] = mapped_column(JSON)
+    version: Mapped[int] = mapped_column(default=1)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 
 
 class CartItem(Base):
@@ -70,7 +85,7 @@ class Order(Base):
     __tablename__ = "orders"
     id: Mapped[int] = mapped_column(primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), index=True)
-    total: Mapped[Decimal] = mapped_column(Numeric(18, 2))
+    total: Mapped[Decimal] = mapped_column(Numeric(30, 12))
     status: Mapped[str] = mapped_column(String(40), default="pending_payment")
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
     lines: Mapped[list["OrderLine"]] = relationship(cascade="all, delete-orphan")
@@ -84,13 +99,16 @@ class OrderLine(Base):
     order_id: Mapped[int] = mapped_column(ForeignKey("orders.id", ondelete="CASCADE"), index=True)
     product_id: Mapped[str] = mapped_column(ForeignKey("products.id"))
     quantity: Mapped[int]
-    unit_price: Mapped[Decimal] = mapped_column(Numeric(18, 2))
+    unit_price: Mapped[Decimal] = mapped_column(Numeric(30, 12))
 
 
 class Subscriber(Base):
     __tablename__ = "subscribers"
+    __table_args__ = (UniqueConstraint('user_id', 'email', name='uq_subscribers_user_email'),)
     id: Mapped[int] = mapped_column(primary_key=True)
-    email: Mapped[str] = mapped_column(String(254), unique=True)
+    email: Mapped[str] = mapped_column(String(254))
+    user_id: Mapped[int | None] = mapped_column(ForeignKey('users.id', ondelete='SET NULL'))
+    created_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), default=utcnow)
 
 
 class ActionToken(Base):

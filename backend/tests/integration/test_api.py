@@ -181,6 +181,7 @@ def test_cart_clear_shipping_and_stock_status(client, engine):
 
 
 def test_newsletter_idempotence_and_rate_limit(client, engine, app):
+    register(client)
     app.state.settings.newsletter_rate_limit = 2
     for _ in range(2):
         assert (

@@ -37,7 +37,7 @@ async function responseError(response, fallback) {
 
 export async function api(path, options = {}) {
   if (options.method && options.method !== 'GET' && !csrfToken) {
-    const response = await request('/api/csrf', { credentials: 'same-origin' });
+    const response = await request('/api/csrf', { credentials: 'same-origin', signal: options.signal });
     if (!response.ok) throw await responseError(response,
       'سرویس ورود و ثبت‌نام در دسترس نیست. لطفاً کمی بعد دوباره تلاش کنید.');
     const data = await readJson(response);

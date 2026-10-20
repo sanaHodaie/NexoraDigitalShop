@@ -16,7 +16,8 @@ from app.infrastructure.crypto import valid_csrf
 from app.infrastructure.database import make_engine
 from app.infrastructure.database_security import check_runtime_role
 from app.infrastructure.rate_limit import LocalLimiter, RedisLimiter
-from app.presentation import account, auth, catalog
+from app.presentation import account, auth, catalog, management, assistant
+from app.infrastructure.assistant_llm import make_planner
 
 
 def create_app(settings: Settings | None = None, engine=None) -> FastAPI:
@@ -42,6 +43,7 @@ def create_app(settings: Settings | None = None, engine=None) -> FastAPI:
     app.state.settings = settings
     app.state.engine = engine if engine is not None else make_engine(settings.database_url.get_secret_value())
     app.state.services = Services(settings, app.state.engine)
+    app.state.assistant_planner = make_planner(settings)
     app.state.limiter = (
         RedisLimiter(settings.redis_url.get_secret_value()) if settings.redis_url else LocalLimiter()
     )
@@ -74,6 +76,8 @@ def create_app(settings: Settings | None = None, engine=None) -> FastAPI:
                 )
         if path.startswith("/api/"):
             response.headers["Cache-Control"] = "no-store"
+            if path.startswith('/api/media/') and request.method == 'GET' and response.status_code == 200:
+                response.headers['Cache-Control'] = 'public, max-age=31536000, immutable'
             # The catalogue is identical for all visitors. Cache only successful
             # public list responses; accounts, tokens, errors and writes stay private.
             if (path == "/api/products" and request.method == "GET"
@@ -143,6 +147,8 @@ def create_app(settings: Settings | None = None, engine=None) -> FastAPI:
     app.include_router(auth.router)
     app.include_router(catalog.router)
     app.include_router(account.router)
+    app.include_router(management.router)
+    app.include_router(assistant.router)
     return app
 
 

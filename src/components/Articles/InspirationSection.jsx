@@ -1,9 +1,12 @@
 import React from 'react';
 import { ArrowLeft, BookOpen, Clock } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import { ARTICLES, articleHref } from '../../data/article-index';
+import { articleHref } from '../../data/article-index';
+import { useContent } from '../../context/ContentContext';
 
 export const InspirationSection = () => {
+  const {articles} = useContent();
+  const ARTICLES = articles.slice(0, 4);
   return (
     <section id="articles" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
       {/* Section Header */}

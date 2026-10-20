@@ -203,7 +203,7 @@ export const FLASH_DEALS = [
   },
 ];
 
-export { ARTICLES } from './article-index';
+export { ARTICLES } from './article-index.js';
 
 export const RECOMMENDED_PRODUCTS = [
   {

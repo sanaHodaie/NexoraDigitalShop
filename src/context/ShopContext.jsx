@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { usePathname } from '../navigation';
 
 const ShopContext = createContext();
-const RIAL_RATE = 600000;
+import {formatPrice} from '../lib/money';
 export const ShopProvider = ({ children }) => {
   const navigate = useNavigate();
   const [cart, setCart] = useState([]);
@@ -135,7 +135,6 @@ export const ShopProvider = ({ children }) => {
     } catch (error) { reportError(error); }
   };
   const toPersianDigits = num => String(num ?? '').replace(/\d/g, d => '۰۱۲۳۴۵۶۷۸۹'[Number(d)]);
-  const formatPrice = amount => `${toPersianDigits(Math.round((amount || 0) * RIAL_RATE).toLocaleString('en-US'))} ریال`;
   return <ShopContext.Provider value={{ cart, wishlist, allProducts, productsStatus, productsRefreshError, productsRefreshing, productsStale, reloadProducts, user, setUser, authStatus, accountStatus, refreshAccount, logout, isLoggedIn, isAuthOpen, setIsAuthOpen, authenticate, authenticateGoogle, toggleLogin,
     addToCart, removeFromCart, updateQuantity, clearCart, toggleWishlist, isInWishlist: id => wishlist.some(x => x.id === id),
     totalCartCount: cart.reduce((sum, x) => sum + x.quantity, 0), totalWishlistCount: wishlist.length,

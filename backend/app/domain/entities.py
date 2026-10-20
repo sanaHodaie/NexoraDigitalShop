@@ -85,6 +85,10 @@ class Order:
         return self.total - sum((line.unit_price * line.quantity for line in self.lines), Decimal("0"))
 
 
+FREE_SHIPPING_THRESHOLD = Decimal("99")
+SHIPPING_FEE = Decimal("9.99")
+
+
 def order_total(lines):
     subtotal = sum((line.unit_price * line.quantity for line in lines), Decimal("0"))
-    return subtotal + (Decimal("0") if subtotal >= 99 else Decimal("9.99"))
+    return subtotal + (Decimal("0") if subtotal >= FREE_SHIPPING_THRESHOLD else SHIPPING_FEE)

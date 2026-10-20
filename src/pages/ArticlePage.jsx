@@ -1,20 +1,21 @@
 import React, { useEffect } from 'react';
 import { Link, useLocation, useParams } from 'react-router-dom';
 import { ArrowLeft, BookOpen, Check, Clock } from 'lucide-react';
-import { ARTICLES, articleHref } from '../data/article-index';
+import { articleHref } from '../data/article-index';
+import { useContent } from '../context/ContentContext';
 import { ARTICLE_CONTENT } from '../data/article-content';
-import { CATALOG_CATEGORIES } from '../data/catalog';
 import EditorialMeta from '../components/Articles/EditorialMeta';
 import './editorial.css';
 
 export default function ArticlePage() {
+  const {articles: ARTICLES, articleContent, categories: CATALOG_CATEGORIES, loadedArticles} = useContent();
   const { slug } = useParams();
   const { hash } = useLocation();
   const article = ARTICLES.find(item => item.slug === slug);
-  const content = ARTICLE_CONTENT[slug];
+  const content = loadedArticles ? articleContent[slug] : ARTICLE_CONTENT[slug];
   useEffect(() => {
     if (hash) document.getElementById(hash.slice(1))?.scrollIntoView();
-  }, [slug, hash]);
+  }, [slug, hash, content]);
   if (!article || !content) return <section className="editorial editorial-missing" dir="rtl"><title>مقاله پیدا نشد | نکسورا</title><meta name="robots" content="noindex" /><h1>این مقاله پیدا نشد</h1><Link to="/magazine">بازگشت به مجله فناوری</Link></section>;
   return <div className="editorial" dir="rtl">
     <EditorialMeta title={article.title} description={article.excerpt} path={articleHref(article)} image={article.image} article={article} />

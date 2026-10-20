@@ -77,18 +77,24 @@ class Products:
     def get(self, pid):
         if pid in RETIRED_PRODUCT_IDS:
             return None
-        return self.entity(self.db.get(m.Product, pid))
+        row = self.db.get(m.Product, pid)
+        return self.entity(row) if row is not None and row.is_active else None
 
     def get_many(self, ids):
         return {
             row.id: self.entity(row)
             for row in self.db.scalars(select(m.Product).where(
-                m.Product.id.in_(ids), m.Product.id.not_in(RETIRED_PRODUCT_IDS)
+                m.Product.id.in_(ids), m.Product.id.not_in(RETIRED_PRODUCT_IDS), m.Product.is_active.is_(True)
             ))
         }
 
+    def all_active(self):
+        return [self.entity(row) for row in self.db.scalars(select(m.Product).where(
+            m.Product.id.not_in(RETIRED_PRODUCT_IDS), m.Product.is_active.is_(True)
+        ).order_by(m.Product.id))]
+
     def search(self, query, category, limit):
-        q = select(m.Product).where(m.Product.id.not_in(RETIRED_PRODUCT_IDS))
+        q = select(m.Product).where(m.Product.id.not_in(RETIRED_PRODUCT_IDS), m.Product.is_active.is_(True))
         if query:
             q = q.where(
                 or_(
@@ -155,7 +161,7 @@ class Inventory:
         return (
             self.db.execute(
                 update(m.Product)
-                .where(m.Product.id == pid, m.Product.stock >= quantity)
+                .where(m.Product.id == pid, m.Product.stock >= quantity, m.Product.is_active.is_(True))
                 .values(stock=m.Product.stock - quantity)
             ).rowcount
             == 1
@@ -290,6 +296,9 @@ class Tokens:
 
 
 AUDIT_EVENTS = {
+    "ASSISTANT_SETTINGS_UPDATED",
+    "REGISTER_SUCCESS", "PRODUCT_CREATED", "PRODUCT_UPDATED", "PRODUCT_ARCHIVED",
+    "CONTENT_UPDATED", "ADMIN_SESSIONS_REVOKED", "ADMIN_ORDER_CANCELLED",
     "LOGIN_SUCCESS",
     "LOGIN_FAILED",
     "LOGOUT",
@@ -310,7 +319,9 @@ class SqlUnitOfWork:
         self.engine, self.cipher = engine, cipher
 
     def __enter__(self):
+        from app.infrastructure.management import ManagementRepository
         self.db = Session(self.engine, expire_on_commit=False)
+        self.management = ManagementRepository(self.db)
         self.users, self.sessions = Users(self.db), Sessions(self.db)
         self.products, self.inventory = Products(self.db), Inventory(self.db)
         self.cart, self.wishlist = Cart(self.db), Wishlist(self.db)
@@ -352,6 +363,6 @@ class SqlUnitOfWork:
             is not None
         )
 
-    def subscribe(self, email):
-        if not self.db.scalar(select(m.Subscriber.id).where(m.Subscriber.email == email)):
-            self.db.add(m.Subscriber(email=email))
+    def subscribe(self, uid, email):
+        if not self.db.scalar(select(m.Subscriber.id).where(m.Subscriber.email == email, m.Subscriber.user_id == uid)):
+            self.db.add(m.Subscriber(email=email, user_id=uid))

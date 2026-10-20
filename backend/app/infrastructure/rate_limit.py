@@ -69,6 +69,8 @@ def enforce(request, kind, account=None):
     limit = settings.login_ip_limit if kind == "login" else settings.auth_rate_limit
     if kind == "newsletter":
         limit = settings.newsletter_rate_limit
+    if kind == "assistant":
+        limit = settings.assistant_rate_limit
     allowed = limiter.allow(bucket(settings, kind + ":ip", ip), limit)
     if account:
         allowed = (

@@ -35,6 +35,35 @@ class Settings(BaseSettings):
     login_account_limit: int = 5
     email_account_limit: int = 3
     notify_password_change: bool = True
+    # No provider request is made until both fields and the admin opt-in are set.
+    openai_api_key: SecretStr | None = None
+    gemini_api_key: SecretStr | None = None
+    assistant_provider: Literal["openai", "gemini"] = "openai"
+    assistant_model: str = Field(default="", max_length=100, pattern=r"^[a-zA-Z0-9._:-]*$")
+    assistant_rate_limit: int = Field(default=15, ge=1, le=60)
+    assistant_proxy_url: SecretStr | None = None
+
+    @field_validator("assistant_proxy_url")
+    @classmethod
+    def validate_assistant_proxy(cls, value: SecretStr | None) -> SecretStr | None:
+        if not value or not value.get_secret_value().strip():
+            return None
+        raw = value.get_secret_value()
+        try:
+            parts = urlsplit(raw)
+            if (
+                parts.scheme not in {"http", "https"}
+                or not parts.hostname
+                or (parts.port is not None and parts.port <= 0)
+                or parts.path not in {"", "/"}
+                or parts.query
+                or parts.fragment
+                or any(char.isspace() for char in raw)
+            ):
+                raise ValueError
+        except ValueError:
+            raise ValueError("ASSISTANT_PROXY_URL must be an HTTP or HTTPS proxy URL.") from None
+        return value
 
     @field_validator("redis_url")
     @classmethod

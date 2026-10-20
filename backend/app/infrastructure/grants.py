@@ -17,9 +17,9 @@ def grant_runtime(engine, role):
                 "SELECT, INSERT, UPDATE, DELETE",
                 ["cart_items", "wishlist_items", "password_resets", "action_tokens", "email_outbox"],
             ),
-            ("SELECT", ["products", "roles", "role_permissions", "user_roles"]),
-            ("UPDATE (stock)", ["products"]),
-            ("SELECT, INSERT", ["security_audit_logs"]),
+            ("SELECT", ["roles", "role_permissions", "user_roles"]),
+            ("SELECT, INSERT, UPDATE", ["products", "site_documents"]),
+            ("SELECT, INSERT", ["security_audit_logs", "product_media"]),
         ]
         for permissions, tables in groups:
             names = ", ".join(f"{schema}.{quote(table)}" for table in tables)

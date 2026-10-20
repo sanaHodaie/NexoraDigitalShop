@@ -1,9 +1,10 @@
 import React from 'react';
-import { CATEGORIES } from '../../data/mockData';
+import { useContent } from '../../context/ContentContext';
 import { Link } from 'react-router-dom';
 import { categoryHref } from '../../data/catalog';
 
 export const CategoryStrip = () => {
+  const {categoryList: CATEGORIES} = useContent();
   return (
     <section className="relative z-20 -mt-20 sm:-mt-24 max-w-6xl mx-auto px-2 sm:px-6">
       {/* Box strictly pushed deeper inside Hero on mobile (-mt-20) and desktop (-mt-24), with elegant glass styling */}

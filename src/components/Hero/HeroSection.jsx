@@ -1,15 +1,16 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { ArrowLeft, ChevronLeft } from 'lucide-react';
-import { HERO_IMAGE } from '../../data/mockData';
+import { useContent } from '../../context/ContentContext';
 
 export const HeroSection = () => {
+  const {home: {hero}} = useContent();
   return (
     <section className="relative w-full overflow-hidden min-h-[580px] sm:min-h-[600px] lg:min-h-[640px] flex items-center -mt-14 sm:-mt-16 pt-16 sm:pt-20">
       {/* Background Image: Positioned to keep laptop & gadgets clearly visible across devices */}
       <div className="absolute inset-0 w-full h-full">
         <img
-          src={HERO_IMAGE}
+          src={hero.image}
           fetchPriority="high" decoding="async" width="1536" height="1024"
           alt="نسل جدید تجهیزات الکترونیک نکسورا"
           className="w-full h-full object-cover object-[70%_center] sm:object-left lg:object-center select-none"
@@ -29,10 +30,10 @@ export const HeroSection = () => {
             transition={{ duration: 0.55, delay: 0.1 }}
             className="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-black text-slate-900 dark:text-white leading-[1.25] sm:leading-[1.18] tracking-tight mb-4"
           >
-            نسل جدید الکترونیک.
+            {hero.title}
             <br />
             <span className="bg-gradient-to-l from-blue-700 via-indigo-600 to-sky-500 dark:from-blue-400 dark:via-indigo-300 dark:to-sky-300 bg-clip-text text-transparent">
-              امکانات بی‌پایان.
+              {hero.accent}
             </span>
           </motion.h1>
 
@@ -43,7 +44,7 @@ export const HeroSection = () => {
             transition={{ duration: 0.55, delay: 0.2 }}
             className="text-slate-700 dark:text-slate-200 text-xs sm:text-base leading-relaxed mb-6 font-medium max-w-lg"
           >
-            آینده فناوری همین‌جاست. هوشمندانه‌تر کار کنید، با شفافیت بشنوید و با جدیدترین شاهکارهای دیجیتال نکسورا دنیای خود را ارتقا دهید.
+            {hero.description}
           </motion.p>
 
           {/* Action Buttons */}

@@ -2,8 +2,10 @@ import { optimizedImage } from '../../data/imageAssets';
 import React from 'react';
 import { Heart, Plus } from 'lucide-react';
 import { useShop } from '../../context/ShopContext';
+import { useContent } from '../../context/ContentContext';
 
 export const RecommendedSection = () => {
+  const {home} = useContent();
   const { addToCart, toggleWishlist, isInWishlist, setQuickViewProduct, formatPrice, allProducts } = useShop();
 
   return (
@@ -22,7 +24,7 @@ export const RecommendedSection = () => {
 
       {/* Product Cards Grid: Texts strictly on the RIGHT side across all devices (mobile and desktop) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5">
-        {allProducts.filter(p => p.id.startsWith('rec-')).map((product) => {
+        {allProducts.filter(p => home.recommendedIds.includes(p.id)).map((product) => {
           const isFavorited = isInWishlist(product.id);
 
           return (

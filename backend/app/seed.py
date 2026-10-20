@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 from app.config import Settings
 from app.db import make_engine
 from app.models import Product
+from app.infrastructure.models import SiteDocument, utcnow
 
 PHOTO_PRODUCT_IDS = {f"{prefix}-{i:02d}" for prefix in ("gaming", "phone", "home", "audio", "computer") for i in range(1, 11)}
 PHOTO_PRODUCT_IDS.update(f"watch-{i:02d}" for i in range(1, 11))
@@ -45,6 +46,11 @@ def seed(engine):
     for filename in ("products.json", "catalog-products.json"):
         products.extend(json.loads((data_dir / filename).read_text(encoding="utf-8")))
     with Session(engine) as db, db.begin():
+        content_path = data_dir / "site-content.json"
+        if content_path.exists():
+            for key, data in json.loads(content_path.read_text(encoding="utf-8")).items():
+                db.execute(insert(SiteDocument).values(key=key, data=data, version=1, updated_at=utcnow())
+                           .on_conflict_do_nothing(index_elements=["key"]))
         for product in products:
             # Re-running deployments must not reset edited prices or inventory.
             db.execute(

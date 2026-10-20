@@ -3,6 +3,9 @@
 Persian/RTL React + Vite storefront with **Python, FastAPI, Pydantic 2,
 SQLAlchemy 2, PostgreSQL and Alembic**.
 
+The integrated management panel is available at `/admin`. See
+[the admin setup and permissions guide](backend/ADMIN_PANEL.fa.md).
+
 ## Structure
 
 ```text
@@ -231,3 +234,6 @@ Catalogue caching, cold-start limits and deployment verification are documented 
 and frontend for the public catalogue CDN cache to take effect.
 `scripts/check-auth.mjs` defaults to API port 8000 and UI port 3001;
 `NEXORA_SKIP_API=1` runs only its mocked browser tests, not live API validation.
+
+The catalogue-grounded shopping assistant, OpenAI configuration, admin controls,
+and review findings are documented in [ASSISTANT.fa.md](backend/ASSISTANT.fa.md).

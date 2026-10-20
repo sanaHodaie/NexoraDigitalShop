@@ -2,6 +2,7 @@ import React, { useEffect, useMemo } from 'react';
 import { Link, useParams, useSearchParams } from 'react-router-dom';
 import { ArrowLeft, Cable, Camera, ChevronLeft, Gamepad2, Headphones, House, Laptop, LayoutGrid, Radio, Search, Smartphone, Watch, X } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
+import { useContent } from '../context/ContentContext';
 import { CATALOG_CATEGORIES, selectCatalogProducts } from '../data/catalog';
 import CatalogProductCard from '../components/Products/CatalogProductCard';
 import CategoryHeroArt from '../components/Categories/CategoryHeroArt';
@@ -11,7 +12,8 @@ import './catalog.css';
 export default function CategoryPage() {
   const { categoryId } = useParams();
   const [params, setParams] = useSearchParams();
-  const category = CATALOG_CATEGORIES[categoryId];
+  const {categories} = useContent();
+  const category = categories[categoryId];
   const { allProducts, productsStatus, productsRefreshError, productsRefreshing, productsStale, reloadProducts, toPersianDigits } = useShop();
   const query = params.get('q') || '';
   const brand = params.get('brand') || '';

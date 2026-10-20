@@ -20,3 +20,4 @@ backend/.venv-local/
 **/.pytest_cache/
 **/.ruff_cache/
 *.pyc
+*.egg-info/
