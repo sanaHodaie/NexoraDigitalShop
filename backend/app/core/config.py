@@ -38,7 +38,8 @@ class Settings(BaseSettings):
     # No provider request is made until both fields and the admin opt-in are set.
     openai_api_key: SecretStr | None = None
     gemini_api_key: SecretStr | None = None
-    assistant_provider: Literal["openai", "gemini"] = "openai"
+    deepseek_api_key: SecretStr | None = None
+    assistant_provider: Literal["openai", "gemini", "deepseek"] = "openai"
     assistant_model: str = Field(default="", max_length=100, pattern=r"^[a-zA-Z0-9._:-]*$")
     assistant_rate_limit: int = Field(default=15, ge=1, le=60)
     assistant_proxy_url: SecretStr | None = None

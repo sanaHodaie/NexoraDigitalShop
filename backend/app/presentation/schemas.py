@@ -92,5 +92,30 @@ class OrderOutput(BaseModel):
     reservation_expires_at: datetime | None = Field(default=None, alias="reservationExpiresAt")
 
 
+class ShippingAddress(BaseModel):
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+    recipient: str = Field(min_length=3, max_length=100)
+    phone: str = Field(pattern=r"^09[0-9]{9}$")
+    province: str = Field(min_length=2, max_length=60)
+    city: str = Field(min_length=2, max_length=60)
+    postalCode: str = Field(pattern=r"^[0-9]{10}$")
+    address: str = Field(min_length=10, max_length=500)
+    building: str = Field(min_length=1, max_length=20)
+    unit: str = Field(default="", max_length=20)
+    notes: str = Field(default="", max_length=300)
+
+    @field_validator("phone", "postalCode", mode="before")
+    @classmethod
+    def ascii_digits(cls, value):
+        if isinstance(value, str):
+            return value.strip().translate(str.maketrans("۰۱۲۳۴۵۶۷۸۹٠١٢٣٤٥٦٧٨٩", "01234567890123456789"))
+        return value
+
+
+class CheckoutInput(BaseModel):
+    # Old clients may send totals; the server always ignores these and computes prices.
+    shippingAddress: ShippingAddress
+
+
 class OrderHistoryOutput(OrderOutput):
     created_at: datetime = Field(alias="createdAt")

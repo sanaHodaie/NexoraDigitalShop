@@ -91,6 +91,10 @@ class Order(Base):
     lines: Mapped[list["OrderLine"]] = relationship(cascade="all, delete-orphan")
     reservation_expires_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), index=True)
     payment_reference: Mapped[str | None] = mapped_column(String(160), unique=True)
+    shipping_address: Mapped[dict | None] = mapped_column(JSON)
+    customer_email: Mapped[str] = mapped_column(String(254), default="")
+    paid_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    rial_rate: Mapped[Decimal] = mapped_column(Numeric(16, 2), default=600000)
 
 
 class OrderLine(Base):
@@ -100,6 +104,7 @@ class OrderLine(Base):
     product_id: Mapped[str] = mapped_column(ForeignKey("products.id"))
     quantity: Mapped[int]
     unit_price: Mapped[Decimal] = mapped_column(Numeric(30, 12))
+    product_name: Mapped[str] = mapped_column(String(300), default="")
 
 
 class Subscriber(Base):

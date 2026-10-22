@@ -2,6 +2,8 @@ import React, { lazy, Suspense, useEffect, useState } from 'react';
 import { ThemeProvider } from './context/ThemeContext';
 import { ContentProvider } from './context/ContentContext';
 import { ShopProvider, useShop } from './context/ShopContext';
+import { CompareProvider } from './context/CompareContext';
+import CompareTray from './components/Products/CompareTray';
 import { Navbar } from './components/Header/Navbar';
 import { Footer } from './components/Footer/Footer';
 import AssistantLauncher from './components/Assistant/AssistantLauncher';
@@ -11,9 +13,11 @@ import { BrowserRouter, Link, Route, Routes, useLocation } from 'react-router-do
 
 const HomePage = lazy(() => import('./pages/HomePage'));
 const CategoryPage = lazy(() => import('./pages/CategoryPage'));
+const ComparePage = lazy(() => import('./pages/ComparePage'));
 const MagazinePage = lazy(() => import('./pages/MagazinePage'));
 const ArticlePage = lazy(() => import('./pages/ArticlePage'));
 const AccountPage = lazy(() => import('./pages/AccountPage'));
+const CheckoutPage = lazy(() => import('./pages/CheckoutPage'));
 const ResetPasswordPage = lazy(() => import('./pages/ResetPasswordPage'));
 const VerifyEmailPage = lazy(() => import('./pages/VerifyEmailPage'));
 const AuthModal = lazy(() => import('./components/Auth/AuthModal').then(module => ({ default: module.AuthModal })));
@@ -35,7 +39,7 @@ function Storefront() {
     if (!hash) window.scrollTo({ top: 0, behavior: 'instant' });
     else document.getElementById(hash.slice(1))?.scrollIntoView();
   }, [pathname, hash]);
-  const account = pathname === '/account' || pathname === '/account/';
+  const account = ['/account', '/account/', '/checkout', '/checkout/'].includes(pathname);
   const recovery = pathname === '/reset-password' || pathname === '/reset-password/';
   const verification = ['/verify-email', '/confirm-email-change'].includes(pathname.replace(/\/$/, ''));
   const { isAuthOpen, isCartOpen, isWishlistModalOpen, quickViewProduct } = useShop();
@@ -56,9 +60,11 @@ function Storefront() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/category/:categoryId" element={<CategoryPage />} />
+          <Route path="/compare" element={<ComparePage />} />
           <Route path="/magazine" element={<MagazinePage />} />
           <Route path="/magazine/:slug" element={<ArticlePage />} />
           <Route path="/account" element={<AccountPage />} />
+          <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route path="/verify-email" element={<VerifyEmailPage />} />
           <Route path="/confirm-email-change" element={<VerifyEmailPage />} />
@@ -68,6 +74,7 @@ function Storefront() {
     </main>
     <Footer />
     <AssistantLauncher />
+    <CompareTray />
     <DeferredModal active={isCartOpen}><CartDrawer /></DeferredModal>
     <DeferredModal active={isWishlistModalOpen}><WishlistModal /></DeferredModal>
     <DeferredModal active={Boolean(quickViewProduct)}><QuickViewModal /></DeferredModal>
@@ -77,5 +84,5 @@ function Storefront() {
 }
 
 export default function App() {
-  return <BrowserRouter><ThemeProvider><ContentProvider><ShopProvider><Storefront /></ShopProvider></ContentProvider></ThemeProvider></BrowserRouter>;
+  return <BrowserRouter><ThemeProvider><ContentProvider><ShopProvider><CompareProvider><Storefront /></CompareProvider></ShopProvider></ContentProvider></ThemeProvider></BrowserRouter>;
 }

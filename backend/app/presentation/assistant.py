@@ -10,7 +10,7 @@ from app.infrastructure.rate_limit import enforce
 from app.presentation.dependencies import current_user, services
 
 router = APIRouter(tags=["assistant"])
-PROVIDER_LABELS = {"openai": "OpenAI", "gemini": "Google Gemini"}
+PROVIDER_LABELS = {"openai": "OpenAI", "gemini": "Google Gemini", "deepseek": "DeepSeek"}
 
 
 class Message(BaseModel):

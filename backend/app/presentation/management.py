@@ -4,13 +4,56 @@ from pydantic import ValidationError
 
 from app.domain.errors import BusinessError
 from app.presentation.dependencies import current_user, services
-from app.presentation.management_schemas import DOCUMENT_MODELS, DocumentInput, ProductInput
+from app.presentation.management_schemas import DOCUMENT_MODELS, BulkPriceInput, DocumentInput, ProductInput
 from app.presentation.schemas import PaymentInput
 from app.infrastructure.images import MAX_UPLOAD_BYTES, product_image
 from app.infrastructure.rate_limit import enforce
 from starlette.concurrency import run_in_threadpool
 
 router = APIRouter(prefix='/api/admin', tags=['management'])
+
+
+@router.get('/products/pricing/brands')
+def pricing_brands(category: str = Query(..., max_length=50), user=Depends(current_user), svc=Depends(services)):
+    from app.domain.management import CATEGORY_IDS
+    if category not in CATEGORY_IDS:
+        raise BusinessError(400, 'دسته‌بندی نامعتبر است.')
+    return {'items': svc.pricing.brands(user.id, category)}
+
+
+@router.post('/products/pricing')
+def bulk_pricing(data: BulkPriceInput, request: Request, user=Depends(current_user), svc=Depends(services)):
+    enforce(request, 'bulk_pricing', str(user.id))
+    return svc.pricing.change(user.id, data.category, data.brand, data.percent, data.snapshot)
+
+
+@router.get('/products/import/template')
+def product_template(user=Depends(current_user), svc=Depends(services)):
+    from app.infrastructure.product_spreadsheet import XLSX_TYPE, spreadsheet_template
+    if 'products:write' not in svc.management.me(user.id)['permissions']:
+        raise BusinessError(403, 'دسترسی افزودن محصول لازم است.')
+    return Response(spreadsheet_template(), media_type=XLSX_TYPE,
+                    headers={'Content-Disposition': 'attachment; filename="nexora-products.xlsx"'})
+
+
+@router.post('/products/import')
+async def import_products(request: Request, commit: bool = False,
+                          user=Depends(current_user), svc=Depends(services)):
+    from app.infrastructure.product_spreadsheet import MAX_BYTES, XLSX_TYPE
+    from app.presentation.product_import import parse_products
+    permissions = await run_in_threadpool(svc.management.me, user.id)
+    if 'products:write' not in permissions['permissions']:
+        raise BusinessError(403, 'دسترسی افزودن محصول لازم است.')
+    enforce(request, 'product_import', str(user.id))
+    if request.headers.get('content-type', '').split(';')[0] != XLSX_TYPE:
+        raise BusinessError(415, 'فقط فایل اکسل با فرمت XLSX پذیرفته می‌شود.')
+    raw = bytearray()
+    async for chunk in request.stream():
+        if len(raw) + len(chunk) > MAX_BYTES:
+            raise BusinessError(413, 'حداکثر حجم فایل اکسل ۲ مگابایت است.')
+        raw.extend(chunk)
+    rows, errors = await run_in_threadpool(parse_products, bytes(raw))
+    return await run_in_threadpool(svc.management.import_products, user.id, rows, errors, commit)
 
 
 @router.post('/media', status_code=201)
@@ -33,6 +76,24 @@ async def upload_image(request: Request, user=Depends(current_user), svc=Depends
 @router.get('/me')
 def me(user=Depends(current_user), svc=Depends(services)):
     return svc.management.me(user.id)
+
+
+@router.get('/orders/{oid}')
+def order_detail(oid: int, user=Depends(current_user), svc=Depends(services)):
+    from app.domain.invoices import invoice_data
+    return invoice_data(svc.orders.document(user.id, oid, admin=True))
+
+
+@router.get('/orders/{oid}/invoice')
+def order_invoice(oid: int, download: bool = True, user=Depends(current_user), svc=Depends(services)):
+    from app.infrastructure.invoice_documents import document_response
+    return document_response(svc.orders.document(user.id, oid, admin=True), download=download)
+
+
+@router.get('/orders/{oid}/warranty')
+def warranty_card(oid: int, download: bool = True, user=Depends(current_user), svc=Depends(services)):
+    from app.infrastructure.invoice_documents import document_response
+    return document_response(svc.orders.document(user.id, oid, admin=True, warranty=True), warranty=True, download=download)
 
 
 @router.get('/dashboard')

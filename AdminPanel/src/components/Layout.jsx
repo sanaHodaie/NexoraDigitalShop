@@ -24,6 +24,7 @@ import {
   UserCheck
 } from 'lucide-react';
 import { playTactileClick, setAudioMuted, getAudioMuted } from '../utils/sound';
+import AdminSearch from './AdminSearch';
 import { toPersianDigits } from '../utils/formatters';
 
 export default function Layout({
@@ -200,20 +201,7 @@ export default function Layout({
                 </h2>
               </div>
 
-              {/* Quick Global Search in Bento Style */}
-              <div className="hidden md:flex items-center gap-2 flex-1 px-3 py-1.5 rounded-2xl bg-slate-100/80 dark:bg-slate-800/80 border border-purple-100/60 dark:border-purple-900/30 text-xs text-slate-400 focus-within:border-purple-400 focus-within:bg-white dark:focus-within:bg-slate-900 transition-all min-w-0">
-                <Search className="w-3.5 h-3.5 text-purple-500 flex-shrink-0" />
-                <input
-                  type="text"
-                  onKeyDown={e=>{if(e.key==='Enter')onSearch?.(e.currentTarget.value);}}
-                  aria-label="جستجوی محصول"
-                  placeholder="جستجوی محصول و فشردن Enter…"
-                  className="bg-transparent border-none outline-none text-xs text-slate-700 dark:text-slate-200 w-full placeholder:text-slate-400 min-w-0"
-                />
-                <span className="text-[10px] bg-white dark:bg-slate-700 px-1.5 py-0.5 rounded-md border border-slate-200 dark:border-slate-600 font-mono text-slate-400 flex-shrink-0">
-                  ⌘K
-                </span>
-              </div>
+              {can('products:read') && <div className="hidden md:flex min-w-0 flex-1"><AdminSearch onSearch={onSearch}/></div>}
             </div>
 
             {/* Right: Sound, Dark Mode, Notifications, User/Login Quick Actions */}
@@ -283,6 +271,7 @@ export default function Layout({
               </motion.button>
             </div>
           </header>
+          {can('products:read') && <div className="md:hidden relative z-20 px-3 py-2 bg-white dark:bg-slate-900"><AdminSearch onSearch={onSearch}/></div>}
 
           {/* Page Container */}
           <main className="flex-1 p-3 sm:p-6 md:p-8 max-w-7xl w-full mx-auto min-w-0 overflow-x-hidden">

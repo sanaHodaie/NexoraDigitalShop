@@ -199,6 +199,87 @@ class GeminiPlanner:
             return None
 
 
+class DeepSeekPlanner:
+    """JSON-only intent extraction; never run model tools or expose generated product facts."""
+
+    def __init__(self, settings, transport=None):
+        self.key = settings.deepseek_api_key
+        self.model = settings.assistant_model
+        self.proxy = settings.assistant_proxy_url
+        self.transport = transport
+
+    @property
+    def configured(self):
+        return bool(self.key and self.key.get_secret_value().strip() and self.model)
+
+    async def plan(self, messages):
+        if not self.configured:
+            return None
+        example = {
+            "category": "laptops", "use_case": "programming", "device": "laptop",
+            "queries": [], "max_rial": None, "min_ram": None, "intent": "recommend",
+            "sort": "price_asc", "clarify_budget": False,
+        }
+        instruction = PROMPT.replace(
+            "Call plan_search exactly once.",
+            "Return only a JSON object matching the schema. Do not call tools.",
+        )
+        instruction += "\nJSON schema: " + json.dumps(SearchIntent.model_json_schema())
+        instruction += "\nExample for a programming laptop without budget: " + json.dumps(example)
+        body = {
+            "model": self.model,
+            "messages": [
+                {"role": "system", "content": instruction},
+                {"role": "user", "content": json.dumps(messages, ensure_ascii=False)},
+            ],
+            "response_format": {"type": "json_object"},
+            "thinking": {"type": "disabled"},
+            "max_tokens": 1200,
+            "stream": False,
+        }
+
+        async def request():
+            async with httpx.AsyncClient(
+                timeout=12, transport=self.transport, follow_redirects=False,
+                proxy=self.proxy.get_secret_value() if self.proxy and self.transport is None else None,
+            ) as client:
+                async with client.stream(
+                    "POST", "https://api.deepseek.com/chat/completions", json=body,
+                    headers={"Authorization": "Bearer " + self.key.get_secret_value()},
+                ) as response:
+                    response.raise_for_status()
+                    raw = bytearray()
+                    async for chunk in response.aiter_bytes():
+                        raw.extend(chunk)
+                        if len(raw) > 65536:
+                            raise ValueError("Provider response exceeds limit")
+            data = json.loads(raw)
+            choices = data["choices"]
+            if len(choices) != 1 or choices[0]["finish_reason"] != "stop":
+                raise ValueError("Incomplete or unexpected response")
+            message = choices[0]["message"]
+            if message.get("tool_calls") or message.get("refusal"):
+                raise ValueError("Unexpected tool response or refusal")
+            intent = SearchIntent.model_validate_json(message["content"], strict=True)
+            if any(len(q) > 100 for q in intent.queries):
+                raise ValueError("Query too long")
+            return Plan(**intent.model_dump())
+
+        try:
+            return await asyncio.wait_for(request(), timeout=15)
+        except httpx.HTTPStatusError as exc:
+            # Only the status code is safe to log; never log headers, body or user messages.
+            logging.getLogger("nexora").warning(
+                "DeepSeek planner HTTP %d; using catalogue rules", exc.response.status_code
+            )
+            return None
+        except (httpx.HTTPError, ValueError, KeyError, IndexError, TypeError, AttributeError, TimeoutError):
+            logging.getLogger("nexora").warning("DeepSeek planner unavailable; using catalogue rules")
+            return None
+
+
 def make_planner(settings, transport=None):
-    cls = GeminiPlanner if settings.assistant_provider == "gemini" else OpenAIPlanner
+    cls = {"gemini": GeminiPlanner, "openai": OpenAIPlanner, "deepseek": DeepSeekPlanner}[
+        settings.assistant_provider
+    ]
     return cls(settings, transport)

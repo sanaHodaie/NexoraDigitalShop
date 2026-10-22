@@ -54,12 +54,13 @@ def test_google_only_structured_request(settings):
     assert result.max_rial == 500000000 and result.use_case == "programming"
 
 
-@pytest.mark.parametrize("provider", ["gemini", "openai"])
+@pytest.mark.parametrize("provider", ["gemini", "openai", "deepseek"])
 def test_assistant_proxy_is_used_by_provider_client(settings, monkeypatch, provider):
     settings.assistant_provider = provider
     settings.assistant_model = "test-model"
     settings.gemini_api_key = SecretStr("google-key")
     settings.openai_api_key = SecretStr("openai-key")
+    settings.deepseek_api_key = SecretStr("deepseek-key")
     settings.assistant_proxy_url = SecretStr("http://127.0.0.1:12334")
     original = httpx.AsyncClient
     captured = []

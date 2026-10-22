@@ -1,4 +1,4 @@
-# Nexora Digital Shop
+﻿# Nexora Digital Shop
 
 Persian/RTL React + Vite storefront with **Python, FastAPI, Pydantic 2,
 SQLAlchemy 2, PostgreSQL and Alembic**.
@@ -237,3 +237,20 @@ and frontend for the public catalogue CDN cache to take effect.
 
 The catalogue-grounded shopping assistant, OpenAI configuration, admin controls,
 and review findings are documented in [ASSISTANT.fa.md](backend/ASSISTANT.fa.md).
+## فاکتور و تحویل سفارش
+
+راهنمای جریان آدرس، پیش‌فاکتور، دانلود و کارت گارانتی در [backend/INVOICES.fa.md](backend/INVOICES.fa.md) آمده است.
+# مقایسهٔ محصولات
+
+در کارت محصولات یا پنجرهٔ جزئیات، «مقایسه» را بزنید. نوار پایین صفحه شما را به
+`/compare` می‌برد؛ حداکثر سه محصول از یک دسته قابل انتخاب هستند. صفحهٔ مقایسه
+جست‌وجو، جایگزینی/حذف محصول و نمایش فقط تفاوت‌ها دارد. مشخصات ناقص با «ثبت نشده»
+نمایش داده می‌شوند و جدول موبایل در محدودهٔ خودش به‌صورت افقی پیمایش می‌شود.
+فقط شناسهٔ محصولات در مرورگر ذخیره می‌شود؛ قیمت و مشخصات از کاتالوگ فعلی می‌آیند.
+این قابلیت برای مهمان نیز فعال است؛ افزودن به سبد همان ورود معمول فروشگاه را می‌خواهد.
+
+تست منطق: `node --test scripts/comparison.test.mjs`
+
+تست مرورگر با سرور ایزولهٔ `tests.serve_management_ui` و Vite پورت 3012:
+`node scripts/check-comparison.mjs`؛ شامل سقف سه محصول، محدودیت دسته، ماندگاری پس
+از رفرش، جایگزینی، حذف، تفاوت‌ها و عرض‌های 320، 375، 768 و 1440 است.

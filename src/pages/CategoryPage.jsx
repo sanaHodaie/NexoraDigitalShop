@@ -7,6 +7,7 @@ import { CATALOG_CATEGORIES, selectCatalogProducts } from '../data/catalog';
 import CatalogProductCard from '../components/Products/CatalogProductCard';
 import CategoryHeroArt from '../components/Categories/CategoryHeroArt';
 import CatalogSort from '../components/Categories/CatalogSort';
+import { SearchBar } from '../components/Header/SearchBar';
 import './catalog.css';
 
 export default function CategoryPage() {
@@ -25,6 +26,7 @@ export default function CategoryPage() {
     return next;
   }, { replace: true });
   const collection = useMemo(() => selectCatalogProducts(allProducts, categoryId), [allProducts, categoryId]);
+  const searchProducts = useMemo(() => selectCatalogProducts(allProducts, categoryId, { brand, available }), [allProducts, categoryId, brand, available]);
   const products = useMemo(() => selectCatalogProducts(allProducts, categoryId, { query, brand, sort, available }), [allProducts, categoryId, query, brand, sort, available]);
   const brands = [...new Set(collection.map(product => product.brand).filter(Boolean))];
   const filtered = Boolean(query || brand || available);
@@ -64,7 +66,8 @@ export default function CategoryPage() {
 
     <section aria-label="فهرست محصولات">
       <div className="catalog-toolbar">
-        <label className="catalog-search"><Search size={19} aria-hidden="true" /><input type="search" value={query} onChange={event => update('q', event.target.value)} placeholder="جست‌وجو در این دسته…" aria-label="جست‌وجو در این دسته" maxLength={100} /></label>
+        <SearchBar key={`search-${categoryId}`} className="catalog-autocomplete" products={searchProducts} value={query}
+          onChange={value => update('q', value)} placeholder="جست‌وجو در این دسته…" />
         <CatalogSort key={categoryId} value={sort} onChange={value => update('sort', value === 'featured' ? '' : value)} />
       </div>
       <div className="catalog-filters">
@@ -75,6 +78,7 @@ export default function CategoryPage() {
         <label className="catalog-available"><input type="checkbox" checked={available} onChange={event => update('available', event.target.checked ? '1' : '')} />فقط موجودها</label>
       </div>
       <div className="catalog-results-line">
+        <Link to="/compare" className="compare-toggle">مقایسهٔ محصولات</Link>
         <p role="status" aria-live="polite">{productsStatus === 'loading' ? 'در حال دریافت محصولات…' : productsStatus === 'ready' ? `${toPersianDigits(products.length)} محصول${filtered ? ` از ${toPersianDigits(collection.length)}` : ' منتخب'}` : 'دریافت محصولات انجام نشد'}</p>
         {filtered && <button onClick={() => setParams({}, { replace: true })}><X size={14} />پاک کردن فیلترها</button>}
       </div>

@@ -2,6 +2,7 @@
 
 from app.application.identity import Identity, IdentityPolicy
 from app.application.orders import Orders
+from app.application.pricing import BulkPricing
 from app.application.shopping import Shopping
 from app.application.management import Management
 from app.application.assistant import Assistant
@@ -27,5 +28,6 @@ class Services:
         )
         self.shopping = Shopping(self.uow)
         self.management = Management(self.uow, settings.session_idle_seconds)
+        self.pricing = BulkPricing(self.uow)
         self.assistant = Assistant(self.uow)
         self.orders = Orders(self.uow, settings.reservation_minutes, settings.require_verified_email)

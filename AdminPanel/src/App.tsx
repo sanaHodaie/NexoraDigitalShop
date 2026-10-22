@@ -3,6 +3,7 @@ import Layout from './components/Layout';
 import LoginModal from './components/LoginModal';
 import Dashboard from './components/Dashboard';
 import Products from './components/Products';
+import BulkPricePage from './components/BulkPricePage';
 import Orders from './components/Orders';
 import Customers from './components/Customers';
 import AuditLog from './components/AuditLog';
@@ -36,7 +37,7 @@ export default function App() {
   },[]);
   const navigate=(page:string)=>{setActivePage(page);location.hash=page;};
   const can=(permission:string)=>Boolean(user?.permissions.includes(permission));
-  const pagePermission = ({assistant:'assistant:read',dashboard:'dashboard:read',products:'products:read',orders:'orders:read',customers:'users:read',logs:'audit:read',messages:'subscribers:read',analytics:'dashboard:read',gold_rates:'content:read',content:'content:read',articles:'content:read',settings:'content:read'})[activePage];
+  const pagePermission = ({pricing:'products:write',assistant:'assistant:read',dashboard:'dashboard:read',products:'products:read',orders:'orders:read',customers:'users:read',logs:'audit:read',messages:'subscribers:read',analytics:'dashboard:read',gold_rates:'content:read',content:'content:read',articles:'content:read',settings:'content:read'})[activePage];
   const logout=async()=>{try{await write('/auth/logout','POST');resetCsrf();setUser(null);setError('');}catch(e){setError(e instanceof Error ? e.message : "خطای ارتباط با سرور");}};
   const toggle=()=>setThemeMode(m=>m==='light'?'dark':m==='dark'?'auto':'light');
   if(loading)return <main className="min-h-screen grid place-items-center" role="status">در حال بررسی دسترسی مدیریت…</main>;
@@ -48,12 +49,13 @@ export default function App() {
     {pagePermission && !can(pagePermission) && <ErrorBox message="دسترسی به این بخش برای حساب شما فعال نیست؛ از منو بخش مجاز را انتخاب کنید."/>}
     {activePage==='dashboard' && can('dashboard:read') && <Dashboard onNavigate={navigate}/>}
     {activePage==='products' && can('products:read') && <Products can={can} search={search}/>}
+    {activePage==='pricing' && can('products:write') && <BulkPricePage/>}
     {activePage==='orders' && can('orders:read') && <Orders can={can}/>}
     {activePage==='customers' && can('users:read') && <Customers can={can}/>}
     {activePage==='logs' && can('audit:read') && <AuditLog/>}
     {activePage==='messages' && can('subscribers:read') && <Subscribers/>}
     {activePage==='assistant' && can('assistant:read') && <AssistantSettings can={can}/>}
     {['content','articles','settings'].includes(activePage) && can('content:read') && <ContentManager key={activePage} documentKey={({gold_rates:'categories',content:'home',articles:'articles',settings:'settings'})[activePage]} canEdit={can('content:write')} themeMode={themeMode} onSetThemeMode={setThemeMode}/>}
-    {!['assistant','dashboard','products','orders','customers','logs','messages','content','articles','settings'].includes(activePage) && <Button onClick={()=>navigate('dashboard')}>بازگشت به داشبورد</Button>}
+    {!['pricing','assistant','dashboard','products','orders','customers','logs','messages','content','articles','settings'].includes(activePage) && <Button onClick={()=>navigate('dashboard')}>بازگشت به داشبورد</Button>}
   </Layout>;
 }

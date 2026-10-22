@@ -7,13 +7,15 @@ import './account.css';
 import phoneImage from '../assets/images/account-phone.webp';
 import { ChangePassword } from '../components/Auth/ChangePassword';
 import { AccountCartCard } from '../components/AccountCartCard';
+import { Link } from 'react-router-dom';
+import InvoiceView from '../components/Orders/InvoiceView';
 
 const sections = [
   ['overview', 'نمای کلی', LayoutDashboard], ['orders', 'سفارش‌های من', Package],
   ['wishlist', 'علاقه‌مندی‌ها', Heart], ['cart', 'سبد خرید', ShoppingBag],
   ['profile', 'اطلاعات شخصی', UserRound], ['security', 'امنیت حساب', ShieldCheck],
 ];
-const statuses = { pending: 'در انتظار', pending_payment: 'در انتظار پرداخت', paid: 'پرداخت‌شده', expired: 'مهلت رزرو تمام شده', processing: 'در حال پردازش', shipped: 'ارسال‌شده', delivered: 'تحویل‌شده', cancelled: 'لغوشده', refunded: 'بازپرداخت‌شده' };
+const statuses = { draft: 'پیش‌فاکتور · در صف پرداخت', pending: 'در صف پرداخت', pending_payment: 'در صف پرداخت', paid: 'پرداخت شده', expired: 'مهلت رزرو تمام شده', processing: 'در حال پردازش', shipped: 'ارسال‌شده', delivered: 'تحویل‌شده', cancelled: 'لغوشده', refunded: 'بازپرداخت‌شده' };
 const dateFormat = new Intl.DateTimeFormat('fa-IR', { dateStyle: 'medium' });
 function dateLabel(value) { const date = new Date(value); return Number.isNaN(date.getTime()) ? '—' : dateFormat.format(date); }
 function Empty({ icon: Icon = Package, title, children }) {
@@ -35,27 +37,15 @@ function OrderCard({ order: initialOrder }) {
   };
   const { formatPrice, toPersianDigits } = useShop();
   const [open, setOpen] = useState(false);
-  const [detail, setDetail] = useState(null);
-  const [state, setState] = useState('loading');
-  const [retry, setRetry] = useState(0);
-  useEffect(() => {
-    if (!open) return;
-    const controller = new AbortController(); setState('loading');
-    api(`/account/orders/${order.id}`, { signal: controller.signal }).then(data => {
-      if (!controller.signal.aborted) { setDetail(data); setState('ready'); }
-    }).catch(() => { if (!controller.signal.aborted) setState('error'); });
-    return () => controller.abort();
-  }, [open, order.id, retry]);
+  const [version, setVersion] = useState(0);
   return <article className="account-order">
     <div className="account-order-top"><span className="account-order-icon"><Package size={20} /></span><div><h3>سفارش شمارهٔ {toPersianDigits(order.id)}</h3><time dateTime={order.createdAt}>{dateLabel(order.createdAt)}</time></div><span className={`account-status ${order.status === 'pending_payment' ? 'pending' : ''}`}>{statuses[order.status] || 'در حال بررسی'}</span></div>
     <div className="account-order-bottom"><strong>{formatPrice(order.total)}</strong><button type="button" aria-expanded={open} aria-controls={`order-${order.id}`} onClick={() => setOpen(!open)}>{open ? 'بستن جزئیات' : 'جزئیات سفارش'}<ChevronDown size={16} className={open ? 'rotate-180' : ''} /></button></div>
     {open && <div id={`order-${order.id}`} className="account-order-detail">
-      {state === 'loading' ? <Loading /> : state === 'error' ? <Failure retry={() => setRetry(retry + 1)} /> : <>
-        {detail.lines.map(line => <div className="account-order-line" key={line.productId}><span>{line.name}<small>{toPersianDigits(line.quantity)} عدد</small></span><b>{formatPrice(line.unitPrice * line.quantity)}</b></div>)}
-        <div className="account-order-line"><span>هزینهٔ ارسال</span><b>{formatPrice(detail.shipping)}</b></div>
-        {order.status === 'pending_payment' && <><p className="account-muted">این سفارش هنوز پرداخت نشده است. رزرو کالا تا {order.reservationExpiresAt ? new Date(order.reservationExpiresAt).toLocaleString('fa-IR') : 'پایان مهلت پرداخت'} معتبر است. درگاه پرداخت آنلاین هنوز فعال نیست.</p><button className="account-button secondary" disabled={cancelling} onClick={cancel}>لغو سفارش و آزاد کردن رزرو</button></>}
+      <InvoiceView id={order.id} onUpdate={setOrder} version={version}/>
+        {order.status === 'draft' && <Link className="account-button" to={`/checkout?invoice=${order.id}`}>ادامهٔ ثبت سفارش</Link>}
+        {['pending_payment','draft'].includes(order.status) && <button className="account-button secondary" disabled={cancelling} onClick={async () => { await cancel(); setVersion(v => v + 1); }}>لغو {order.status === 'draft' ? 'پیش‌فاکتور' : 'سفارش و آزاد کردن رزرو'}</button>}
         {cancelError && <p role="alert" className="account-error">{cancelError}</p>}
-      </>}
     </div>}
   </article>;
 }
@@ -130,6 +120,7 @@ export default function AccountPage() {
     return () => controller.abort();
   }, [isLoggedIn, user?.email, reload, cart.length]);
   const selectSection = key => {
+    if (key === 'cart') refreshAccount().catch(() => {});
     setSection(key);
     requestAnimationFrame(() => {
       content.current?.focus({ preventScroll: true });

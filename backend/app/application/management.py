@@ -63,6 +63,30 @@ class Management:
             tx.audit("PRODUCT_ARCHIVED", uid, pid)
             tx.commit()
 
+    def import_products(self, uid, rows, errors, commit=False):
+        """Preview or atomically create a validated batch; never overwrite existing products."""
+        with self.uow() as tx:
+            self.authorize(tx, uid, 'products:write')
+            errors = list(errors)
+            existing = tx.management.existing_product_ids([row['product']['id'] for row in rows])
+            for row in rows:
+                if row['product']['id'] in existing:
+                    errors.append({'row': row['row'], 'field': 'id',
+                                   'message': 'این شناسه قبلاً در فروشگاه ثبت شده است؛ حتی محصولات بایگانی‌شده باید شناسهٔ یکتا داشته باشند.'})
+            created = 0
+            if commit and not errors:
+                for row in rows:
+                    data = row['product']
+                    tx.management.save_product(data['id'], data, create=True)
+                    tx.audit('PRODUCT_CREATED', uid, data['id'])
+                    created += 1
+                tx.commit()
+            # Keep preview small and independent of persistence models.
+            return {'items': [{'row': row['row'], **{key: row['product'][key]
+                     for key in ('id', 'name', 'nameEn', 'category', 'categoryFa', 'priceRial', 'stock')}}
+                     for row in rows], 'errors': sorted(errors, key=lambda e: e['row']),
+                    'created': created, 'canImport': bool(rows) and not errors}
+
     def revoke_sessions(self, uid, target):
         with self.uow() as tx:
             self.authorize(tx, uid, "sessions:revoke")
@@ -78,9 +102,10 @@ class Management:
             order = tx.orders.get(oid, lock=True)
             if order is None:
                 raise BusinessError(404, "سفارش پیدا نشد.")
-            if order.status not in {OrderStatus.PENDING, OrderStatus.AWAITING_PAYMENT}:
+            if order.status not in {OrderStatus.DRAFT, OrderStatus.PENDING, OrderStatus.AWAITING_PAYMENT}:
                 raise BusinessError(409, "فقط سفارش پرداخت‌نشده قابل لغو است.")
-            InventoryReservation.release(tx, order)
+            if order.status != OrderStatus.DRAFT:
+                InventoryReservation.release(tx, order)
             order.status = OrderStatus.CANCELLED
             tx.orders.save(order)
             tx.audit("ADMIN_ORDER_CANCELLED", uid, oid)

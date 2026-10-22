@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { optimizedImage } from '../../data/imageAssets';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Trash2, Plus, Minus, ShoppingBag, ArrowLeft, CheckCircle, Truck } from 'lucide-react';
-import { api } from '../../api/client';
+import { X, Trash2, Plus, Minus, ShoppingBag, ArrowLeft, Truck } from 'lucide-react';
 import { useShop } from '../../context/ShopContext';
 
 export const CartDrawer = () => {
@@ -10,28 +10,21 @@ export const CartDrawer = () => {
     isCartOpen,
     setIsCartOpen,
     cart,
+    accountStatus,
+    refreshAccount,
     removeFromCart,
     updateQuantity,
     cartSubtotal,
     formatPrice,
-    clearCart,
   } = useShop();
 
-  const [isCheckingOut, setIsCheckingOut] = useState(false);
-  const [orderComplete, setOrderComplete] = useState(null);
-  const [checkoutError, setCheckoutError] = useState('');
-
+  const navigate = useNavigate();
   const freeShippingThreshold = 99;
   const isFreeShipping = cartSubtotal >= freeShippingThreshold;
   const remainingForFreeShipping = Math.max(0, freeShippingThreshold - cartSubtotal);
 
   const finalTotal = cartSubtotal;
-  const handleCheckout = async () => {
-    setCheckoutError(''); setIsCheckingOut(true);
-    try { const order = await api('/account/orders', { method: 'POST' }); setOrderComplete(order); await clearCart(); }
-    catch (error) { setCheckoutError(error.message); }
-    finally { setIsCheckingOut(false); }
-  };
+  const handleCheckout = () => { setIsCartOpen(false); navigate('/checkout'); };
 
   return (
     <AnimatePresence>
@@ -72,7 +65,7 @@ export const CartDrawer = () => {
             </div>
 
             {/* Free Shipping Tracker */}
-            <div className="bg-blue-50 dark:bg-blue-950/40 px-6 py-3 border-b border-blue-100 dark:border-blue-900/40">
+            {accountStatus === 'ready' && <div className="bg-blue-50 dark:bg-blue-950/40 px-6 py-3 border-b border-blue-100 dark:border-blue-900/40">
               <div className="flex items-center gap-2 text-xs font-semibold text-blue-700 dark:text-blue-300 mb-1.5">
                 <Truck className="w-4 h-4" />
                 {isFreeShipping ? (
@@ -91,32 +84,11 @@ export const CartDrawer = () => {
                   }}
                 />
               </div>
-            </div>
+            </div>}
 
             {/* Items List */}
             <div className="flex-1 overflow-y-auto p-6 space-y-4 no-scrollbar">
-              {orderComplete ? (
-                <div className="text-center py-16 space-y-4">
-                  <div className="w-16 h-16 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-600 flex items-center justify-center mx-auto">
-                    <CheckCircle className="w-10 h-10" />
-                  </div>
-                  <h4 className="text-lg font-bold text-slate-900 dark:text-white">
-                    سفارش شما با موفقیت ثبت گردید!
-                  </h4>
-                  <p className="text-xs text-slate-500 max-w-xs mx-auto">
-                    شماره سفارش: {orderComplete.id}. پرداخت هنوز انجام نشده است؛ این سفارش در انتظار پرداخت است.
-                  </p>
-                  <button
-                    onClick={() => {
-                      setOrderComplete(false);
-                      setIsCartOpen(false);
-                    }}
-                    className="px-6 py-2.5 rounded-xl bg-blue-600 text-white text-xs font-bold shadow-md cursor-pointer"
-                  >
-                    ادامه خرید
-                  </button>
-                </div>
-              ) : cart.length === 0 ? (
+              {accountStatus !== 'ready' ? <div role="status" className="text-sm leading-7 text-center py-8 text-slate-600 dark:text-slate-300">{accountStatus === 'error' ? <><p>قیمت به‌روز سبد دریافت نشد.</p><button className="text-blue-600 mt-3" onClick={()=>refreshAccount().catch(()=>{})}>دریافت دوبارهٔ قیمت‌ها</button></> : 'در حال دریافت قیمت و موجودی فعلی…'}</div> : cart.length === 0 ? (
                 <div className="text-center py-16 space-y-3">
                   <div className="w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-400 flex items-center justify-center mx-auto">
                     <ShoppingBag className="w-8 h-8" />
@@ -197,7 +169,7 @@ export const CartDrawer = () => {
             </div>
 
             {/* Footer with totals and checkout */}
-            {!orderComplete && cart.length > 0 && (
+            {accountStatus === 'ready' && cart.length > 0 && (
               <div className="p-6 border-t border-slate-100 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-900/90 space-y-4">
                 {/* Promo Code Input */}
                 {/* Subtotal & Discount rows */}
@@ -222,21 +194,13 @@ export const CartDrawer = () => {
                   </div>
                 </div>
 
-                {checkoutError && <p role="alert" className="text-red-600 text-xs">{checkoutError}</p>}
                 {/* Checkout Button */}
                 <button
                   onClick={handleCheckout}
-                  disabled={isCheckingOut}
                   className="w-full py-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 active:scale-98 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-lg shadow-blue-500/25 transition-all cursor-pointer disabled:opacity-50"
                 >
-                  {isCheckingOut ? (
-                    <span>در حال ثبت سفارش...</span>
-                  ) : (
-                    <>
-                      <span>ثبت سفارش در انتظار پرداخت</span>
-                      <ArrowLeft className="w-4 h-4" />
-                    </>
-                  )}
+                  <span>ادامهٔ خرید و ثبت آدرس</span>
+                  <ArrowLeft className="w-4 h-4" />
                 </button>
               </div>
             )}

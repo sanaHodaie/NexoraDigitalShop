@@ -17,6 +17,8 @@ dependencies = [
   "cryptography>=46,<51",
   "pillow==13.0.0",
   "httpx>=0.28,<1",
+  "openpyxl>=3.1.5,<4",
+  "defusedxml>=0.7.1,<1",
 ]
 
 [dependency-groups]

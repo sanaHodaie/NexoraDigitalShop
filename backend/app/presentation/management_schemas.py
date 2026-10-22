@@ -54,11 +54,20 @@ class ProductInput(StrictModel):
 
     @model_validator(mode='after')
     def resolve_price(self):
+        if self.isActive and self.image == '/assets/products/product-pending.svg':
+            raise ValueError('Upload a product image before publishing')
         if (self.price is None) == (self.priceRial is None):
             raise ValueError('Provide exactly one price')
         if self.priceRial is not None:
             self.price = (Decimal(self.priceRial) / Decimal(600000)).quantize(Decimal('0.000000000001'))
         return self
+
+
+class BulkPriceInput(StrictModel):
+    category: Category
+    brand: str | None = Field(default=None, min_length=1, max_length=100)
+    percent: Decimal = Field(gt=0, le=100, max_digits=5, decimal_places=2, allow_inf_nan=False)
+    snapshot: str | None = Field(default=None, pattern=r'^[a-f0-9]{64}$')
 
 
 class Source(StrictModel):

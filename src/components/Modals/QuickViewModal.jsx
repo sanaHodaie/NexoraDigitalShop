@@ -6,6 +6,7 @@ import { Heart, ShoppingBag, Check, Shield, Truck, RotateCcw, Star } from 'lucid
 import { useShop } from '../../context/ShopContext';
 import { CloseIcon } from '../../assets/icons/CloseIcon';
 import './quick-view.css';
+import CompareButton from '../Products/CompareButton';
 
 const mobileQuery = '(max-width: 767px)';
 const subscribeMobile = callback => {
@@ -225,6 +226,7 @@ function QuickViewDialog({ quickViewProduct }) {
                   </button>
                 </div>
 
+                <CompareButton product={quickViewProduct} />
                 {/* Add to Cart */}
                 <button
                   type="button"

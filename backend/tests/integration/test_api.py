@@ -7,7 +7,7 @@ import pytest
 from alembic.autogenerate import compare_metadata
 from alembic.config import Config
 from alembic.migration import MigrationContext
-from conftest import register, write
+from conftest import CHECKOUT, register, write
 from fastapi.testclient import TestClient
 from sqlalchemy import func, select, update
 from sqlalchemy.orm import Session
@@ -136,7 +136,7 @@ def test_account_isolation_wishlist_cart_and_checkout(client, app, engine):
         assert other.get("/api/account/cart").json() == []
         assert other.get("/api/account/wishlist").json() == []
         assert other.get("/api/account/orders").json() == []
-    result = write(client, "POST", "/api/account/orders", json={"total": 0}).json()
+    result = write(client, "POST", "/api/account/orders", json={**CHECKOUT, "total": 0}).json()
     subtotal = product["price"] * 2
     assert result["total"] == subtotal + (0 if subtotal >= 99 else 9.99)
     assert result["status"] == "pending_payment"
@@ -145,7 +145,7 @@ def test_account_isolation_wishlist_cart_and_checkout(client, app, engine):
     with Session(engine) as db:
         assert db.get(Product, pid).stock == 98
         assert db.scalar(select(OrderLine)).unit_price == Decimal(str(product["price"]))
-    assert write(client, "POST", "/api/account/orders").status_code == 400
+    assert write(client, "POST", "/api/account/orders", json=CHECKOUT).status_code == 400
     assert write(client, "DELETE", f"/api/account/wishlist/{pid}").status_code == 204
     assert client.get("/api/account/wishlist").json() == []
 
@@ -158,7 +158,7 @@ def test_failed_order_rolls_back_every_stock_reservation(client, engine):
     with Session(engine) as db:
         db.get(Product, products[1]["id"]).stock = 1
         db.commit()
-    assert write(client, "POST", "/api/account/orders").status_code == 409
+    assert write(client, "POST", "/api/account/orders", json=CHECKOUT).status_code == 409
     assert len(client.get("/api/account/cart").json()) == 2
     with Session(engine) as db:
         assert db.get(Product, products[0]["id"]).stock == 100
@@ -174,7 +174,7 @@ def test_cart_clear_shipping_and_stock_status(client, engine):
         db.commit()
     assert write(client, "PUT", f"/api/account/cart/{pid}", json={"quantity": 2}).status_code == 409
     write(client, "PUT", f"/api/account/cart/{pid}", json={"quantity": 1})
-    assert write(client, "POST", "/api/account/orders").json()["total"] == 19.99
+    assert write(client, "POST", "/api/account/orders", json=CHECKOUT).json()["total"] == 19.99
     assert client.get(f"/api/products/{pid}").json()["inStock"] is False
     assert write(client, "PUT", "/api/account/cart/missing", json={"quantity": 0}).status_code == 204
     assert write(client, "DELETE", "/api/account/cart").status_code == 204
@@ -291,7 +291,7 @@ def test_account_profile_and_order_details_are_private(client, app, engine):
     assert client.get("/api/auth/me").json()["fullName"] == "Updated Name"
     product = client.get("/api/products?limit=1").json()[0]
     write(client, "PUT", f"/api/account/cart/{product['id']}", json={"quantity": 1})
-    order = write(client, "POST", "/api/account/orders").json()
+    order = write(client, "POST", "/api/account/orders", json=CHECKOUT).json()
     detail = client.get(f"/api/account/orders/{order['id']}")
     assert detail.status_code == 200
     assert detail.headers["cache-control"] == "no-store"
@@ -300,6 +300,8 @@ def test_account_profile_and_order_details_are_private(client, app, engine):
         "name": product["name"],
         "quantity": 1,
         "unitPrice": product["price"],
+        "unitPriceRial": round(product["price"] * 600000),
+        "totalRial": round(product["price"] * 600000),
     }
     assert detail.json()["shipping"] == (0 if product["price"] >= 99 else 9.99)
     with TestClient(app, base_url="https://shop.test") as other:
@@ -353,7 +355,7 @@ def test_competing_orders_do_not_oversell(app, engine):
         with ThreadPoolExecutor(max_workers=2) as pool:
             statuses = list(
                 pool.map(
-                    lambda client: write(client, "POST", "/api/account/orders").status_code, [first, second]
+                    lambda client: write(client, "POST", "/api/account/orders", json=CHECKOUT).status_code, [first, second]
                 )
             )
         assert sorted(statuses) == [200, 409]

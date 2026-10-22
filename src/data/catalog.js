@@ -1,3 +1,5 @@
+import { buildSearchIndex, matchesSearch } from '../lib/product-search.js';
+
 export const CATALOG_CATEGORIES = {
   more: {
     title: 'سایر دسته‌ها', english: 'MORE TO EXPLORE',
@@ -81,16 +83,12 @@ export const CATALOG_CATEGORIES = {
 
 export const categoryHref = id => CATALOG_CATEGORIES[id] ? `/category/${id}` : `/#${id}`;
 
-const normalize = value => String(value ?? '').toLowerCase().replace(/ي/g, 'ی').replace(/ك/g, 'ک').replace(/[آأإ]/g, 'ا')
-  .replace(/[۰-۹]/g, digit => String('۰۱۲۳۴۵۶۷۸۹'.indexOf(digit))).replace(/[\s\u200c]+/g, ' ').trim();
-
 export function selectCatalogProducts(products, categoryId, { query = '', brand = '', sort = 'featured', available = false } = {}) {
   const category = CATALOG_CATEGORIES[categoryId];
   if (!category) return [];
-  const term = normalize(query);
-  const selected = products.filter(product => product.category === categoryId && !/^(trend|rec|flash)-/.test(product.id)
-    && (!brand || product.brand === brand) && (!available || product.inStock)
-    && (!term || normalize(`${product.name} ${product.nameEn} ${(product.specs || []).join(' ')}`).includes(term)));
+  const candidates = products.filter(product => product.category === categoryId && !/^(trend|rec|flash)-/.test(product.id)
+    && (!brand || product.brand === brand) && (!available || product.inStock));
+  const selected = buildSearchIndex(candidates).filter(entry => matchesSearch(entry, query)).map(entry => entry.product);
   return selected.sort((a, b) => sort === 'price-asc' ? a.price - b.price
     : sort === 'price-desc' ? b.price - a.price
       : (category.productIds.indexOf(a.id) < 0 ? 9999 : category.productIds.indexOf(a.id)) - (category.productIds.indexOf(b.id) < 0 ? 9999 : category.productIds.indexOf(b.id)));

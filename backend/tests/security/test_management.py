@@ -3,7 +3,7 @@ from io import BytesIO
 from PIL import Image
 from datetime import timedelta
 
-from conftest import register, write
+from conftest import CHECKOUT, register, write
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -40,7 +40,7 @@ def test_rial_price_round_trip_and_order_snapshot(client, engine):
     assert round(result.json()['price'] * 600000) == 123456789
     assert round(client.get('/api/products/extra-01').json()['price'] * 600000) == 123456789
     assert write(client, 'PUT', '/api/account/cart/extra-01', json={'quantity': 2}).status_code == 204
-    order = write(client, 'POST', '/api/account/orders').json()
+    order = write(client, 'POST', '/api/account/orders', json=CHECKOUT).json()
     assert round(order['total'] * 600000) == 246913578
     body['expectedStock'] = row['stock'] - 2
     body['priceRial'] = 50000000
@@ -193,7 +193,7 @@ def test_content_persists_conflicts_and_draft_visibility(client, engine):
 def test_manager_cancel_releases_stock_once(client, engine):
     register(client); grant(engine)
     write(client,'PUT','/api/account/cart/extra-01',json={'quantity':2})
-    order=write(client,'POST','/api/account/orders').json()
+    order=write(client,'POST','/api/account/orders', json=CHECKOUT).json()
     oid=order['id']
     with Session(engine) as db:
         stock=db.get(Product,'extra-01').stock

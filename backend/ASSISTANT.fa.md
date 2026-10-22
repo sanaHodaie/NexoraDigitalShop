@@ -5,6 +5,42 @@
 `agents/nexora-agent-fixed/nexora-agent` برای مراجعه حفظ شده است؛ سرور مستقل آن
 را هم‌زمان اجرا نکنید. نصب وابستگی‌های جداگانهٔ آن برای این اتصال لازم نیست.
 
+## اتصال DeepSeek
+
+در `backend/.env` محلی یا Environment سرویس بک‌اند تنظیم کنید:
+
+```ini
+ASSISTANT_PROVIDER=deepseek
+DEEPSEEK_API_KEY=YOUR_DEEPSEEK_KEY
+ASSISTANT_MODEL=deepseek-flash
+ASSISTANT_PROXY_URL=
+```
+
+طبق [مستندات رسمی DeepSeek](https://api-docs.deepseek.com/)، مدل `deepseek-flash`
+در تاریخ بررسی ۲۰۲۶-۱۰-۲۰ در API ارائه می‌شود. از نام مدل API استفاده کنید.
+این اتصال فقط کلید DeepSeek را مصرف می‌کند؛ کلیدهای گوگل و OpenAI استفاده نمی‌شوند.
+پس از تغییر تنظیمات، بک‌اند را ری‌استارت کنید. در `/admin#assistant` گزینه‌های
+«فعال بودن راهنمای خرید» و «استفاده از DeepSeek برای درک درخواست» باید روشن باشند.
+
+اتصال از `https://api.deepseek.com/chat/completions` و
+[JSON Output](https://api-docs.deepseek.com/guides/json_mode/) استفاده می‌کند.
+Thinking برای تفسیر کوتاه درخواست خاموش است؛ پاسخ ساختاریافته با Pydantic بررسی
+می‌شود. پاسخ ناقص، خالی، خارج از قرارداد، خطای اعتبار یا محدودیت درخواست به
+راهنمای پایهٔ کاتالوگ برمی‌گردد؛ هیچ درخواست جایگزینی به سرویس دیگری نمی‌رود.
+همچنان قیمت، مشخصات و موجودی فقط از دیتابیس خوانده می‌شوند.
+
+در تست واقعی اتصال محلی، پروکسی قدیمی در دسترس نبود؛ اتصال مستقیم موفق به تماس
+با API شد، اما تولید پاسخ `HTTP 402` داد. API موجودی حساب نیز با وضعیت `200`
+مقدار `is_available=false` برگرداند. بنابراین کلید برای بررسی حساب پذیرفته شد،
+ولی اعتبار قابل مصرف برای پاسخ مدل وجود نداشت. اعتبار را در پنل DeepSeek بررسی
+و تأمین کنید؛ داشتن کلید به‌تنهایی به معنی داشتن اعتبار نیست. پس از آن از پنل
+مدیریت «آزمایش پاسخ» را اجرا کنید؛ حالت `deepseek` یعنی طرح مدل پذیرفته شده است.
+کیفیت پاسخ زندهٔ فارسی تا رفع محدودیت اعتبار هنوز تأیید نشده است.
+
+پس از افزودن DeepSeek، ۶۹ تست مرتبط با راهنما، سرویس‌های مدل و امنیت API موفق
+بودند؛ ساخت فرانت‌اند و TypeScript check نیز موفق بود. تست پاسخ موفق DeepSeek
+با سرویس شبیه‌سازی‌شده انجام شد؛ تست واقعی حساب به علت نبود اعتبار پاسخ مدل نداد.
+
 ## اتصال فقط به Google AI Studio
 
 برای اجرای محلی با پروکسی HTTP/Mixed، فقط در `backend/.env` مقدار زیر را
@@ -151,7 +187,7 @@ cd D:\nexoraShop\backend
 
 - `domain/assistant.py`: قواعد مستقل از دیتابیس و مدل؛
 - `application/assistant.py`: دریافت کاتالوگ و کنترل‌های مدیریت؛
-- `infrastructure/assistant_llm.py`: اتصال محدود و اعتبارسنجی‌شده به OpenAI یا Google Gemini؛
+- `infrastructure/assistant_llm.py`: اتصال محدود و اعتبارسنجی‌شده به DeepSeek، OpenAI یا Google Gemini؛
 - `presentation/assistant.py`: API، CSRF موجود، validation و rate limit؛
 - `src/components/Assistant`: گفت‌وگو، کارت محصول و تعامل صریح با سبد؛
 - `AdminPanel/src/components/AssistantSettings.jsx`: تنظیمات و آزمایش پاسخ.

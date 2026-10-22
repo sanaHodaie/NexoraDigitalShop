@@ -20,7 +20,7 @@ def main():
         url='sqlite:///' + str(Path(directory)/'test.db')
         settings=Settings(_env_file=None,environment='test',database_url=url,
                           secret_key='browser-tests-only-not-a-real-secret',require_verified_email=False,
-                          auth_rate_limit=100,login_ip_limit=100,login_account_limit=100)
+                          auth_rate_limit=100,login_ip_limit=100,login_account_limit=100,email_account_limit=100)
         # HTTP cookies only for this localhost-only isolated test server.
         settings=settings.model_copy(update={'environment':'development'})
         engine=create_engine(url,connect_args={'check_same_thread':False})

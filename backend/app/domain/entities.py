@@ -13,6 +13,7 @@ def aware(value):
 
 
 class OrderStatus(StrEnum):
+    DRAFT = "draft"
     PENDING = "pending"
     AWAITING_PAYMENT = "pending_payment"  # Preserve the existing public contract.
     PAID = "paid"
@@ -79,6 +80,10 @@ class Order:
     reservation_expires_at: datetime | None
     lines: list[Line] = field(default_factory=list)
     payment_reference: str | None = None
+    shipping_address: dict | None = None
+    customer_email: str = ""
+    paid_at: datetime | None = None
+    rial_rate: Decimal = Decimal("600000")
 
     @property
     def shipping(self):

@@ -1,12 +1,16 @@
 from decimal import Decimal
 
+import httpx
 from conftest import register, write
+from pydantic import SecretStr
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.domain.assistant import Plan
+from app.infrastructure.assistant_llm import make_planner
 from app.infrastructure.models import AuditLog, Product
 from tests.security.test_management import grant
+from tests.unit.test_deepseek_planner import reply
 
 
 def ask(client, text, extra=None):
@@ -179,3 +183,34 @@ def test_google_provider_metadata_and_response_mode(client, app, engine):
     register(client)
     grant(engine)
     assert client.get("/api/admin/assistant").json()["provider"] == "Google Gemini"
+
+
+def test_deepseek_uses_database_facts_and_falls_back_on_empty_balance(client, app, engine):
+    settings = app.state.settings
+    settings.assistant_provider = "deepseek"
+    settings.assistant_model = "deepseek-flash"
+    settings.deepseek_api_key = SecretStr("test-deepseek-secret")
+    app.state.assistant_planner = make_planner(
+        settings, httpx.MockTransport(lambda _: httpx.Response(200, json=reply()))
+    )
+    config = client.get("/api/assistant/config").json()
+    assert config["provider"] == "DeepSeek" and config["externalModel"]
+    result = ask(client, "لپتاپ برای برنامه نویسی تا ۵۰ میلیون تومان").json()
+    assert result["mode"] == "deepseek" and result["products"]
+    with Session(engine) as db:
+        for product in result["products"]:
+            stored = db.get(Product, product["id"])
+            assert stored.stock > 0 and stored.is_active
+            assert product["priceRial"] == int(stored.price * 600000)
+            assert product["priceRial"] <= 500000000
+    register(client)
+    grant(engine)
+    doc = client.get("/api/admin/assistant")
+    assert doc.json()["provider"] == "DeepSeek" and doc.json()["configured"]
+    assert "test-deepseek-secret" not in doc.text
+    app.state.assistant_planner = make_planner(
+        settings, httpx.MockTransport(lambda _: httpx.Response(402, text="private-secret"))
+    )
+    result = ask(client, "لپتاپ برای برنامه نویسی تا ۵۰ میلیون تومان")
+    assert result.status_code == 200 and result.json()["mode"] == "catalog"
+    assert result.json()["products"] and "private-secret" not in result.text

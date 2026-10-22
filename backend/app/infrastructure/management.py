@@ -1,12 +1,30 @@
 """SQL read models and persistence for management; never expose ORM users/sessions."""
 from datetime import timedelta
 
-from sqlalchemy import func, or_, select
+from sqlalchemy import func, or_, select, update
 from sqlalchemy.orm import selectinload
 
 from app.domain.entities import aware, utcnow
 from app.domain.errors import BusinessError
+from app.domain.catalog import RETIRED_PRODUCT_IDS
 from app.infrastructure import models as m
+
+
+SEARCH_REPLACEMENTS = list(zip('۰۱۲۳۴۵۶۷۸۹٠١٢٣٤٥٦٧٨٩يكآأإ\u200c', '01234567890123456789یکااا '))
+
+
+def search_text(value):
+    value = value.lower()
+    for before, after in SEARCH_REPLACEMENTS:
+        value = value.replace(before, after)
+    return value
+
+
+def search_column(column):
+    result = func.lower(column)
+    for before, after in SEARCH_REPLACEMENTS:
+        result = func.replace(result, before, after)
+    return result
 
 
 class ManagementRepository:
@@ -41,9 +59,37 @@ class ManagementRepository:
         if category:
             q = q.where(m.Product.category == category)
         if query:
-            q = q.where(or_(m.Product.name.contains(query, autoescape=True),
-                            m.Product.name_en.contains(query, autoescape=True), m.Product.id == query))
+            text = search_column(m.Product.name + ' ' + m.Product.name_en + ' ' + m.Product.id + ' ' +
+                                 func.coalesce(m.Product.payload['brand'].as_string(), ''))
+            for token in search_text(query).split()[:12]:
+                q = q.where(text.contains(token, autoescape=True))
         return self.page(q.order_by(m.Product.id), page, size, self.product)
+
+    def existing_product_ids(self, ids):
+        return set(self.db.scalars(select(m.Product.id).where(m.Product.id.in_(ids))))
+
+    def product_brands(self, category):
+        brand = m.Product.payload['brand'].as_string()
+        return list(self.db.scalars(select(brand).where(
+            m.Product.category == category, m.Product.id.not_in(RETIRED_PRODUCT_IDS),
+            brand.is_not(None), brand != '').distinct().order_by(brand)))
+
+    def price_candidates(self, category, brand, lock=False):
+        query = select(m.Product).where(m.Product.category == category,
+                                       m.Product.id.not_in(RETIRED_PRODUCT_IDS)).order_by(m.Product.id).limit(1001)
+        if brand is not None:
+            query = query.where(m.Product.payload['brand'].as_string() == brand)
+        if lock:
+            query = query.with_for_update()
+        return [{'id': p.id, 'name': p.name, 'price': p.price, 'brand': p.payload.get('brand', ''),
+                 'isActive': p.is_active} for p in self.db.scalars(query)]
+
+    def set_product_price(self, pid, expected_price, price):
+        product = self.db.get(m.Product, pid)
+        changed = self.db.execute(update(m.Product).where(m.Product.id == pid, m.Product.price == expected_price)
+                                  .values(price=price, payload={**product.payload, 'price': float(price)}))
+        if changed.rowcount != 1:
+            raise BusinessError(409, 'قیمت تغییر کرده است؛ پیش‌نمایش تازه بگیرید.', 'PRICE_PREVIEW_STALE')
 
     def save_product(self, pid, data, create=False):
         row = self.db.scalar(select(m.Product).where(m.Product.id == pid).with_for_update())
@@ -76,10 +122,10 @@ class ManagementRepository:
                             m.Order.id == (int(query) if query.isascii() and query.isdigit() else -1)))
         def output(row):
             user = self.db.get(m.User, row.user_id)
-            return {"id": row.id, "userId": row.user_id, "email": user.email, "name": user.full_name,
+            return {"id": row.id, "userId": row.user_id, "email": row.customer_email or user.email, "name": (row.shipping_address or {}).get("recipient") or user.full_name,
                     "total": float(row.total), "status": row.status, "createdAt": aware(row.created_at),
                     "reservationExpiresAt": aware(row.reservation_expires_at) if row.reservation_expires_at else None,
-                    "lines": [{"productId": line.product_id, "name": self.db.get(m.Product, line.product_id).name,
+                    "lines": [{"productId": line.product_id, "name": line.product_name or self.db.get(m.Product, line.product_id).name,
                                "quantity": line.quantity, "unitPrice": float(line.unit_price)} for line in row.lines]}
         return self.page(q.order_by(m.Order.id.desc()), page, size, output)
 

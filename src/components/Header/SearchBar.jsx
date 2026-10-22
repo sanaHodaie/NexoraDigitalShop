@@ -1,135 +1,87 @@
+import React, { useEffect, useId, useMemo, useRef, useState } from 'react';
+import { Search, X, ArrowUpLeft } from 'lucide-react';
 import { optimizedImage } from '../../data/imageAssets';
-import React, { useState, useRef, useEffect } from 'react';
-import { Search, X, ArrowUpLeft, Sparkles } from 'lucide-react';
 import { useShop } from '../../context/ShopContext';
+import { buildSearchIndex, normalizeSearch, suggestProducts } from '../../lib/product-search';
+import './search.css';
 
-export const SearchBar = ({ className = '', isCompact = false }) => {
-  const { setQuickViewProduct, allProducts } = useShop();
-  const [searchQuery, setSearchQuery] = useState('');
-  const [isOpen, setIsOpen] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(false);
-  const containerRef = useRef(null);
-
-
-  const filteredProducts = searchQuery.trim()
-    ? allProducts.filter(
-        (p) =>
-          p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          p.nameEn.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          p.categoryFa.toLowerCase().includes(searchQuery.toLowerCase())
-      ).slice(0, 5)
-    : [];
+export const SearchBar = ({ className = '', products, value, onChange, onSelect, onDismiss, autoFocus = false, placeholder = 'نام محصول، مدل یا برند…' }) => {
+  const { allProducts, productsStatus, reloadProducts, setQuickViewProduct, formatPrice } = useShop();
+  const [localQuery, setLocalQuery] = useState('');
+  const [open, setOpen] = useState(false);
+  const [active, setActive] = useState(-1);
+  const root = useRef(null);
+  const input = useRef(null);
+  const id = useId();
+  const query = value ?? localQuery;
+  const index = useMemo(() => buildSearchIndex(products ?? allProducts), [products, allProducts]);
+  const suggestions = useMemo(() => suggestProducts(index, query), [index, query]);
+  const visible = open && Boolean(normalizeSearch(query));
+  const activeOption = active >= 0 ? suggestions[active] : undefined;
+  const update = text => { setLocalQuery(text); onChange?.(text); setActive(-1); setOpen(true); };
+  const select = product => {
+    update(product.name);
+    setOpen(false);
+    setQuickViewProduct(product);
+    onSelect?.(product);
+  };
 
   useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (containerRef.current && !containerRef.current.contains(e.target)) {
-        setIsOpen(false);
-        if (isCompact && !searchQuery) {
-          setIsExpanded(false);
-        }
-      }
+    const outside = event => {
+      if (!root.current?.contains(event.target)) { setOpen(false); setActive(-1); }
     };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [isCompact, searchQuery]);
+    document.addEventListener('pointerdown', outside);
+    return () => document.removeEventListener('pointerdown', outside);
+  }, []);
+  useEffect(() => {
+    if (visible && activeOption) document.getElementById(`${id}-${activeOption.id}`)?.scrollIntoView({ block: 'nearest' });
+  }, [activeOption, visible, id]);
 
-  return (
-    <div ref={containerRef} className={`relative ${className}`}>
-      {/* If compact, it behaves like a sleek expandable pill or small input */}
-      <form
-        onSubmit={(e) => {
-          e.preventDefault();
-          if (filteredProducts.length > 0) {
-            setQuickViewProduct(filteredProducts[0]);
-            setIsOpen(false);
-          }
-        }}
-        className="relative flex items-center"
-      >
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => {
-            setSearchQuery(e.target.value);
-            setIsOpen(true);
-          }}
-          onFocus={() => {
-            setIsOpen(true);
-            setIsExpanded(true);
-          }}
-          placeholder="جستجو..."
-          className={`h-8 text-xs bg-slate-100/90 dark:bg-slate-800/90 text-slate-800 dark:text-slate-100 placeholder:text-slate-400 dark:placeholder:text-slate-500 rounded-full border border-slate-200 dark:border-slate-700/80 focus:outline-none focus:ring-2 focus:ring-blue-500/40 transition-all shadow-inner pr-8 pl-6 ${
-            isCompact ? (isExpanded || searchQuery ? 'w-44 lg:w-56' : 'w-28 lg:w-36') : 'w-full'
-          }`}
-        />
+  const keyDown = event => {
+    if (event.nativeEvent.isComposing || event.keyCode === 229) return;
+    if (event.key === 'Escape') {
+      event.preventDefault(); event.stopPropagation(); setOpen(false); setActive(-1); onDismiss?.();
+    } else if (['ArrowDown', 'ArrowUp'].includes(event.key) && suggestions.length) {
+      event.preventDefault(); setOpen(true);
+      setActive(previous => event.key === 'ArrowDown'
+        ? (previous + 1) % suggestions.length
+        : previous <= 0 ? suggestions.length - 1 : previous - 1);
+    } else if (event.key === 'Enter' && visible && suggestions.length) {
+      event.preventDefault(); select(activeOption || suggestions[0]);
+    } else if (event.key === 'Tab') { setOpen(false); setActive(-1); }
+  };
+  const status = productsStatus === 'loading' && !index.length ? 'در حال دریافت محصولات…'
+    : productsStatus === 'error' && !index.length ? 'دریافت محصولات انجام نشد.'
+      : suggestions.length ? `${new Intl.NumberFormat('fa-IR').format(suggestions.length)} پیشنهاد؛ با کلیدهای بالا و پایین انتخاب کنید.`
+        : 'محصولی پیدا نشد؛ نام یا مدل دیگری را امتحان کنید.';
 
-        {/* Search icon inside right */}
-        <Search className="absolute right-2.5 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
-
-        {/* Clear Button */}
-        {searchQuery && (
-          <button
-            type="button"
-            onClick={() => {
-              setSearchQuery('');
-              setIsOpen(false);
-            }}
-            className="absolute left-2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-0.5 cursor-pointer"
-          >
-            <X className="w-3 h-3" />
-          </button>
-        )}
-      </form>
-
-      {/* Live Search Suggestions Dropdown */}
-      {isOpen && searchQuery.trim() !== '' && (
-        <div className="absolute top-full right-0 mt-2 w-72 sm:w-80 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl z-50 overflow-hidden">
-          <div className="py-2">
-            <div className="px-3.5 py-1 text-[11px] font-semibold text-slate-400 dark:text-slate-500 uppercase flex items-center justify-between">
-              <span>نتایج جستجو ({filteredProducts.length})</span>
-              <Sparkles className="w-3 h-3 text-blue-500" />
-            </div>
-
-            {filteredProducts.length > 0 ? (
-              filteredProducts.map((product) => (
-                <button
-                  key={product.id}
-                  type="button"
-                  onClick={() => {
-                    setQuickViewProduct(product);
-                    setIsOpen(false);
-                  }}
-                  className="w-full px-3.5 py-2 flex items-center justify-between hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors text-right cursor-pointer group"
-                >
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-8 h-8 rounded-lg bg-slate-100 dark:bg-slate-800 p-1 overflow-hidden shrink-0">
-                      <img
-                        src={optimizedImage(product.image)}
-                        alt={product.name}
-                        className="w-full h-full object-contain"
-                        referrerPolicy="no-referrer"
-                      />
-                    </div>
-                    <div>
-                      <div className="text-xs font-medium text-slate-800 dark:text-slate-200 group-hover:text-blue-600 line-clamp-1">
-                        {product.name}
-                      </div>
-                      <div className="text-[10px] text-slate-400">
-                        ${product.price}
-                      </div>
-                    </div>
-                  </div>
-                  <ArrowUpLeft className="w-3.5 h-3.5 text-slate-400 group-hover:text-blue-600" />
-                </button>
-              ))
-            ) : (
-              <div className="p-3 text-center text-xs text-slate-500">
-                موردی یافت نشد.
-              </div>
-            )}
-          </div>
-        </div>
-      )}
+  return <div ref={root} className={`product-search ${className}`} dir="rtl" onBlur={event => {
+    if (!event.currentTarget.contains(event.relatedTarget)) { setOpen(false); setActive(-1); }
+  }}>
+    <div className="product-search-field">
+      <Search size={17} aria-hidden="true" />
+      <input ref={input} type="text" role="combobox" autoFocus={autoFocus} autoComplete="off" spellCheck={false}
+        maxLength={100} value={query} onChange={event => update(event.target.value)} onFocus={() => {
+          setOpen(true);
+          if (!allProducts.length && productsStatus === 'loading') reloadProducts();
+        }} onKeyDown={keyDown} placeholder={placeholder} aria-label={placeholder}
+        aria-autocomplete="list" aria-expanded={visible} aria-controls={visible ? `${id}-list` : undefined}
+        aria-activedescendant={visible && activeOption ? `${id}-${activeOption.id}` : undefined} />
+      {query && <button type="button" aria-label="پاک کردن جست‌وجو" onClick={() => { update(''); input.current?.focus(); }}><X size={15} /></button>}
     </div>
-  );
+    {visible && <div className="product-search-popup">
+      <p className="product-search-caption">پیشنهاد محصولات <span>انتخاب و مشاهده</span></p>
+      <div role="listbox" id={`${id}-list`} aria-label="محصولات پیشنهادی" className="product-search-list">
+        {suggestions.map((product, position) => <button key={product.id} type="button" role="option"
+          id={`${id}-${product.id}`} aria-selected={position === active} tabIndex={-1}
+          onMouseDown={event => event.preventDefault()} onPointerMove={() => setActive(position)} onClick={() => select(product)}>
+          <img src={optimizedImage(product.image)} alt="" width="48" height="48" loading="lazy" decoding="async" referrerPolicy="no-referrer" />
+          <span className="product-search-copy"><strong>{product.name}</strong><small>{product.categoryFa || product.brand}</small><b>{product.inStock === false ? 'ناموجود' : formatPrice(product.price)}</b></span>
+          <ArrowUpLeft size={15} aria-hidden="true" />
+        </button>)}
+      </div>
+      <p className="product-search-status" role="status" aria-live="polite">{status}</p>
+      {productsStatus === 'error' && !index.length && <button type="button" className="product-search-retry" onClick={reloadProducts}>تلاش مجدد</button>}
+    </div>}
+  </div>;
 };

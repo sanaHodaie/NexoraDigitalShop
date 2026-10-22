@@ -2,6 +2,7 @@ import { optimizedImage } from '../../data/imageAssets';
 import React, { useState } from 'react';
 import { ArrowUpLeft, Check, Heart, ShoppingBag } from 'lucide-react';
 import { useShop } from '../../context/ShopContext';
+import CompareButton from './CompareButton';
 
 export default function CatalogProductCard({ product, eager = false }) {
   const { addToCart, toggleWishlist, isInWishlist, setQuickViewProduct, formatPrice, cart } = useShop();
@@ -44,6 +45,7 @@ export default function CatalogProductCard({ product, eager = false }) {
           </button>
           <button className="catalog-detail" onClick={() => setQuickViewProduct(product)} aria-label={`جزئیات ${product.name}`}><ArrowUpLeft size={20} /></button>
         </div>
+        <CompareButton product={product} className="compare-card-toggle" />
       </div>
     </div>
   </article>;

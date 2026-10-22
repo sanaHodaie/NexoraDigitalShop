@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+﻿import React, {useState} from 'react';
 import {write} from '../api';
 import {Button, ErrorBox, Field, Heading, inputClass, LoadState, Panel, useResource} from './ManagementUI';
 
@@ -38,6 +38,10 @@ function Editor({document, canEdit, reload}) {
     </form></Panel>
     <Panel><h2 className="font-bold mb-3">آزمایش با محصولات واقعی</h2><p className="text-xs leading-6 mb-4 text-slate-500">آزمایش از تنظیمات ذخیره‌شده و همان محدودیت درخواست کاربران استفاده می‌کند.</p>
       <form onSubmit={test} className="space-y-3"><Field label="پرسش نمونه"><textarea value={question} onChange={e=>setQuestion(e.target.value)} maxLength={1000} required rows={3} className={inputClass}/></Field><Button disabled={testing || !question.trim()} secondary>{testing ? 'در حال بررسی…' : 'آزمایش پاسخ'}</Button></form>
-      {preview && <div className="mt-5 text-sm leading-7"><p className="whitespace-pre-wrap">{preview.text}</p><p className="text-xs text-purple-600 dark:text-purple-300 my-3">روش پاسخ: {preview.mode==='gemini'?'تفسیر با Google Gemini و دادهٔ فروشگاه':preview.mode==='openai'?'تفسیر با OpenAI و دادهٔ فروشگاه':'راهنمای پایهٔ کاتالوگ'}</p>{preview.products.map(p=><div key={p.id} className="border-t border-purple-100 dark:border-purple-900 py-3"><b>{p.name}</b><p>{new Intl.NumberFormat('fa-IR').format(p.priceRial)} ریال</p><p className="text-xs">{p.specs.join(' · ') || 'مشخصات ثبت نشده'}</p></div>)}</div>}
+      {preview && <div className="mt-5 text-sm leading-7">
+        <p className="whitespace-pre-wrap">{preview.text}</p>
+        <p className="text-xs text-purple-600 dark:text-purple-300 my-3">روش پاسخ: {preview.mode==='deepseek'?'تفسیر با DeepSeek و دادهٔ فروشگاه':preview.mode==='gemini'?'تفسیر با Google Gemini و دادهٔ فروشگاه':preview.mode==='openai'?'تفسیر با OpenAI و دادهٔ فروشگاه':'راهنمای پایهٔ کاتالوگ'}</p>
+        {preview.products.map(p=><div key={p.id} className="border-t border-purple-100 dark:border-purple-900 py-3"><b>{p.name}</b><p>{new Intl.NumberFormat('fa-IR').format(p.priceRial)} ریال</p><p className="text-xs">{p.specs.join(' · ') || 'مشخصات ثبت نشده'}</p></div>)}
+      </div>}
     </Panel></div>;
 }

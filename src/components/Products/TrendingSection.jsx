@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Heart, Plus, Users, Award, Flame } from 'lucide-react';
 import { useShop } from '../../context/ShopContext';
 import { useContent } from '../../context/ContentContext';
+import CompareButton from './CompareButton';
 
 export const TrendingSection = () => {
   const {home} = useContent();
@@ -87,6 +88,7 @@ export const TrendingSection = () => {
               onClick={() => setQuickViewProduct(product)}
               className="product-hover-card group relative rounded-[30px] overflow-hidden bg-slate-900 h-[390px] sm:h-[410px] flex flex-col justify-end p-4 sm:p-4.5 shadow-xl border border-slate-200/50 dark:border-slate-800 text-right cursor-pointer"
             >
+              <CompareButton product={product} className="absolute top-14 right-3.5 z-20" />
               {/* Full Image Background */}
               <img loading="lazy" decoding="async"
                 src={optimizedImage(product.image)}

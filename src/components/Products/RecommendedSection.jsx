@@ -3,6 +3,7 @@ import React from 'react';
 import { Heart, Plus } from 'lucide-react';
 import { useShop } from '../../context/ShopContext';
 import { useContent } from '../../context/ContentContext';
+import CompareButton from './CompareButton';
 
 export const RecommendedSection = () => {
   const {home} = useContent();
@@ -32,6 +33,7 @@ export const RecommendedSection = () => {
               key={product.id}
               className="product-hover-card group relative rounded-[28px] overflow-hidden bg-slate-900 h-96 sm:h-[420px] flex flex-col justify-end p-5 shadow-xl cursor-pointer border border-slate-200/50 dark:border-slate-800 text-right"
             >
+              <CompareButton product={product} className="absolute top-4 right-4 z-20" />
               {/* Full Background Product Photo */}
               <img loading="lazy" decoding="async"
                 src={optimizedImage(product.image)}

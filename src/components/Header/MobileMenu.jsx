@@ -72,6 +72,7 @@ export const MobileMenu = ({ isOpen, onClose }) => {
             {/* Navigation Body */}
             <div className="flex-1 overflow-y-auto px-5 py-5 space-y-4 no-scrollbar">
               <nav className="space-y-1">
+                <Link to="/compare" onClick={onClose} className="flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-semibold text-blue-600 dark:text-blue-300 hover:bg-blue-50 dark:hover:bg-slate-800">مقایسهٔ محصولات<span className="text-xs">تا ۳ محصول</span></Link>
                 <a
                   href="/"
                   onClick={onClose}

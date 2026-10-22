@@ -19,18 +19,18 @@ export const ShopProvider = ({ children }) => {
   const sessionBootstrap = useRef(null);
   const pathname = usePathname();
   const [isAuthOpen, setIsAuthOpen] = useState(false);
-  const [isCartOpen, setIsCartOpen] = useState(false);
+  const [isCartOpen, setCartOpen] = useState(false);
   const [isWishlistModalOpen, setIsWishlistModalOpen] = useState(false);
   const [quickViewProduct, setQuickViewProduct] = useState(null);
   const [centerToast, setCenterToast] = useState(null);
 
   const showCenterMessage = (title, message, iconType = 'info') => setCenterToast({ id: Date.now(), title, message, iconType });
   const reportError = (error) => showCenterMessage('خطا', error.message, 'info');
-  const refreshAccount = useCallback(async () => {
+  const refreshAccount = useCallback(async ({background = false} = {}) => {
     const epoch = ++accountEpoch.current;
-    setAccountStatus('loading');
+    if (!background) setAccountStatus('loading');
     try {
-      const [newCart, newWishlist] = await Promise.all([api('/account/cart'), api('/account/wishlist')]);
+      const [newCart, newWishlist] = await Promise.all([api('/account/cart', {cache:'no-store'}), api('/account/wishlist', {cache:'no-store'})]);
       if (!Array.isArray(newCart) || !Array.isArray(newWishlist)) throw new Error('Invalid account response');
       if (epoch !== accountEpoch.current) return;
       setCart(newCart); setWishlist(newWishlist); setAccountStatus('ready');
@@ -39,6 +39,26 @@ export const ShopProvider = ({ children }) => {
       throw error;
     }
   }, []);
+  const setIsCartOpen = useCallback(open => {
+    setCartOpen(open);
+    if (open && isLoggedIn) refreshAccount().catch(() => {});
+  }, [isLoggedIn, refreshAccount]);
+  useEffect(() => {
+    if (!isLoggedIn) return;
+    const visibleCart = isCartOpen || pathname.startsWith('/account') || pathname.startsWith('/checkout');
+    const refresh = () => {
+      if (!document.hidden) refreshAccount({background:true}).catch(() => {});
+    };
+    if (visibleCart && !isCartOpen) refreshAccount().catch(() => {});
+    window.addEventListener('focus', refresh);
+    document.addEventListener('visibilitychange', refresh);
+    const timer = visibleCart ? window.setInterval(refresh, 15000) : null;
+    return () => {
+      if (timer) window.clearInterval(timer);
+      window.removeEventListener('focus', refresh);
+      document.removeEventListener('visibilitychange', refresh);
+    };
+  }, [isLoggedIn, isCartOpen, pathname, refreshAccount]);
   const reloadProducts = useCallback(() => productsResource.load({ force: true }), []);
   useEffect(() => {
     if (!pathname.startsWith('/account') && !pathname.startsWith('/reset-password')) productsResource.load();
@@ -125,7 +145,7 @@ export const ShopProvider = ({ children }) => {
     catch (error) { reportError(error); }
   };
   const removeFromCart = (id) => updateQuantity(id, 0);
-  const clearCart = async () => { try { await api('/account/cart', { method: 'DELETE' }); setCart([]); } catch (error) { reportError(error); } };
+  const clearCart = async () => { try { await api('/account/cart', { method: 'DELETE' }); await refreshAccount(); } catch (error) { reportError(error); } };
   const toggleWishlist = async (product) => {
     if (!requireLogin()) return;
     try {

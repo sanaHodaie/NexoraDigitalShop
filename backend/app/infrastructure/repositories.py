@@ -193,10 +193,14 @@ class Orders:
             row.created_at,
             row.reservation_expires_at,
             [
-                e.Line(x.product_id, x.quantity, x.unit_price, names.get(x.product_id, x.product_id))
+                e.Line(x.product_id, x.quantity, x.unit_price, x.product_name or names.get(x.product_id, x.product_id))
                 for x in row.lines
             ],
             row.payment_reference,
+            row.shipping_address,
+            row.customer_email,
+            row.paid_at,
+            row.rial_rate,
         )
 
     def get(self, oid, user_id=None, lock=False):
@@ -229,12 +233,19 @@ class Orders:
                 user_id=order.user_id,
                 created_at=order.created_at,
                 lines=[
-                    m.OrderLine(product_id=x.product_id, quantity=x.quantity, unit_price=x.unit_price)
+                    m.OrderLine(product_id=x.product_id, quantity=x.quantity, unit_price=x.unit_price, product_name=x.name)
                     for x in order.lines
                 ],
             )
         )
+        if order.id and row.status == 'draft' and order.status == 'draft':
+            prices = {line.product_id: line for line in order.lines}
+            for line in row.lines:
+                current = prices[line.product_id]
+                line.unit_price, line.product_name = current.unit_price, current.name
         row.total, row.status = order.total, order.status
+        row.shipping_address, row.customer_email = order.shipping_address, order.customer_email
+        row.paid_at, row.rial_rate = order.paid_at, order.rial_rate
         row.reservation_expires_at, row.payment_reference = (
             order.reservation_expires_at,
             order.payment_reference,
@@ -296,6 +307,8 @@ class Tokens:
 
 
 AUDIT_EVENTS = {
+    "INVOICE_DRAFT_REPRICED",
+    "PRODUCT_PRICE_CHANGED",
     "ASSISTANT_SETTINGS_UPDATED",
     "REGISTER_SUCCESS", "PRODUCT_CREATED", "PRODUCT_UPDATED", "PRODUCT_ARCHIVED",
     "CONTENT_UPDATED", "ADMIN_SESSIONS_REVOKED", "ADMIN_ORDER_CANCELLED",
@@ -308,6 +321,8 @@ AUDIT_EVENTS = {
     "EMAIL_VERIFIED",
     "EMAIL_CHANGED",
     "ORDER_CREATED",
+    "INVOICE_DRAFT_CREATED",
+    "INVOICE_DRAFT_CANCELLED",
     "ORDER_CANCELLED",
     "ORDER_EXPIRED",
     "PAYMENT_CONFIRMED",

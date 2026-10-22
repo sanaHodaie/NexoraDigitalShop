@@ -3,7 +3,7 @@ from datetime import timedelta
 from types import SimpleNamespace
 
 import pytest
-from conftest import register, write
+from conftest import CHECKOUT, register, write
 from fastapi.testclient import TestClient
 from sqlalchemy import select, update
 from sqlalchemy.orm import Session
@@ -30,7 +30,7 @@ def checkout(client):
     assert (
         write(client, "PUT", f"/api/account/cart/{pid}", json={"quantity": 1, "price": 0}).status_code == 204
     )
-    result = write(client, "POST", "/api/account/orders", json={"total": 0, "userId": 999})
+    result = write(client, "POST", "/api/account/orders", json={**CHECKOUT, "total": 0, "userId": 999})
     assert result.status_code == 200, result.text
     return pid, result.json()
 
@@ -88,7 +88,7 @@ def test_invalid_idle_session_and_logout_all(client, app, engine):
 def test_email_verification_hash_expiry_one_use_and_checkout_gate(client, app, engine):
     register(client)
     app.state.services.orders.require_verified = True
-    assert write(client, "POST", "/api/account/orders").status_code == 403
+    assert write(client, "POST", "/api/account/orders", json=CHECKOUT).status_code == 403
     token = secrets.token_urlsafe(32)
     with Session(engine) as db:
         user = db.scalar(select(User))

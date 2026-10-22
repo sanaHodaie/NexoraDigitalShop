@@ -3,7 +3,7 @@ from decimal import Decimal
 from pathlib import Path
 
 import pytest
-from conftest import register, write
+from conftest import CHECKOUT, register, write
 from sqlalchemy.orm import Session
 
 from app.models import Product
@@ -38,7 +38,7 @@ def test_retired_drone_is_hidden_without_deleting_order_history(client, engine):
     assert write(client, "PUT", "/api/account/wishlist/drone-10").status_code == 404
     assert client.get("/api/account/cart").json() == []
     assert client.get("/api/account/wishlist").json() == []
-    assert write(client, "POST", "/api/account/orders").status_code == 400
+    assert write(client, "POST", "/api/account/orders", json=CHECKOUT).status_code == 400
     history = client.get(f"/api/account/orders/{oid}")
     assert history.status_code == 200
     assert history.json()["lines"][0]["productId"] == "drone-10"

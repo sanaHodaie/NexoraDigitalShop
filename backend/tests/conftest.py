@@ -12,6 +12,11 @@ from app.config import Settings
 from app.main import create_app
 from app.seed import seed
 
+CHECKOUT = {"shippingAddress": {
+    "recipient": "Test Customer", "phone": "09123456789", "province": "Tehran", "city": "Tehran",
+    "postalCode": "1234567890", "address": "Test Street, Test Alley", "building": "12", "unit": "2", "notes": "",
+}}
+
 
 @pytest.fixture
 def engine(tmp_path):
