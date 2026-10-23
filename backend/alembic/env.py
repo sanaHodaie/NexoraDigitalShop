@@ -8,8 +8,9 @@ from app.config import Settings
 from app.db import Base
 
 config = context.config
-if config.config_file_name:
-    fileConfig(config.config_file_name)
+if config.config_file_name and config.attributes.get("connection") is None:
+    # Embedded migrations must preserve the caller's handlers and security logging.
+    fileConfig(config.config_file_name, disable_existing_loggers=False)
 target_metadata = Base.metadata
 
 

@@ -7,8 +7,8 @@ from sqlalchemy.orm import Session
 
 from app.config import Settings
 from app.db import make_engine
-from app.models import Product
 from app.infrastructure.models import SiteDocument, utcnow
+from app.models import Product
 
 PHOTO_PRODUCT_IDS = {f"{prefix}-{i:02d}" for prefix in ("gaming", "phone", "home", "audio", "computer") for i in range(1, 11)}
 PHOTO_PRODUCT_IDS.update(f"watch-{i:02d}" for i in range(1, 11))

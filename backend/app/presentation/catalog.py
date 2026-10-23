@@ -11,6 +11,7 @@ router = APIRouter(prefix="/api", tags=["catalog"])
 @router.get('/media/{filename}')
 def media(filename: str, svc=Depends(services)):
     import re
+
     from app.domain.errors import BusinessError
     if not re.fullmatch(r'[a-f0-9]{64}\.webp', filename):
         raise BusinessError(404, 'Image not found')

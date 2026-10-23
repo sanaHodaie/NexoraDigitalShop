@@ -12,12 +12,12 @@ from app.bootstrap import Services
 from app.core.config import Settings
 from app.core.logging import configure_logging
 from app.domain.errors import BusinessError, Conflict
+from app.infrastructure.assistant_llm import make_planner
 from app.infrastructure.crypto import valid_csrf
 from app.infrastructure.database import make_engine
 from app.infrastructure.database_security import check_runtime_role
 from app.infrastructure.rate_limit import LocalLimiter, RedisLimiter
-from app.presentation import account, auth, catalog, management, assistant
-from app.infrastructure.assistant_llm import make_planner
+from app.presentation import account, assistant, auth, catalog, management
 
 
 def create_app(settings: Settings | None = None, engine=None) -> FastAPI:

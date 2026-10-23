@@ -1,14 +1,14 @@
 from fastapi import APIRouter, Depends, Query, Request, Response
 from fastapi.exceptions import RequestValidationError
 from pydantic import ValidationError
+from starlette.concurrency import run_in_threadpool
 
 from app.domain.errors import BusinessError
+from app.infrastructure.images import MAX_UPLOAD_BYTES, product_image
+from app.infrastructure.rate_limit import enforce
 from app.presentation.dependencies import current_user, services
 from app.presentation.management_schemas import DOCUMENT_MODELS, BulkPriceInput, DocumentInput, ProductInput
 from app.presentation.schemas import PaymentInput
-from app.infrastructure.images import MAX_UPLOAD_BYTES, product_image
-from app.infrastructure.rate_limit import enforce
-from starlette.concurrency import run_in_threadpool
 
 router = APIRouter(prefix='/api/admin', tags=['management'])
 

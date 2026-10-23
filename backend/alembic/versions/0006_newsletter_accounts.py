@@ -1,6 +1,7 @@
 """Associate newsletter submissions with the authenticated account."""
-from alembic import op
 import sqlalchemy as sa
+
+from alembic import op
 
 revision = '0006'
 down_revision = '0005'

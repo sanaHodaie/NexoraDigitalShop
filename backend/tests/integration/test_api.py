@@ -1,3 +1,4 @@
+import logging
 from concurrent.futures import ThreadPoolExecutor
 from datetime import timedelta
 from decimal import Decimal
@@ -229,6 +230,13 @@ def test_google_verification_and_no_email_account_linking(client, app, monkeypat
         write(client, "POST", "/api/auth/google", json={"credential": "header.payload.signature"}).status_code
         == 409
     )
+
+
+def test_embedded_migrations_preserve_application_logging(engine, caplog):
+    logger = logging.getLogger("nexora")
+    assert not logger.disabled
+    logger.warning("Migration logging regression check")
+    assert "Migration logging regression check" in caplog.text
 
 
 def test_migrations_match_models_and_seed_does_not_reset_stock(engine):

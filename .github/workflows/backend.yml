@@ -1,9 +1,9 @@
 name: Backend checks
 on:
   push:
-    paths: ['backend/**', 'src/**', 'scripts/**', 'package*.json', 'vercel.json', '.github/workflows/backend.yml']
+    paths: ['backend/**', 'src/**', 'AdminPanel/**', 'scripts/**', 'package*.json', 'vercel.json', '.github/workflows/backend.yml']
   pull_request:
-    paths: ['backend/**', 'src/**', 'scripts/**', 'package*.json', 'vercel.json', '.github/workflows/backend.yml']
+    paths: ['backend/**', 'src/**', 'AdminPanel/**', 'scripts/**', 'package*.json', 'vercel.json', '.github/workflows/backend.yml']
 permissions:
   contents: read
 jobs:
@@ -53,5 +53,5 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npm run build
-      - run: node --test scripts/api-client.test.mjs scripts/vercel-config.test.mjs scripts/catalog.test.mjs
+      - run: node --test scripts/*.test.mjs
       - run: npm audit --audit-level=high

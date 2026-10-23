@@ -4,11 +4,10 @@ from datetime import timedelta
 from sqlalchemy import func, or_, select, update
 from sqlalchemy.orm import selectinload
 
+from app.domain.catalog import RETIRED_PRODUCT_IDS
 from app.domain.entities import aware, utcnow
 from app.domain.errors import BusinessError
-from app.domain.catalog import RETIRED_PRODUCT_IDS
 from app.infrastructure import models as m
-
 
 SEARCH_REPLACEMENTS = list(zip('۰۱۲۳۴۵۶۷۸۹٠١٢٣٤٥٦٧٨٩يكآأإ\u200c', '01234567890123456789یکااا '))
 

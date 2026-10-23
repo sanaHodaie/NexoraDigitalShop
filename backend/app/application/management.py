@@ -1,6 +1,6 @@
 """Management use cases: authorization and transactions, without ORM dependencies."""
 from app.application.orders import InventoryReservation
-from app.domain.entities import OrderStatus, aware, utcnow
+from app.domain.entities import OrderStatus, utcnow
 from app.domain.errors import BusinessError
 from app.domain.management import MANAGEMENT_PERMISSIONS
 

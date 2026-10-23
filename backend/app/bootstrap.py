@@ -1,11 +1,11 @@
 """Composition root: the only place that wires ports to concrete adapters."""
 
+from app.application.assistant import Assistant
 from app.application.identity import Identity, IdentityPolicy
+from app.application.management import Management
 from app.application.orders import Orders
 from app.application.pricing import BulkPricing
 from app.application.shopping import Shopping
-from app.application.management import Management
-from app.application.assistant import Assistant
 from app.infrastructure.crypto import Cipher, PasswordAdapter, TokenAdapter
 from app.infrastructure.google import GoogleAdapter
 from app.infrastructure.repositories import SqlUnitOfWork

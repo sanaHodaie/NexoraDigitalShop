@@ -1,5 +1,6 @@
 """Operator-only command: python -m app.provision_admin user@example.com [--revoke]."""
 import argparse
+
 from sqlalchemy import delete, select
 from sqlalchemy.orm import Session
 

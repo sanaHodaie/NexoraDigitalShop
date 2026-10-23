@@ -2,7 +2,7 @@ from decimal import Decimal
 from typing import Annotated
 from urllib.parse import urlsplit
 
-from pydantic import BaseModel, ConfigDict, Field, AfterValidator, field_validator, model_validator
+from pydantic import AfterValidator, BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from app.domain.management import CATEGORY_IDS
 
