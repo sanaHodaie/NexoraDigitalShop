@@ -1,4 +1,4 @@
-import React, {useRef, useState} from 'react';
+import React, {useEffect, useRef, useState} from 'react';
 import {CheckCircle2, Download, FileSpreadsheet, UploadCloud} from 'lucide-react';
 import {api} from '../api';
 import {Button, ErrorBox, Modal, number} from './ManagementUI';
@@ -8,11 +8,30 @@ const labels = {id:'شناسه', name:'نام فارسی', nameEn:'نام انگ
 
 export default function ProductImportModal({onClose, onSaved}) {
   const picker = useRef(null);
+  const preview = useRef(null);
+  const inFlight = useRef(false);
   const [file, setFile] = useState(null);
   const [result, setResult] = useState(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
   const [page, setPage] = useState(1);
+  const [cooldown, setCooldown] = useState({preview:0, commit:0});
+  const [now, setNow] = useState(Date.now);
+  const previewWait = Math.max(0, Math.ceil((cooldown.preview - now) / 1000));
+  const commitWait = Math.max(0, Math.ceil((cooldown.commit - now) / 1000));
+  const waiting = previewWait > 0 || commitWait > 0;
+  useEffect(() => {
+    if (!waiting) return;
+    const timer = window.setInterval(() => setNow(Date.now()), 1000);
+    return () => window.clearInterval(timer);
+  }, [waiting]);
+  useEffect(() => {
+    if (!result || result.created) return;
+    preview.current?.focus({preventScroll:true});
+    preview.current?.scrollIntoView({
+      block:'start', behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth',
+    });
+  }, [result]);
   const selectFile = event => {
     const selected = event.target.files?.[0];
     event.target.value = '';
@@ -25,7 +44,9 @@ export default function ProductImportModal({onClose, onSaved}) {
     setFile(selected);
   };
   const submit = async (commit = false) => {
-    if (!file || busy) return;
+    const phase = commit ? 'commit' : 'preview';
+    if (!file || inFlight.current || cooldown[phase] > Date.now()) return;
+    inFlight.current = true;
     setBusy(true); setError('');
     try {
       const data = await api(`/admin/products/import?commit=${commit}`, {
@@ -35,9 +56,15 @@ export default function ProductImportModal({onClose, onSaved}) {
       if (data.created) { setFile(null); onSaved(); }
     } catch (e) {
       setError(e.message);
+      if (e.status === 429) {
+        const time = Date.now();
+        setNow(time);
+        setCooldown(value => ({...value, [phase]:time + (e.retryAfter || 60) * 1000}));
+      }
       // Require a fresh preview after a failed or uncertain commit.
-      setResult(null);
-    } finally { setBusy(false); }
+      // A throttled preview has not changed the selected file or its previous preview.
+      if (commit || e.status !== 429) setResult(null);
+    } finally { inFlight.current = false; setBusy(false); }
   };
   return <Modal title="افزودن گروهی محصولات از اکسل" onClose={() => {if (!busy) onClose();}}>
     <div className="space-y-5 min-w-0" dir="rtl">
@@ -49,6 +76,11 @@ export default function ProductImportModal({onClose, onSaved}) {
         <p>محصولات به‌صورت بایگانی ثبت می‌شوند؛ پس از افزودن عکس، وضعیت نمایش را فعال کنید. هیچ محصول قبلی بازنویسی نمی‌شود.</p>
       </div>
       <ErrorBox message={error}/>
+      {waiting && <p role="status" className="text-xs leading-7 text-amber-700 dark:text-amber-300">
+        {previewWait > 0 && <span className="block">بررسی دوبارهٔ فایل تا {number(previewWait)} ثانیهٔ دیگر فعال می‌شود.</span>}
+        {commitWait > 0 && <span className="block">ثبت نهایی تا {number(commitWait)} ثانیهٔ دیگر فعال می‌شود.</span>}
+        فایل انتخاب‌شده حفظ شده است؛ پس از پایان زمان، دکمهٔ موردنظر را بزنید.
+      </p>}
       {result?.created > 0 && <div role="status" className="flex gap-3 rounded-2xl p-4 bg-emerald-50 dark:bg-emerald-950/40 text-emerald-800 dark:text-emerald-300 text-sm leading-7"><CheckCircle2 className="shrink-0 mt-1" size={20}/><span>{number(result.created)} محصول ثبت شد. این پنجره را ببندید و از دکمهٔ ویرایش هر محصول، عکس را اضافه و محصول را فعال کنید.</span></div>}
       <div className="rounded-3xl border-2 border-dashed border-purple-200 dark:border-purple-800 p-5 flex flex-col sm:flex-row sm:items-center gap-4">
         <FileSpreadsheet className="text-purple-500 shrink-0" size={34}/>
@@ -56,7 +88,7 @@ export default function ProductImportModal({onClose, onSaved}) {
         <input ref={picker} type="file" accept=".xlsx" aria-label="فایل اکسل محصولات" className="hidden" disabled={busy} onChange={selectFile}/>
         <Button type="button" secondary disabled={busy} onClick={() => picker.current?.click()}><UploadCloud size={16} className="inline ml-2"/>{file ? 'تعویض فایل' : 'انتخاب فایل اکسل'}</Button>
       </div>
-      {result && !result.created && <section className="space-y-3" aria-label="پیش‌نمایش اکسل">
+      {result && !result.created && <section ref={preview} tabIndex={-1} className="space-y-3 outline-none scroll-mt-4" aria-label="پیش‌نمایش اکسل">
         <h3 className="font-bold text-sm">پیش‌نمایش · {number(result.items.length)} ردیف خوانده‌شده</h3>
         {result.errors.length > 0 && <div role="alert" className="rounded-2xl bg-rose-50 dark:bg-rose-950/30 p-4 text-xs leading-7 text-rose-700 dark:text-rose-300">
           <strong>هیچ محصولی ثبت نشده است. خطاها را در فایل اصلاح و دوباره بارگذاری کنید.</strong>
@@ -73,8 +105,8 @@ export default function ProductImportModal({onClose, onSaved}) {
       </section>}
       <div role="status" aria-live="polite" className="text-xs text-purple-600 dark:text-purple-300">{busy ? 'در حال بررسی و پردازش فایل؛ لطفاً منتظر بمانید…' : ''}</div>
       <div className="flex flex-wrap gap-3">
-        {file && <Button disabled={busy} onClick={() => submit(false)}>بررسی و پیش‌نمایش</Button>}
-        {file && result?.canImport && !result.created && <Button disabled={busy} onClick={() => submit(true)}>ثبت نهایی {number(result.items.length)} محصول</Button>}
+        {file && <Button disabled={busy || previewWait > 0} onClick={() => submit(false)}>بررسی و پیش‌نمایش</Button>}
+        {file && result?.canImport && !result.created && <Button disabled={busy || commitWait > 0} onClick={() => submit(true)}>ثبت نهایی {number(result.items.length)} محصول</Button>}
         <Button secondary disabled={busy} onClick={onClose}>بستن</Button>
       </div>
     </div>

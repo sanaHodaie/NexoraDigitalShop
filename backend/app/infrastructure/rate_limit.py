@@ -67,6 +67,11 @@ def enforce(request, kind, account=None):
         except ValueError:
             pass  # Invalid headers are ignored, never used as unique rate-limit keys.
     limit = settings.login_ip_limit if kind == "login" else settings.auth_rate_limit
+    account_limit = settings.login_account_limit if kind == "login" else settings.email_account_limit
+    if kind in {"product_import_preview", "product_import_commit"}:
+        limit = settings.product_import_ip_limit
+        account_limit = (settings.product_import_commit_limit if kind == "product_import_commit"
+                         else settings.product_import_preview_limit)
     if kind == "newsletter":
         limit = settings.newsletter_rate_limit
     if kind == "assistant":
@@ -76,7 +81,7 @@ def enforce(request, kind, account=None):
         allowed = (
             limiter.allow(
                 bucket(settings, kind + ":account", account.strip().lower()),
-                settings.login_account_limit if kind == "login" else settings.email_account_limit,
+                account_limit,
             )
             and allowed
         )

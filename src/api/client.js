@@ -31,6 +31,11 @@ async function responseError(response, fallback) {
     : response.status >= 500 ? serviceUnavailable : fallback;
   const error = new Error(message);
   error.status = response.status;
+  if (response.status === 429) {
+    const retry = response.headers.get('retry-after');
+    const seconds = retry && /^\d+$/.test(retry) ? Number(retry) : 60;
+    error.retryAfter = Math.min(3600, Math.max(1, seconds));
+  }
   if (typeof data?.code === 'string') error.code = data.code;
   return error;
 }

@@ -78,9 +78,45 @@ try {
   await until(`Array.from(document.querySelectorAll('button')).some(b=>b.textContent==='بررسی و پیش‌نمایش')`);
   await evaluate(`Array.from(document.querySelectorAll('button')).find(b=>b.textContent==='بررسی و پیش‌نمایش').click()`);
   await until(`Boolean(document.querySelector('[aria-label="جدول محصولات اکسل"] tbody tr'))`);
+  await until(`document.activeElement?.getAttribute('aria-label')==='پیش‌نمایش اکسل'`);
+  await until(`(() => {const r=document.querySelector('[aria-label="پیش‌نمایش اکسل"]').getBoundingClientRect();return r.top>=0 && r.top<innerHeight-40;})()`);
   assert.equal(await evaluate(`document.querySelectorAll('[role="dialog"] [role="alert"]').length`),0);
+  // Repeated previews must not consume the three-per-minute email quota.
+  for (let i = 0; i < 3; i++) {
+    await evaluate(`Array.from(document.querySelectorAll('button')).find(b=>b.textContent==='بررسی و پیش‌نمایش').click()`);
+    await wait(200);
+    await until(`!Array.from(document.querySelectorAll('button')).find(b=>b.textContent==='بررسی و پیش‌نمایش').disabled`);
+    assert.equal(await evaluate(`document.querySelectorAll('[role="dialog"] [role="alert"]').length`),0);
+    assert.ok(await evaluate(`Boolean(document.querySelector('[aria-label="جدول محصولات اکسل"] tbody tr'))`));
+  }
+  // Exercise the recovery UI without hammering the real rate limiter.
+  await evaluate(`(() => {
+    window.__originalFetch=window.fetch; window.__limitedCalls=0;
+    window.fetch=async (...args)=>{
+      if(String(args[0]).includes('/admin/products/import?commit=false')) {
+        window.__limitedCalls++;
+        return Response.json({error:'درخواست‌های زیادی ارسال شده است.',code:'RATE_LIMITED'}, {status:429,headers:{'Retry-After':'2'}});
+      }
+      return window.__originalFetch(...args);
+    };
+    Array.from(document.querySelectorAll('button')).find(b=>b.textContent==='بررسی و پیش‌نمایش').click();
+  })()`);
+  await until(`Array.from(document.querySelectorAll('[role="status"]')).some(el=>el.textContent.includes('ثانیهٔ دیگر'))`);
+  assert.ok(await evaluate(`Array.from(document.querySelectorAll('button')).find(b=>b.textContent==='بررسی و پیش‌نمایش').disabled`));
+  assert.ok(await evaluate(`Boolean(document.querySelector('[aria-label="جدول محصولات اکسل"] tbody tr'))`));
+  assert.equal(await evaluate(`Array.from(document.querySelectorAll('button')).find(b=>b.textContent.startsWith('ثبت نهایی')).disabled`),false);
+  await wait(2300);
+  await until(`!Array.from(document.querySelectorAll('button')).find(b=>b.textContent==='بررسی و پیش‌نمایش').disabled`);
+  assert.equal(await evaluate('window.__limitedCalls'),1,'No automatic POST retry');
+  await evaluate(`window.fetch=window.__originalFetch; Array.from(document.querySelectorAll('button')).find(b=>b.textContent==='بررسی و پیش‌نمایش').click()`);
+  await wait(200);
+  await until(`!Array.from(document.querySelectorAll('button')).find(b=>b.textContent==='بررسی و پیش‌نمایش').disabled && !document.querySelector('[role="dialog"] [role="alert"]')`);
   for (const width of [320,375,768,1440]) {
     await command('Emulation.setDeviceMetricsOverride',{width,height:1000,deviceScaleFactor:1,mobile:width<500});
+    await evaluate(`Array.from(document.querySelectorAll('button')).find(b=>b.textContent==='بررسی و پیش‌نمایش').click()`);
+    await wait(250);
+    await until(`!Array.from(document.querySelectorAll('button')).find(b=>b.textContent==='بررسی و پیش‌نمایش').disabled && document.activeElement?.getAttribute('aria-label')==='پیش‌نمایش اکسل'`);
+    await until(`(() => {const r=document.querySelector('[aria-label="جدول محصولات اکسل"]').getBoundingClientRect();return r.top>=0 && r.top<innerHeight-60;})()`);
     assert.equal(await evaluate(`document.documentElement.scrollWidth<=innerWidth`),true,`Page overflow ${width}`);
     assert.equal(await evaluate(`(() => {const d=document.querySelector('[role="dialog"]');const r=d.getBoundingClientRect();return r.left>=0 && r.right<=innerWidth && d.scrollWidth<=d.clientWidth;})()`),true,`Dialog contained ${width}`);
     await writeFile(join(output,`import-${width}.png`),Buffer.from((await command('Page.captureScreenshot',{format:'png'})).data,'base64'));
@@ -94,7 +130,7 @@ try {
   assert.equal(Math.round(saved.price*600000),120000000);
   assert.equal(await evaluate(`(async()=>{const r=await fetch('/assets/products/product-pending.svg');return r.status;})()`),200);
   assert.deepEqual(errors,[]);
-  console.log(JSON.stringify({passed:true,screenshots:output,checks:['template','file input','preview','commit','inactive product','rial price','320/375/768/1440 layout']}));
+  console.log(JSON.stringify({passed:true,screenshots:output,checks:['template','file input','repeated preview','429 countdown and retained preview','manual retry','commit','inactive product','rial price','320/375/768/1440 layout']}));
 } finally {
   socket?.close();
   browser.kill();

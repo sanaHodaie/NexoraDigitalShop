@@ -144,9 +144,57 @@ def test_import_rolls_back_products_and_audit_on_mid_batch_failure(client, engin
 def test_import_rate_limit(client, engine, app):
     register(client)
     grant(engine)
+    app.state.settings.product_import_preview_limit = 1
+    app.state.settings.product_import_commit_limit = 1
+    assert upload(client).status_code == 200
+    limited = upload(client)
+    assert limited.status_code == 429
+    assert limited.headers['retry-after'] == '60'
+    assert limited.json()['code'] == 'RATE_LIMITED'
+    # Exhausting previews must not prevent committing a previously reviewed file.
+    assert upload(client, commit=True).json()['created'] == 1
+    assert upload(client, commit=True).status_code == 429
+
+
+def test_repeated_previews_use_import_limits_and_never_create_products(client, engine, app, monkeypatch):
+    register(client)
+    grant(engine)
     app.state.settings.email_account_limit = 1
+    app.state.settings.auth_rate_limit = 1
+    app.state.settings.product_import_preview_limit = 4
+    clock = [1000.0]
+    monkeypatch.setattr('app.infrastructure.rate_limit.time.monotonic', lambda: clock[0])
+    raw = workbook()
+    for _ in range(4):
+        response = upload(client, raw)
+        assert response.status_code == 200
+        assert response.json()['canImport'] and response.json()['created'] == 0
+        assert response.json()['items'][0]['id'] == 'excel-phone-01'
+    assert upload(client, raw).status_code == 429
+    with Session(engine) as db:
+        assert db.get(Product, 'excel-phone-01') is None
+    clock[0] += 61
+    assert upload(client, raw).status_code == 200
+
+
+def test_import_account_limits_are_independent_and_ip_limit_remains(client, engine, app):
+    from fastapi.testclient import TestClient
+
+    register(client)
+    grant(engine)
+    app.state.settings.product_import_preview_limit = 1
+    app.state.settings.product_import_ip_limit = 3
     assert upload(client).status_code == 200
     assert upload(client).status_code == 429
+    with TestClient(app, base_url='https://shop.test') as second:
+        register(second, 'second-importer@example.com')
+        with Session(engine) as db, db.begin():
+            uid = db.scalar(select(User.id).where(User.email == 'second-importer@example.com'))
+            db.add(UserRole(user_id=uid, role='importer'))
+        assert upload(second).status_code == 200
+        # Increase only the account allowance to prove the shared IP ceiling still applies.
+        app.state.settings.product_import_preview_limit = 10
+        assert upload(second).status_code == 429
 
 
 def test_persian_headers_digits_categories_and_optional_columns():

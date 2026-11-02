@@ -34,6 +34,9 @@ class Settings(BaseSettings):
     login_ip_limit: int = 30
     login_account_limit: int = 5
     email_account_limit: int = 3
+    product_import_preview_limit: int = Field(default=20, ge=1, le=120)
+    product_import_commit_limit: int = Field(default=5, ge=1, le=30)
+    product_import_ip_limit: int = Field(default=60, ge=1, le=300)
     notify_password_change: bool = True
     # No provider request is made until both fields and the admin opt-in are set.
     openai_api_key: SecretStr | None = None

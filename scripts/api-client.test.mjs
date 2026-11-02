@@ -35,6 +35,17 @@ function isReadablePersianError(error) {
   return true;
 }
 
+test('rate-limit errors expose Retry-After without automatically repeating a write', async () => {
+  const calls = mockFetch(json({token:'csrf-one'}), Response.json(
+    {error:'درخواست‌های زیادی ارسال شده است.', code:'RATE_LIMITED'},
+    {status:429, headers:{'Retry-After':'12'}},
+  ));
+  await assert.rejects(api('/admin/products/import?commit=false', registration), {
+    status:429, code:'RATE_LIMITED', retryAfter:12,
+  });
+  assert.equal(calls.length, 2);
+});
+
 test('a CSRF network failure is readable and never submits registration', async () => {
   const calls = mockFetch(new TypeError('Failed to fetch'));
 

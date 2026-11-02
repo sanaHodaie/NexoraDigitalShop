@@ -44,7 +44,7 @@ async def import_products(request: Request, commit: bool = False,
     permissions = await run_in_threadpool(svc.management.me, user.id)
     if 'products:write' not in permissions['permissions']:
         raise BusinessError(403, 'دسترسی افزودن محصول لازم است.')
-    enforce(request, 'product_import', str(user.id))
+    enforce(request, 'product_import_commit' if commit else 'product_import_preview', str(user.id))
     if request.headers.get('content-type', '').split(';')[0] != XLSX_TYPE:
         raise BusinessError(415, 'فقط فایل اکسل با فرمت XLSX پذیرفته می‌شود.')
     raw = bytearray()
