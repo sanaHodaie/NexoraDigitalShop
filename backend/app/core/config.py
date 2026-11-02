@@ -16,6 +16,8 @@ class Settings(BaseSettings):
     secret_key: SecretStr = SecretStr("local-development-only-change-before-deploying")
     run_worker: bool = True
     migrate_on_start: bool = True
+    telegram_bot_api_key: SecretStr | None = None
+    telegram_bot_username: str = Field(default="", pattern=r"^([A-Za-z][A-Za-z0-9_]{4,31})?$")
     google_client_id: str | None = None
     resend_api_key: SecretStr | None = None
     mail_from: str = ""
@@ -46,6 +48,15 @@ class Settings(BaseSettings):
     assistant_model: str = Field(default="", max_length=100, pattern=r"^[a-zA-Z0-9._:-]*$")
     assistant_rate_limit: int = Field(default=15, ge=1, le=60)
     assistant_proxy_url: SecretStr | None = None
+
+    @field_validator("telegram_bot_api_key")
+    @classmethod
+    def validate_telegram_key(cls, value):
+        if value is None or not value.get_secret_value().strip():
+            return None
+        if len(value.get_secret_value()) < 32:
+            raise ValueError("TELEGRAM_BOT_API_KEY must contain at least 32 characters")
+        return value
 
     @field_validator("assistant_proxy_url")
     @classmethod

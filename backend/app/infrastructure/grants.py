@@ -15,7 +15,8 @@ def grant_runtime(engine, role):
             ("SELECT, INSERT, UPDATE", ["users", "auth_sessions", "orders", "order_lines", "subscribers"]),
             (
                 "SELECT, INSERT, UPDATE, DELETE",
-                ["cart_items", "wishlist_items", "password_resets", "action_tokens", "email_outbox"],
+                ["cart_items", "wishlist_items", "password_resets", "action_tokens", "email_outbox",
+                 "telegram_links", "telegram_link_challenges"],
             ),
             ("SELECT", ["roles", "role_permissions", "user_roles"]),
             ("SELECT, INSERT, UPDATE", ["products", "site_documents"]),

@@ -1,0 +1,16 @@
+# اطلاعات محرمانه — هرگز در Git قرار نگیرد
+.env
+
+# پایتون
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# داده‌های محلی ربات
+data/
+
+# سیستم‌عامل
+Thumbs.db
+.DS_Store

@@ -8,6 +8,7 @@ import phoneImage from '../assets/images/account-phone.webp';
 import { ChangePassword } from '../components/Auth/ChangePassword';
 import { AccountCartCard } from '../components/AccountCartCard';
 import { Link } from 'react-router-dom';
+import TelegramConnection from '../components/TelegramConnection';
 import InvoiceView from '../components/Orders/InvoiceView';
 
 const sections = [
@@ -156,7 +157,7 @@ export default function AccountPage() {
           {!ready ? accountStatus === 'error' ? <Failure retry={() => refreshAccount().catch(() => {})} /> : <Loading /> : !(section === 'wishlist' ? wishlist.length : cart.length) ? <Empty icon={section === 'wishlist' ? Heart : ShoppingBag} title={section === 'wishlist' ? 'لیست علاقه‌مندی‌های شما خالی است' : 'سبد خرید شما خالی است'}>کالاهایی که دوست دارید را در فروشگاه پیدا کنید.</Empty> : <div className="account-products">{(section === 'wishlist' ? wishlist.map(product => ({ product })) : cart).map(({ product, quantity }) => section === 'cart' ? <AccountCartCard key={product.id} product={product} quantity={quantity} /> : <article key={product.id} className="account-product"><button className="account-product-image" onClick={() => setQuickViewProduct(product)} aria-label={`مشاهدهٔ ${product.name}`}><img src={optimizedImage(product.image)} alt="" width="160" height="160" loading="lazy" decoding="async" /></button><h3>{product.name}</h3><strong>{formatPrice(product.price)}</strong>{quantity && <small>{toPersianDigits(quantity)} عدد در سبد خرید</small>}<div>{section === 'wishlist' ? <button onClick={() => toggleWishlist(product)} aria-label={`حذف ${product.name} از علاقه‌مندی‌ها`}><Heart size={16} />حذف از لیست</button> : <button onClick={() => setIsCartOpen(true)}>ویرایش تعداد</button>}<button onClick={() => setQuickViewProduct(product)}>مشاهده <ArrowUpLeft size={15} /></button></div></article>)}</div>}
           {section === 'cart' && ready && cart.length > 0 && <div className="account-cart-total"><span>جمع کالاها (بدون ارسال)</span><strong>{formatPrice(shop.cartSubtotal)}</strong><button className="account-button" onClick={() => setIsCartOpen(true)}>ادامهٔ سفارش <ArrowUpLeft size={17} /></button></div>}
         </section>}
-        {section === 'profile' && <><Profile /><ChangePassword /></>}
+        {section === 'profile' && <><Profile /><TelegramConnection /><ChangePassword /></>}
         {section === 'security' && <Security onLogout={leave} busy={busy} />}
       </div>
     </div><p className="account-footnote"><ShieldCheck size={14} />اطلاعات این صفحه فقط برای حساب شما نمایش داده می‌شود.</p>

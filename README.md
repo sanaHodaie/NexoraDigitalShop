@@ -254,3 +254,10 @@ and review findings are documented in [ASSISTANT.fa.md](backend/ASSISTANT.fa.md)
 تست مرورگر با سرور ایزولهٔ `tests.serve_management_ui` و Vite پورت 3012:
 `node scripts/check-comparison.mjs`؛ شامل سقف سه محصول، محدودیت دسته، ماندگاری پس
 از رفرش، جایگزینی، حذف، تفاوت‌ها و عرض‌های 320، 375، 768 و 1440 است.
+
+## Telegram bot
+
+The integrated chat bot lives in `telegram_bot/`. See
+[راهنمای اجرا و تست دستی ربات تلگرام](telegram_bot/README.md) for setup, optional
+single-use website account linking, read-only preflight checks, and the manual test checklist.
+The bot is a separate polling process; Mini App work is deferred until manual acceptance.
