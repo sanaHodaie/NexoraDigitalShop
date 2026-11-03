@@ -58,6 +58,14 @@ def category_name(product, lang):
     return str(raw.get('categoryFa') or fallback) if lang == 'fa' else fallback
 
 
+CATEGORY_EMOJI = {
+    'smartphones': '📱', 'laptops': '💻', 'audio': '🎧',
+    'gaming': '🎮', 'smart-home': '🏠', 'wearables': '⌚',
+    'accessories': '🔌', 'cameras': '📷', 'drones': '🚁',
+    'more': '🛍️', 'other': '📦',
+}
+
+
 def categories(products, lang):
     grouped = {}
     for product in products:
@@ -67,7 +75,7 @@ def categories(products, lang):
         grouped[key][1] += 1
     choices = {}
     for key, (name, count) in sorted(grouped.items()):
-        label = f"📂 {name} ({count})"
+        label = f"{CATEGORY_EMOJI.get(key, '📦')} {name} ({count})"
         if label in choices:
             label += f" · {key}"
         choices[label] = key
