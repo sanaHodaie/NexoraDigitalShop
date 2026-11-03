@@ -3,15 +3,15 @@
 
 import logging
 from collections import defaultdict
-from decimal import Decimal, InvalidOperation, ROUND_HALF_UP
+from decimal import ROUND_HALF_UP, Decimal, InvalidOperation
+from types import SimpleNamespace
 from urllib.parse import urljoin
 
 from aiogram import F, Router
 from aiogram.filters import Command, CommandStart
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
-from aiogram.types import CallbackQuery, Message
-
+from aiogram.types import CallbackQuery, Message, ReplyKeyboardMarkup
 from api_client import (
     ApiDataError,
     ApiError,
@@ -23,9 +23,13 @@ from api_client import (
 from config import Config
 from keyboards import (
     callback_id,
+    categories,
+    categories_kb,
+    category_name,
     language_kb,
     main_menu_kb,
     product_kb,
+    product_label,
     products_list_kb,
 )
 from settings_store import SettingsStore
@@ -82,7 +86,29 @@ def fmt_details(
     if p.description:
         lines.append("")
         lines.append(f"{tr(lang, 'label_description')}:")
-        lines.append(str(p.description)[:600])
+        lines.append(str(p.description))
+    raw = p.raw
+    if raw.get("category"):
+        lines.extend(["", f"{tr(lang, 'label_category')}: {category_name(p, lang)}"])
+    if raw.get("brand"):
+        lines.append(f"{tr(lang, 'label_brand')}: {raw['brand']}")
+    if raw.get("originalPrice") is not None:
+        lines.append(f"{tr(lang, 'label_original_price')}: {fmt_price(raw['originalPrice'])}{price_suffix}")
+    if raw.get("discountPercent") is not None:
+        lines.append(f"{tr(lang, 'label_discount')}: {raw['discountPercent']}%")
+    if raw.get("reviewCount") is not None:
+        lines.append(f"{tr(lang, 'label_reviews')}: {raw['reviewCount']}")
+    if raw.get("rating") is not None:
+        lines.append(f"{tr(lang, 'label_rating')}: {raw['rating']} / 5")
+    specs = raw.get("specs") or raw.get("specifications")
+    if specs:
+        lines.extend(["", tr(lang, 'label_specs') + ":"])
+        if isinstance(specs, dict):
+            lines.extend(f"• {key}: {value}" for key, value in specs.items())
+        elif isinstance(specs, list):
+            lines.extend(f"• {value}" for value in specs)
+        else:
+            lines.append(str(specs))
 
     return "\n".join(lines)
 
@@ -108,6 +134,10 @@ class NexoraHandlers:
         self._page: dict[int, int] = defaultdict(int)
         self._compare_mode: dict[int, bool] = defaultdict(bool)
 
+        self._category_choices = {}
+        self._selected_category = {}
+        self._detail = {}
+        self._compare_products = defaultdict(dict)
         self._register()
 
     # --------------------------------------------------
@@ -150,6 +180,14 @@ class NexoraHandlers:
             self.cmd_cancel,
             Command("cancel"),
         )
+
+        # Reply-keyboard commands must win over the search state.
+        labels = {tr(lang, key) for lang in ("fa", "en") for key in (
+            "btn_products", "btn_search", "btn_compare", "btn_language", "btn_back_main",
+            "btn_categories", "btn_back_products", "btn_next", "btn_previous",
+            "btn_add_compare", "btn_compare_show", "btn_compare_clear",
+        )} | {"🇮🇷 فارسی", "🇬🇧 English"}
+        r.message.register(self.reply_navigation, F.text.in_(labels))
 
         # دکمه‌های منو
         r.callback_query.register(
@@ -229,6 +267,9 @@ class NexoraHandlers:
         text: str,
         kb,
     ) -> None:
+        if isinstance(kb, ReplyKeyboardMarkup):
+            await message.answer(text, reply_markup=kb)
+            return
         try:
             await message.edit_text(
                 text,
@@ -246,7 +287,7 @@ class NexoraHandlers:
         target,
         lang: str,
     ) -> None:
-        if isinstance(target, CallbackQuery):
+        if isinstance(target, CallbackQuery) or hasattr(target, "message"):
             await self._edit(
                 target.message,
                 tr(lang, "main_menu"),
@@ -311,6 +352,12 @@ class NexoraHandlers:
                 count=len(products)
             )
 
+        if not products:
+            text = tr(lang, "products_empty")
+        elif self._selected_category.get(uid):
+            text = category_name(products[0], lang) + "\n" + text
+        pages = max(1, (len(products) + self.cfg.page_size - 1) // self.cfg.page_size)
+        text += "\n" + tr(lang, "page_label").format(page=page + 1, pages=pages)
         kb = products_list_kb(
             products,
             page,
@@ -479,13 +526,8 @@ class NexoraHandlers:
             )
             return
 
-        # اگر توکنی همراه /start نبود، خوشامدگویی عادی
-        name = telegram_user.first_name or ""
-
-        await message.answer(
-            tr(lang, "welcome").format(name=name),
-            reply_markup=main_menu_kb(lang),
-        )
+        self._compare_mode[telegram_user.id] = False
+        await self.show_categories(message, lang, telegram_user.id, welcome=telegram_user.first_name or "")
 
     async def cmd_help(
         self,
@@ -592,35 +634,8 @@ class NexoraHandlers:
         await state.clear()
         await cb.answer()
 
-        try:
-            products = await self.client.get_products()
-
-        except ApiError as exc:
-            await self._answer_api_error(
-                cb.message,
-                lang,
-                exc,
-            )
-            return
-
-        self._products_cache[uid] = products
-        self._compare[uid] = set()
-
-        if not products:
-            await self._edit(
-                cb.message,
-                tr(lang, "products_empty"),
-                main_menu_kb(lang),
-            )
-            return
-
-        await self._show_products_page(
-            cb.message,
-            lang,
-            uid,
-            products,
-            0,
-        )
+        self._compare_mode[uid] = False
+        await self.show_categories(cb.message, lang, uid)
 
     async def cb_page(
         self,
@@ -703,35 +718,30 @@ class NexoraHandlers:
 
         await cb.answer()
 
-        details = fmt_details(
-            product,
-            lang,
-            self.cfg.price_suffix,
-        )
+        await self.show_product(cb.message, uid, product)
 
-        if product.image and product.image.startswith("/"):
-            product.image = urljoin(self.cfg.frontend_url + "/", product.image)
-        if product.image and str(product.image).lower().startswith(
-            ("http://", "https://")
-        ):
+    async def send_long(self, message, text, kb):
+        # Telegram counts UTF-16 code units. 1900 Python chars stay below 4096
+        # even if every character is a supplementary Unicode character.
+        chunks = [text[i:i + 1900] for i in range(0, len(text), 1900)] or ["—"]
+        for chunk in chunks:
+            await message.answer(chunk, reply_markup=kb)
+
+    async def show_product(self, message, uid, product):
+        lang = self.lang_of(uid)
+        self._detail[uid] = product
+        kb = product_kb(lang, product.id)
+        details = fmt_details(product, lang, self.cfg.price_suffix)
+        image = product.image
+        if image and image.startswith("/"):
+            image = urljoin(self.cfg.frontend_url + "/", image)
+        if image and image.lower().startswith(("http://", "https://")):
             try:
-                await cb.message.answer_photo(
-                    product.image,
-                    caption=details[:1024],
-                    reply_markup=product_kb(lang, pid),
-                )
-                return
-
+                # Details are sent separately; never truncate them to a photo caption.
+                await message.answer_photo(image)
             except Exception:
-                logger.info(
-                    "نمایش تصویر محصول %s ناموفق بود؛ متن جایگزین شد.",
-                    pid,
-                )
-
-        await cb.message.answer(
-            details,
-            reply_markup=product_kb(lang, pid),
-        )
+                logger.info("Product image unavailable; sending full text details")
+        await self.send_long(message, details, kb)
 
     # --------------------------------------------------
     # جست‌وجو
@@ -797,18 +807,9 @@ class NexoraHandlers:
             )
             return
 
-        await message.answer(
-            tr(lang, "search_result").format(
-                q=query,
-                count=len(products),
-            ),
-            reply_markup=products_list_kb(
-                products,
-                0,
-                self.cfg.page_size,
-                lang,
-            ),
-        )
+        self._selected_category.pop(uid, None)
+        self._compare_mode[uid] = False
+        await self._show_products_page(message, lang, uid, products, 0)
 
     # --------------------------------------------------
     # مقایسه محصولات
@@ -825,27 +826,8 @@ class NexoraHandlers:
         await state.clear()
         await cb.answer()
 
-        try:
-            products = await self.client.get_products()
-
-        except ApiError as exc:
-            await self._answer_api_error(
-                cb.message,
-                lang,
-                exc,
-            )
-            return
-
-        self._products_cache[uid] = products
-
-        await self._show_products_page(
-            cb.message,
-            lang,
-            uid,
-            products,
-            0,
-            compare_mode=True,
-        )
+        self._compare_mode[uid] = True
+        await self.show_categories(cb.message, lang, uid)
 
     async def cb_compare_toggle(
         self,
@@ -865,15 +847,23 @@ class NexoraHandlers:
         if not any(p.id == pid for p in products):
             await cb.answer(tr(lang, "product_not_found"), show_alert=True)
             return
+        candidate = next(p for p in products if p.id == pid)
+        if pid not in selected and self._compare_products[uid]:
+            category = str(candidate.raw.get("category") or "other")
+            if any(str(p.raw.get("category") or "other") != category for p in self._compare_products[uid].values()):
+                await cb.answer(tr(lang, "compare_category"), show_alert=True)
+                return
         if pid not in selected and len(selected) >= 3:
-            await cb.answer("حداکثر سه محصول / Maximum three products", show_alert=True)
+            await cb.answer(tr(lang, "compare_limit"), show_alert=True)
             return
 
         if pid in selected:
             selected.remove(pid)
+            self._compare_products[uid].pop(pid, None)
             added = False
         else:
             selected.add(pid)
+            self._compare_products[uid][pid] = candidate
             added = True
 
         products = self._products_cache.get(uid)
@@ -906,7 +896,7 @@ class NexoraHandlers:
         lang = self.lang_of(uid)
 
         selected = self._compare.get(uid, set())
-        products = self._products_cache.get(uid, [])
+        products = list(self._compare_products[uid].values())
 
         chosen = [
             p for p in products
@@ -938,30 +928,8 @@ class NexoraHandlers:
         ]
 
         for i, product in enumerate(chosen, start=1):
-            lines.append("")
-            lines.append(f"{i}) {product.name}")
-
-            lines.append(
-                f"{tr(lang, 'label_price')}: "
-                f"{fmt_price(product.price)}"
-                f"{self.cfg.price_suffix}"
-            )
-
-            lines.append(
-                f"{tr(lang, 'label_availability')}: "
-                f"{fmt_availability(product, lang)}"
-            )
-
-            if product.description:
-                lines.append(
-                    f"{tr(lang, 'label_description')}: "
-                    f"{str(product.description)[:200]}"
-                )
-
-        await cb.message.answer(
-            "\n".join(lines),
-            reply_markup=main_menu_kb(lang),
-        )
+            lines.extend(["", f"{i})", fmt_details(product, lang, self.cfg.price_suffix)])
+        await self.send_long(cb.message, "\n".join(lines), main_menu_kb(lang))
 
     async def cb_compare_clear(
         self,
@@ -971,6 +939,7 @@ class NexoraHandlers:
         lang = self.lang_of(uid)
 
         self._compare[uid].clear()
+        self._compare_products[uid].clear()
 
         await cb.answer()
 
@@ -1044,11 +1013,110 @@ class NexoraHandlers:
         if message.from_user is None:
             return
 
-        lang = self.lang_of(
-            message.from_user.id
-        )
-
+        uid = message.from_user.id
+        lang = self.lang_of(uid)
+        text = message.text or ""
+        choices = self._category_choices.get(uid, {})
+        if text in choices:
+            try:
+                category = choices[text]
+                products = await self.client.get_products(category=category) if category != "other" else [
+                    p for p in await self.client.get_products() if not p.raw.get("category") or p.raw.get("category") == "other"]
+            except ApiError as exc:
+                await self._answer_api_error(message, lang, exc)
+                return
+            self._products_cache[uid] = products
+            self._selected_category[uid] = category
+            self._category_choices.pop(uid, None)
+            await self._show_products_page(message, lang, uid, products, 0, self._compare_mode[uid])
+            return
+        products = self._products_cache.get(uid, [])
+        for index, product in enumerate(products):
+            if text == product_label(product, index, self._compare[uid]):
+                if self._compare_mode[uid]:
+                    await self.cb_compare_toggle(self.reply_callback(message, "cmp:toggle:" + callback_id(product.id)))
+                else:
+                    await self.cb_product(self.reply_callback(message, "prod:" + callback_id(product.id)))
+                return
         await message.answer(
             tr(lang, "unknown_input"),
             reply_markup=main_menu_kb(lang),
         )
+
+
+    def reply_callback(self, message, data=""):
+        # Reuse the same validation for old inline callbacks and bottom-keyboard messages.
+        async def answer(text=None, **kwargs):
+            if text:
+                await message.answer(text)
+        return SimpleNamespace(message=message, from_user=message.from_user, data=data, answer=answer)
+
+    async def show_categories(self, message, lang, uid, welcome=None):
+        try:
+            products = await self.client.get_products()
+        except ApiError as exc:
+            await self._answer_api_error(message, lang, exc)
+            return
+        choices = categories(products, lang)
+        self._category_choices[uid] = choices
+        self._products_cache.pop(uid, None)
+        self._detail.pop(uid, None)
+        self._selected_category.pop(uid, None)
+        text = tr(lang, "choose_compare_category" if self._compare_mode[uid] else "categories_title")
+        if not products:
+            text = tr(lang, "products_empty")
+        if welcome is not None:
+            text = tr(lang, "welcome").format(name=welcome) + "\n\n" + text
+        await message.answer(text, reply_markup=categories_kb(choices, lang))
+
+    async def reply_navigation(self, message, state):
+        uid = message.from_user.id
+        lang = self.lang_of(uid)
+        text = message.text
+        await state.clear()
+        # Both languages are recognized so switching language never strands an old keyboard.
+        action = next((key for key in (
+            "btn_products", "btn_search", "btn_compare", "btn_language", "btn_back_main",
+            "btn_categories", "btn_back_products", "btn_next", "btn_previous",
+            "btn_add_compare", "btn_compare_show", "btn_compare_clear",
+        ) if any(tr(code, key) == text for code in ("fa", "en"))), None)
+        cb = self.reply_callback(message)
+        if text in ("🇮🇷 فارسی", "🇬🇧 English"):
+            cb.data = "lang:" + ("fa" if text == "🇮🇷 فارسی" else "en")
+            await self.cb_set_lang(cb, state)
+        elif action in ("btn_products", "btn_categories", "btn_back_main"):
+            self._compare_mode[uid] = False
+            await self.show_categories(message, lang, uid)
+        elif action == "btn_compare":
+            await self.cb_compare_start(cb, state)
+        elif action == "btn_search":
+            await self.cb_search_start(cb, state)
+        elif action == "btn_language":
+            await self.cb_language(cb, state)
+        elif action in ("btn_next", "btn_previous", "btn_back_products"):
+            products = self._products_cache.get(uid)
+            if products is None:
+                await self.show_categories(message, lang, uid)
+                return
+            pages = max(1, (len(products) + self.cfg.page_size - 1) // self.cfg.page_size)
+            delta = 1 if action == "btn_next" else -1 if action == "btn_previous" else 0
+            page = max(0, min(pages - 1, self._page[uid] + delta))
+            await self._show_products_page(message, lang, uid, products, page, self._compare_mode[uid])
+        elif action == "btn_add_compare":
+            product = self._detail.get(uid)
+            if product is None:
+                await message.answer(tr(lang, "compare_empty"), reply_markup=main_menu_kb(lang))
+                return
+            if product.id in self._compare[uid]:
+                await message.answer(tr(lang, "compare_added"), reply_markup=product_kb(lang, product.id))
+                return
+            # Keep current browse results; selection must not disappear on changing categories.
+            products = self._products_cache.setdefault(uid, [])
+            if not any(p.id == product.id for p in products):
+                products.append(product)
+            cb.data = "cmp:toggle:" + callback_id(product.id)
+            await self.cb_compare_toggle(cb)
+        elif action == "btn_compare_show":
+            await self.cb_compare_show(cb)
+        elif action == "btn_compare_clear":
+            await self.cb_compare_clear(cb)

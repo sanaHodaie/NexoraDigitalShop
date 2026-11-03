@@ -16,3 +16,14 @@ One backend dependency deprecation warning (Starlette/httpx) remains; no failed/
 **Not verified:** live Telegram getMe/polling/message delivery, external deployment, email/AI integrations.
 No usable BotFather token or public bot username was available. No real Telegram messages were sent.
 Mini App conversion and visual redesign are deferred until user acceptance of the chat bot.
+
+## Bottom-menu category navigation — 2026-11-03
+
+- Updated bot suite: **48 passed**; modified Python files pass Ruff checks.
+- Main/category/product/language menus use persistent, resized Telegram reply keyboards.
+- Catalogue categories and counts are derived from API products; category selection forwards the category filter.
+- Verified the seeded catalogue categories, page controls, duplicate product names, full details/specifications, Unicode message limits, and failed-image text fallback.
+- Real aiogram dispatcher with simulated Telegram transport verifies start → category → product details, search cancellation by menu buttons, and language changes.
+- Comparison selections survive category navigation; maximum three products, same-category validation, and clear-selection paths tested.
+- No live Telegram calls were made for this UI update. User should restart the local bot, send /start, and perform the updated manual checklist.
+- Backend/frontend code unchanged in this update; prior backend/browser evidence above belongs to the original integration validation.

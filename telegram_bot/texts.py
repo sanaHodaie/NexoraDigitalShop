@@ -4,7 +4,7 @@ TEXTS = {
     "fa": {
         "welcome": "سلام {name} عزیز! 👋\nبه ربات فروشگاه Nexora خوش آمدید.\nاز منوی زیر انتخاب کنید:",
         "main_menu": "منوی اصلی — یکی از گزینه‌ها را انتخاب کنید:",
-        "btn_products": "🛍 محصولات",
+        "btn_products": "🗂 دسته‌بندی محصولات",
         "btn_search": "🔍 جست‌وجو",
         "btn_compare": "⚖️ مقایسه",
         "btn_language": "🌐 زبان / Language",
@@ -42,7 +42,7 @@ TEXTS = {
         "err_generic": "⚠️ خطای غیرمنتظره‌ای رخ داد. لطفاً دوباره تلاش کنید.",
         "unknown_input": "برای شروع از منوی زیر استفاده کنید:",
         "help": "📖 راهنمای ربات فروشگاه Nexora:\n\n"
-                "🛍 محصولات — فهرست محصولات واقعی فروشگاه\n"
+                "🗂 دسته‌بندی محصولات — دسته، سپس نام محصول را از منوی پایین انتخاب کنید\n"
                 "🔍 جست‌وجو — جست‌وجوی محصول بر اساس نام\n"
                 "⚖️ مقایسه — مقایسه‌ی ۲ یا چند محصول\n"
                 "🌐 زبان — تغییر زبان (فارسی/English)\n\n"
@@ -52,7 +52,7 @@ TEXTS = {
     "en": {
         "welcome": "Hello {name}! 👋\nWelcome to the Nexora shop bot.\nChoose an option from the menu below:",
         "main_menu": "Main menu — please choose an option:",
-        "btn_products": "🛍 Products",
+        "btn_products": "🗂 Product categories",
         "btn_search": "🔍 Search",
         "btn_compare": "⚖️ Compare",
         "btn_language": "🌐 زبان / Language",
@@ -90,7 +90,7 @@ TEXTS = {
         "err_generic": "⚠️ An unexpected error occurred. Please try again.",
         "unknown_input": "Use the menu below to get started:",
         "help": "📖 Nexora shop bot guide:\n\n"
-                "🛍 Products — list of real shop products\n"
+                "🗂 Product categories — choose a category, then a product from the bottom menu\n"
                 "🔍 Search — find a product by name\n"
                 "⚖️ Compare — compare 2 or more products\n"
                 "🌐 Language — switch language (فارسی/English)\n\n"
@@ -98,6 +98,31 @@ TEXTS = {
                 "/cancel — cancel current action and return to the menu",
     },
 }
+
+TEXTS["fa"].update({
+    "btn_categories": "🗂 بازگشت به دسته‌بندی‌ها", "btn_previous": "◀️ صفحهٔ قبل",
+    "btn_next": "صفحهٔ بعد ▶️", "categories_title": "دسته‌بندی محصولات فروشگاه؛ از منوی پایین انتخاب کنید:",
+    "page_label": "صفحهٔ {page} از {pages}", "label_specs": "مشخصات فنی",
+    "label_original_price": "قیمت قبل از تخفیف", "label_discount": "تخفیف", "label_reviews": "تعداد نظرها",
+    "label_category": "دسته‌بندی", "label_brand": "برند", "label_rating": "امتیاز",
+    "compare_limit": "حداکثر سه محصول را می‌توانید مقایسه کنید.",
+    "compare_category": "برای مقایسه، محصولات یک دسته را انتخاب کنید.",
+    "selection_expired": "منوی قبلی دیگر فعال نیست؛ دوباره دسته‌بندی را انتخاب کنید.",
+    "choose_compare_category": "برای انتخاب محصولات مقایسه، ابتدا دسته‌بندی را از پایین انتخاب کنید.",
+    "compare_empty": "ابتدا از دسته‌بندی‌ها محصولی انتخاب و به مقایسه اضافه کنید.",
+})
+TEXTS["en"].update({
+    "btn_categories": "🗂 Back to categories", "btn_previous": "◀️ Previous page",
+    "btn_next": "Next page ▶️", "categories_title": "Choose a product category from the bottom menu:",
+    "page_label": "Page {page} of {pages}", "label_specs": "Specifications",
+    "label_original_price": "Original price", "label_discount": "Discount", "label_reviews": "Reviews",
+    "label_category": "Category", "label_brand": "Brand", "label_rating": "Rating",
+    "compare_limit": "You can compare up to three products.",
+    "compare_category": "Choose products from the same category for comparison.",
+    "selection_expired": "That menu is no longer active. Please choose a category again.",
+    "choose_compare_category": "First choose a category below to select products for comparison.",
+    "compare_empty": "Choose a product from the categories and add it to comparison first.",
+})
 
 DEFAULT_LANG = "fa"
 
