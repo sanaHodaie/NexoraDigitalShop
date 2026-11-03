@@ -27,3 +27,13 @@ Mini App conversion and visual redesign are deferred until user acceptance of th
 - Comparison selections survive category navigation; maximum three products, same-category validation, and clear-selection paths tested.
 - No live Telegram calls were made for this UI update. User should restart the local bot, send /start, and perform the updated manual checklist.
 - Backend/frontend code unchanged in this update; prior backend/browser evidence above belongs to the original integration validation.
+
+## Welcome Start button and category artwork — 2026-11-03
+
+- Bot suite: **52 passed**; Ruff checks pass for modified Python files.
+- /start sends a welcome message with an inline Start button below it. The Start callback opens the persistent category menu.
+- Category menu uses two columns, including safe handling of an odd category count.
+- Selecting a category uploads its existing website category PNG from a whitelisted local path before listing products; missing/upload-failed artwork does not block browsing.
+- Category artwork upload and unknown-category path safety are covered by tests; real dispatcher simulation covers the Start callback.
+- Generated profile avatar saved at assets/nexora-bot-avatar.png. It has not been uploaded to Telegram; owner can use BotFather /setuserpic.
+- No live Telegram call or deployment was performed for this update. Closing the foreground terminal still stops the bot.

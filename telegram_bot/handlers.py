@@ -4,6 +4,7 @@
 import logging
 from collections import defaultdict
 from decimal import ROUND_HALF_UP, Decimal, InvalidOperation
+from pathlib import Path
 from types import SimpleNamespace
 from urllib.parse import urljoin
 
@@ -11,7 +12,7 @@ from aiogram import F, Router
 from aiogram.filters import Command, CommandStart
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
-from aiogram.types import CallbackQuery, Message, ReplyKeyboardMarkup
+from aiogram.types import CallbackQuery, FSInputFile, Message, ReplyKeyboardMarkup
 from api_client import (
     ApiDataError,
     ApiError,
@@ -31,6 +32,7 @@ from keyboards import (
     product_kb,
     product_label,
     products_list_kb,
+    start_kb,
 )
 from settings_store import SettingsStore
 from texts import tr
@@ -183,11 +185,13 @@ class NexoraHandlers:
 
         # Reply-keyboard commands must win over the search state.
         labels = {tr(lang, key) for lang in ("fa", "en") for key in (
-            "btn_products", "btn_search", "btn_compare", "btn_language", "btn_back_main",
+            "btn_start", "btn_products", "btn_search", "btn_compare", "btn_language", "btn_back_main",
             "btn_categories", "btn_back_products", "btn_next", "btn_previous",
             "btn_add_compare", "btn_compare_show", "btn_compare_clear",
         )} | {"🇮🇷 فارسی", "🇬🇧 English"}
         r.message.register(self.reply_navigation, F.text.in_(labels))
+
+        r.callback_query.register(self.cb_begin, F.data == "menu:start")
 
         # دکمه‌های منو
         r.callback_query.register(
@@ -527,7 +531,17 @@ class NexoraHandlers:
             return
 
         self._compare_mode[telegram_user.id] = False
-        await self.show_categories(message, lang, telegram_user.id, welcome=telegram_user.first_name or "")
+        await message.answer(
+            tr(lang, "welcome").format(name=telegram_user.first_name or ""),
+            reply_markup=start_kb(lang),
+        )
+
+    async def cb_begin(self, cb, state):
+        await state.clear()
+        await cb.answer()
+        uid = cb.from_user.id
+        self._compare_mode[uid] = False
+        await self.show_categories(cb.message, self.lang_of(uid), uid)
 
     async def cmd_help(
         self,
@@ -1028,6 +1042,7 @@ class NexoraHandlers:
             self._products_cache[uid] = products
             self._selected_category[uid] = category
             self._category_choices.pop(uid, None)
+            await self.show_category_photo(message, category)
             await self._show_products_page(message, lang, uid, products, 0, self._compare_mode[uid])
             return
         products = self._products_cache.get(uid, [])
@@ -1050,6 +1065,18 @@ class NexoraHandlers:
             if text:
                 await message.answer(text)
         return SimpleNamespace(message=message, from_user=message.from_user, data=data, answer=answer)
+
+    async def show_category_photo(self, message, category):
+        # Only use known project assets; never build a file path from API input.
+        allowed = {"smartphones", "laptops", "audio", "gaming", "smart-home",
+                   "wearables", "accessories", "cameras", "drones", "more"}
+        asset = category if category in allowed else "more"
+        path = Path(__file__).resolve().parents[1] / "public" / "assets" / "category-heroes" / (asset + ".png")
+        if path.is_file():
+            try:
+                await message.answer_photo(FSInputFile(path))
+            except Exception:
+                logger.info("Category image unavailable; continuing with product menu")
 
     async def show_categories(self, message, lang, uid, welcome=None):
         try:
@@ -1076,7 +1103,7 @@ class NexoraHandlers:
         await state.clear()
         # Both languages are recognized so switching language never strands an old keyboard.
         action = next((key for key in (
-            "btn_products", "btn_search", "btn_compare", "btn_language", "btn_back_main",
+            "btn_start", "btn_products", "btn_search", "btn_compare", "btn_language", "btn_back_main",
             "btn_categories", "btn_back_products", "btn_next", "btn_previous",
             "btn_add_compare", "btn_compare_show", "btn_compare_clear",
         ) if any(tr(code, key) == text for code in ("fa", "en"))), None)
@@ -1084,6 +1111,8 @@ class NexoraHandlers:
         if text in ("🇮🇷 فارسی", "🇬🇧 English"):
             cb.data = "lang:" + ("fa" if text == "🇮🇷 فارسی" else "en")
             await self.cb_set_lang(cb, state)
+        elif action == "btn_start":
+            await self.cmd_start(message, state)
         elif action in ("btn_products", "btn_categories", "btn_back_main"):
             self._compare_mode[uid] = False
             await self.show_categories(message, lang, uid)

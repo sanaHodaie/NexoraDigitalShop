@@ -123,6 +123,8 @@ async def test_category_then_product_full_details_and_back(handler):
     handler.client.get_products.return_value = [phone, laptop]
     start = message_for('/start')
     await handler.cmd_start(start, state_for())
+    assert start.answer.call_args.kwargs['reply_markup'].inline_keyboard[0][0].callback_data == 'menu:start'
+    await handler.cb_begin(handler.reply_callback(start, 'menu:start'), state_for())
     category = next(x for x in buttons(start) if 'گوشی هوشمند' in x)
     assert phone.name not in buttons(start)
     handler.client.get_products.return_value = [phone]
@@ -243,6 +245,12 @@ async def test_real_dispatcher_category_navigation_search_cancel_and_language(ha
             'chat': {'id': 123, 'type': 'private'}, 'text': text}}))
     try:
         await send('/start')
+        assert session.sent[-1].reply_markup.inline_keyboard[0][0].callback_data == 'menu:start'
+        await dispatcher.feed_update(bot, Update.model_validate({'update_id': 99, 'callback_query': {
+            'id': 'start-click', 'chat_instance': 'test', 'from': {'id': 123, 'is_bot': False, 'first_name': 'Test'},
+            'data': 'menu:start', 'message': {'message_id': 20, 'date': 1700000000,
+                'chat': {'id': 123, 'type': 'private'}, 'text': 'Welcome'}
+        }}))
         category = next(b.text for row in session.sent[-1].reply_markup.keyboard for b in row if 'گوشی' in b.text)
         await send(category)
         labels = [b.text for row in session.sent[-1].reply_markup.keyboard for b in row]
@@ -278,3 +286,27 @@ async def test_comparison_rejects_other_categories_and_can_clear(handler):
     assert message.answer.call_args.args[0] == tr('fa', 'compare_category')
     await handler.reply_navigation(message_for(tr('fa', 'btn_compare_clear')), state_for())
     assert handler._compare[123] == set() and handler._compare_products[123] == {}
+
+
+async def test_category_photo_uses_local_asset_and_falls_back_safely(handler):
+    from pathlib import Path
+
+    from aiogram.types import FSInputFile
+    message = message_for()
+    await handler.show_category_photo(message, 'smartphones')
+    photo = message.answer_photo.call_args.args[0]
+    assert isinstance(photo, FSInputFile)
+    assert Path(photo.path).name == 'smartphones.png'
+    await handler.show_category_photo(message, '../../private')
+    assert Path(message.answer_photo.call_args.args[0].path).name == 'more.png'
+    message.answer_photo.side_effect = RuntimeError('network error')
+    await handler.show_category_photo(message, 'smartphones')
+
+
+async def test_start_callback_opens_category_menu(handler):
+    handler.client.get_products.return_value = [Product('p', 'Phone', raw={'category': 'smartphones'})]
+    message = message_for('/start')
+    await handler.cmd_start(message, state_for())
+    assert message.answer.call_args.kwargs['reply_markup'].inline_keyboard
+    await handler.cb_begin(handler.reply_callback(message, 'menu:start'), state_for())
+    assert any('گوشی' in b for b in buttons(message))

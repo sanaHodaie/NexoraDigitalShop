@@ -2,7 +2,7 @@
 
 TEXTS = {
     "fa": {
-        "welcome": "سلام {name} عزیز! 👋\nبه ربات فروشگاه Nexora خوش آمدید.\nاز منوی زیر انتخاب کنید:",
+        "welcome": "سلام {name} عزیز! 👋\nبه ربات فروشگاه Nexora خوش آمدید.\nبرای دیدن دسته‌بندی‌ها دکمهٔ شروع را بزنید:",
         "main_menu": "منوی اصلی — یکی از گزینه‌ها را انتخاب کنید:",
         "btn_products": "🗂 دسته‌بندی محصولات",
         "btn_search": "🔍 جست‌وجو",
@@ -50,7 +50,7 @@ TEXTS = {
                 "/cancel — لغو عملیات جاری و بازگشت به منو",
     },
     "en": {
-        "welcome": "Hello {name}! 👋\nWelcome to the Nexora shop bot.\nChoose an option from the menu below:",
+        "welcome": "Hello {name}! 👋\nWelcome to the Nexora shop bot.\nTap Start below to browse the product categories:",
         "main_menu": "Main menu — please choose an option:",
         "btn_products": "🗂 Product categories",
         "btn_search": "🔍 Search",
@@ -100,6 +100,7 @@ TEXTS = {
 }
 
 TEXTS["fa"].update({
+    "btn_start": "▶️ شروع",
     "btn_categories": "🗂 بازگشت به دسته‌بندی‌ها", "btn_previous": "◀️ صفحهٔ قبل",
     "btn_next": "صفحهٔ بعد ▶️", "categories_title": "دسته‌بندی محصولات فروشگاه؛ از منوی پایین انتخاب کنید:",
     "page_label": "صفحهٔ {page} از {pages}", "label_specs": "مشخصات فنی",
@@ -112,6 +113,7 @@ TEXTS["fa"].update({
     "compare_empty": "ابتدا از دسته‌بندی‌ها محصولی انتخاب و به مقایسه اضافه کنید.",
 })
 TEXTS["en"].update({
+    "btn_start": "▶️ Start",
     "btn_categories": "🗂 Back to categories", "btn_previous": "◀️ Previous page",
     "btn_next": "Next page ▶️", "categories_title": "Choose a product category from the bottom menu:",
     "page_label": "Page {page} of {pages}", "label_specs": "Specifications",

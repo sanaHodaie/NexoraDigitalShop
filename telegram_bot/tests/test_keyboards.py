@@ -68,3 +68,18 @@ def test_current_store_catalogue_groups_every_product():
     assert set(choices.values()) == {p['category'] for p in raw}
     assert any('گوشی هوشمند' in label for label in choices)
     assert len(choices) == len({p['category'] for p in raw})
+
+
+def test_categories_use_two_columns():
+    from texts import tr
+    choices = {f'Category {i}': str(i) for i in range(5)}
+    kb = categories_kb(choices, 'fa')
+    rows = [[button.text for button in row] for row in kb.keyboard]
+    assert rows[:3] == [['Category 0', 'Category 1'], ['Category 2', 'Category 3'], ['Category 4']]
+    assert tr('fa', 'btn_products') in labels(kb)
+
+
+def test_start_is_inline_below_welcome():
+    from keyboards import start_kb
+    button = start_kb('fa').inline_keyboard[0][0]
+    assert button.text == tr('fa', 'btn_start') and button.callback_data == 'menu:start'

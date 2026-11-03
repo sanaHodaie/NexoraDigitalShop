@@ -1,7 +1,12 @@
 """Persistent bottom keyboards for category → product navigation."""
 from hashlib import sha256
 
-from aiogram.types import KeyboardButton, ReplyKeyboardMarkup
+from aiogram.types import (
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+    KeyboardButton,
+    ReplyKeyboardMarkup,
+)
 from api_client import Product
 from texts import tr
 
@@ -18,6 +23,12 @@ def keyboard(rows):
         keyboard=[[KeyboardButton(text=text) for text in row] for row in rows],
         resize_keyboard=True, is_persistent=True, one_time_keyboard=False,
     )
+
+
+def start_kb(lang):
+    return InlineKeyboardMarkup(inline_keyboard=[[
+        InlineKeyboardButton(text=tr(lang, "btn_start"), callback_data="menu:start")
+    ]])
 
 
 def menu_rows(lang):
@@ -64,7 +75,8 @@ def categories(products, lang):
 
 
 def categories_kb(choices, lang):
-    return keyboard([[label] for label in choices] + menu_rows(lang))
+    labels = list(choices)
+    return keyboard([labels[i:i + 2] for i in range(0, len(labels), 2)] + menu_rows(lang))
 
 
 def product_label(product, index, selected=None):
