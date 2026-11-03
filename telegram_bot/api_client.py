@@ -7,8 +7,11 @@
 - ApiDataError     → پاسخ JSON معتبر یا قابل تفسیر نیست.
 """
 
+import asyncio
 import logging
+from copy import deepcopy
 from dataclasses import dataclass, field
+from time import monotonic
 from typing import Any
 from urllib.parse import quote
 
@@ -194,7 +197,11 @@ class NexoraClient:
         timeout: float = 10.0,
         telegram_bot_api_key: str = "",
         telegram_confirm_path: str = "/internal/telegram/link-confirmations",
+        catalogue_cache_seconds: float = 30,
     ):
+        self._catalogue_cache_seconds = catalogue_cache_seconds
+        self._catalogue_cache = {}
+        self._catalogue_lock = asyncio.Lock()
         self._products_path = products_path
         self._product_detail_path = product_detail_path
 
@@ -218,7 +225,22 @@ class NexoraClient:
         query: str | None = None,
         category: str | None = None,
     ) -> list[Product]:
-        """دریافت فهرست محصولات از بک‌اند Nexora."""
+        # Search and single-product details always remain fresh.
+        if query or self._catalogue_cache_seconds <= 0:
+            return await self._fetch_products(query, category)
+        async with self._catalogue_lock:
+            entry = self._catalogue_cache.get(category)
+            if entry and entry[0] > monotonic():
+                return deepcopy(entry[1])
+            products = await self._fetch_products(query, category)
+            # Keep the cache bounded even if many different category strings arrive.
+            if len(self._catalogue_cache) >= 64:
+                self._catalogue_cache.clear()
+            self._catalogue_cache[category] = (monotonic() + self._catalogue_cache_seconds, deepcopy(products))
+            return products
+
+    async def _fetch_products(self, query=None, category=None):
+        """Fetch without caching errors; retain the backend's query contract."""
 
         params: dict[str, str] = {}
 

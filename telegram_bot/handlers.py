@@ -9,6 +9,7 @@ from types import SimpleNamespace
 from urllib.parse import urljoin
 
 from aiogram import F, Router
+from aiogram.exceptions import TelegramBadRequest
 from aiogram.filters import Command, CommandStart
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import State, StatesGroup
@@ -34,6 +35,7 @@ from keyboards import (
     products_list_kb,
     start_kb,
 )
+from media_cache import MemoryMediaCache
 from settings_store import SettingsStore
 from texts import tr
 
@@ -122,10 +124,12 @@ class NexoraHandlers:
         cfg: Config,
         client: NexoraClient,
         store: SettingsStore,
+        media_cache=None,
     ):
         self.cfg = cfg
         self.client = client
         self.store = store
+        self.media_cache = media_cache if media_cache is not None else MemoryMediaCache()
 
         self.router = Router(name="nexora")
         self.router.message.filter(F.chat.type == "private")
@@ -1042,8 +1046,9 @@ class NexoraHandlers:
             self._products_cache[uid] = products
             self._selected_category[uid] = category
             self._category_choices.pop(uid, None)
-            await self.show_category_photo(message, category)
+            # Menu first: photo transfer must never delay usable product buttons.
             await self._show_products_page(message, lang, uid, products, 0, self._compare_mode[uid])
+            await self.show_category_photo(message, category)
             return
         products = self._products_cache.get(uid, [])
         for index, product in enumerate(products):
@@ -1072,11 +1077,27 @@ class NexoraHandlers:
                    "wearables", "accessories", "cameras", "drones", "more"}
         asset = category if category in allowed else "more"
         path = Path(__file__).resolve().parents[1] / "public" / "assets" / "category-heroes" / (asset + ".png")
-        if path.is_file():
+        cache_key = "category-v1:" + asset
+        cached = await self.media_cache.get(cache_key)
+        if cached:
             try:
-                await message.answer_photo(FSInputFile(path))
+                await message.answer_photo(cached)
+                return
+            except TelegramBadRequest:
+                await self.media_cache.delete(cache_key)
             except Exception:
-                logger.info("Category image unavailable; continuing with product menu")
+                logger.info("Category photo temporarily unavailable")
+                return
+        source = FSInputFile(path) if path.is_file() else urljoin(
+            self.cfg.frontend_url + "/", "assets/category-heroes/" + asset + ".png"
+        )
+        try:
+            sent = await message.answer_photo(source)
+            photos = getattr(sent, "photo", None)
+            if isinstance(photos, list) and photos:
+                await self.media_cache.set(cache_key, photos[-1].file_id)
+        except Exception:
+            logger.info("Category image unavailable; product menu remains usable")
 
     async def show_categories(self, message, lang, uid, welcome=None):
         try:

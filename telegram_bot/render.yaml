@@ -1,0 +1,24 @@
+# Optional alternative for a commercial project that cannot use Vercel Hobby.
+# Import THIS file as a separate Blueprint, or enter these fields in New Web Service.
+services:
+  - type: web
+    name: nexora-telegram-bot
+    runtime: python
+    plan: free
+    rootDir: telegram_bot
+    buildCommand: pip install uv==0.12.23 && uv sync --frozen --no-dev
+    startCommand: uv run --frozen --no-dev uvicorn webhook_app:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: BOT_TOKEN
+        sync: false
+      - key: WEBHOOK_SECRET
+        sync: false
+      - key: BOT_DATABASE_URL
+        sync: false
+      - key: NEXORA_API_URL
+        value: https://nexora-api-s2q3.onrender.com
+      - key: FRONTEND_URL
+        value: https://nexora-digital-shop.vercel.app
+      - key: TELEGRAM_BOT_API_KEY
+        sync: false

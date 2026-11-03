@@ -253,7 +253,8 @@ async def test_real_dispatcher_category_navigation_search_cancel_and_language(ha
         }}))
         category = next(b.text for row in session.sent[-1].reply_markup.keyboard for b in row if 'گوشی' in b.text)
         await send(category)
-        labels = [b.text for row in session.sent[-1].reply_markup.keyboard for b in row]
+        menu = next(method for method in reversed(session.sent) if method.__api_method__ == 'sendMessage')
+        labels = [b.text for row in menu.reply_markup.keyboard for b in row]
         assert '1. Phone' in labels and not any('Laptop' in label for label in labels)
         await send('1. Phone')
         assert 'OLED screen' in session.sent[-1].text

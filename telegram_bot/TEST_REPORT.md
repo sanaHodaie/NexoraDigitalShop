@@ -37,3 +37,19 @@ Mini App conversion and visual redesign are deferred until user acceptance of th
 - Category artwork upload and unknown-category path safety are covered by tests; real dispatcher simulation covers the Start callback.
 - Generated profile avatar saved at assets/nexora-bot-avatar.png. It has not been uploaded to Telegram; owner can use BotFather /setuserpic.
 - No live Telegram call or deployment was performed for this update. Closing the foreground terminal still stops the bot.
+
+## Webhook hosting and response-speed preparation — 2026-11-03
+
+- Bot/webhook suite: **66 passed**, including tests against a dedicated local PostgreSQL instance; no skipped tests in this run.
+- Verified state, language, comparison, menu and search continuation across a NEW runtime/dispatcher/client for every update.
+- PostgreSQL tests cover successful-update deduplication, rollback/retry, simultaneous same-user updates and persistent media IDs shared across users.
+- Short-lived catalogue caching reduces duplicate list calls; search/details stay fresh; failed responses are not cached.
+- Product menu is sent before category artwork. Existing Telegram file IDs avoid repeated uploads; packaged deployments fall back to the public frontend artwork URL.
+- Webhook tests cover secret authentication, fail-closed missing configuration, malformed/oversized payloads, awaited processing and retryable failures without error disclosure.
+- Expired callback acknowledgements do not permanently block the delivery queue; other Telegram errors propagate for retry.
+- Management command tests verify endpoint preflight sends only invalid empty updates and registration preserves queued updates and uses the secret header.
+- Exact database setup command executed successfully; a restricted test runtime role can access bot state/media and is denied access to a shop-private test table.
+- Production dependency export installed in a separate environment. The packaged api/index.py ASGI entry point started successfully; real local HTTP verified health=200, unauthenticated webhook=401, authenticated malformed update=400. Public-image fallback verified without local artwork files.
+- Ruff and git diff checks passed. No backend/frontend application code changed.
+
+Not executed: deployment to a real Vercel/Render account, provisioning the user's Neon database, live Telegram webhook registration, or external end-to-end latency measurement. No live Telegram messages were sent. Free-tier eligibility and production behavior must be confirmed on the chosen host; Vercel Hobby should not be assumed suitable for commercial use.
