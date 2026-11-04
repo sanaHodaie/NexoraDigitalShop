@@ -9,6 +9,7 @@ import CategoryHeroArt from '../components/Categories/CategoryHeroArt';
 import CatalogSort from '../components/Categories/CatalogSort';
 import { SearchBar } from '../components/Header/SearchBar';
 import './catalog.css';
+import ErrorPage from './ErrorPage';
 
 export default function CategoryPage() {
   const { categoryId } = useParams();
@@ -32,6 +33,7 @@ export default function CategoryPage() {
   const filtered = Boolean(query || brand || available);
 
   useEffect(() => {
+    if (!category) return;
     const previousTitle = document.title;
     const description = document.querySelector('meta[name="description"]');
     const previousDescription = description?.getAttribute('content');
@@ -48,7 +50,7 @@ export default function CategoryPage() {
     };
   }, [category, categoryId]);
 
-  if (!category) return <section className="catalog-page catalog-empty" dir="rtl"><h1>این دسته‌بندی پیدا نشد</h1><Link to="/">بازگشت به خانه</Link></section>;
+  if (!category) return <ErrorPage />;
   const Icon = { more: LayoutGrid, smartphones: Smartphone, laptops: Laptop, audio: Headphones, gaming: Gamepad2, 'smart-home': House, wearables: Watch, accessories: Cable, cameras: Camera, drones: Radio }[categoryId];
   return <div className="catalog-page" dir="rtl">
     <nav className="catalog-breadcrumb" aria-label="مسیر صفحه"><Link to="/">خانه</Link><ChevronLeft size={14} aria-hidden="true" /><span aria-current="page">{category.title}</span></nav>

@@ -48,6 +48,7 @@ export default function Layout({
   const [isMutedState, setIsMutedState] = useState(getAudioMuted());
 
   const navItems = [
+    { id: 'customer-requests', label: 'درخواست‌های تلگرام و عمده', icon: MessageSquare, badge: null },
     { id: 'assistant', label: 'راهنمای هوشمند خرید', icon: Sparkles, badge: null },
     { id: 'dashboard', label: 'داشبورد اصلی', icon: LayoutDashboard, badge: null },
     { id: 'products', label: 'محصولات و موجودی', icon: Gem, badge: null },
@@ -58,7 +59,7 @@ export default function Layout({
     { id: 'content', label: 'محتوای صفحه اصلی', icon: LayoutDashboard, badge: null },
     { id: 'articles', label: 'مجله فناوری', icon: MessageSquare, badge: null },
     { id: 'settings', label: 'تنظیمات سیستم', icon: SettingsIcon, badge: null }
-  ].filter(item => can(({assistant:'assistant:read',dashboard:'dashboard:read',gold_rates:'content:read',products:'products:read',orders:'orders:read',messages:'subscribers:read',customers:'users:read',analytics:'dashboard:read',settings:'content:read',content:'content:read',articles:'content:read',logs:'audit:read'})[item.id]));
+  ].filter(item => can(({'customer-requests':'orders:read',assistant:'assistant:read',dashboard:'dashboard:read',gold_rates:'content:read',products:'products:read',orders:'orders:read',messages:'subscribers:read',customers:'users:read',analytics:'dashboard:read',settings:'content:read',content:'content:read',articles:'content:read',logs:'audit:read'})[item.id]));
 
   const handleNavClick = (pageId) => {
     playTactileClick();

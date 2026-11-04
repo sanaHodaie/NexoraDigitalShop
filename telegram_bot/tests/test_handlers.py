@@ -125,6 +125,7 @@ async def test_category_then_product_full_details_and_back(handler):
     await handler.cmd_start(start, state_for())
     assert start.answer.call_args.kwargs['reply_markup'].inline_keyboard[0][0].callback_data == 'menu:start'
     await handler.cb_begin(handler.reply_callback(start, 'menu:start'), state_for())
+    await handler.show_categories(start, 'fa', 123)
     category = next(x for x in buttons(start) if 'گوشی هوشمند' in x)
     assert phone.name not in buttons(start)
     handler.client.get_products.return_value = [phone]
@@ -251,6 +252,7 @@ async def test_real_dispatcher_category_navigation_search_cancel_and_language(ha
             'data': 'menu:start', 'message': {'message_id': 20, 'date': 1700000000,
                 'chat': {'id': 123, 'type': 'private'}, 'text': 'Welcome'}
         }}))
+        await send(tr('fa', 'btn_products'))
         category = next(b.text for row in session.sent[-1].reply_markup.keyboard for b in row if 'گوشی' in b.text)
         await send(category)
         menu = next(method for method in reversed(session.sent) if method.__api_method__ == 'sendMessage')
@@ -266,7 +268,7 @@ async def test_real_dispatcher_category_navigation_search_cancel_and_language(ha
         await send(tr('fa', 'btn_language'))
         await send('🇬🇧 English')
         assert handler.store.get_lang(123) == 'en'
-        assert any(b.text == tr('en', 'btn_products') for row in session.sent[-1].reply_markup.keyboard for b in row)
+        assert any(b.text == '📦 Wholesale enquiry' for row in session.sent[-1].reply_markup.keyboard for b in row)
         await send(tr('en', 'btn_products'))
         assert any('Smartphones' in b.text for row in session.sent[-1].reply_markup.keyboard for b in row)
     finally:
@@ -310,4 +312,4 @@ async def test_start_callback_opens_category_menu(handler):
     await handler.cmd_start(message, state_for())
     assert message.answer.call_args.kwargs['reply_markup'].inline_keyboard
     await handler.cb_begin(handler.reply_callback(message, 'menu:start'), state_for())
-    assert any('گوشی' in b for b in buttons(message))
+    assert '📦 درخواست خرید عمده' in buttons(message)

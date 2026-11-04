@@ -77,11 +77,14 @@ class TelegramSession(BaseSession):
 async def test_cold_start_navigation_search_language_and_photo_cache(store, monkeypatch):
     monkeypatch.setenv('BOT_TOKEN', '123456:fake-test-token')
     monkeypatch.setenv('NEXORA_API_URL', 'https://shop.test')
+    monkeypatch.setenv('TELEGRAM_BOT_API_KEY', 'customer-service-test-key-' * 2)
     products = [{'id': 'p', 'name': 'Phone', 'price': 2, 'category': 'smartphones', 'specs': ['OLED']},
                 {'id': 'p2', 'name': 'Phone 2', 'price': 3, 'category': 'smartphones'}]
     sent, requests = [], []
     def api(request):
         requests.append(request)
+        if request.url.path == '/internal/telegram/customer-requests':
+            return httpx.Response(200,json={'id':88,'status':'new'})
         return httpx.Response(200, json=products[0] if request.url.path.endswith('/p') else products)
     counter = 0
     async def deliver(text=None, callback=None, uid=123, repeat=False):
@@ -102,7 +105,7 @@ async def test_cold_start_navigation_search_language_and_photo_cache(store, monk
         runtime.cfg, runtime.store = load_config(), store
         runtime.bot = Bot(runtime.cfg.bot_token, session=TelegramSession(sent))
         runtime.bot._me = User(id=123456, is_bot=True, first_name='Nexora', username='NexoraTestBot')
-        runtime.client = NexoraClient('https://shop.test', product_detail_path='/api/products/{id}')
+        runtime.client = NexoraClient('https://shop.test', product_detail_path='/api/products/{id}', telegram_bot_api_key=runtime.cfg.telegram_bot_api_key)
         await runtime.client.aclose()
         runtime.client._client = httpx.AsyncClient(transport=httpx.MockTransport(api), base_url='https://shop.test')
         try:
@@ -113,6 +116,7 @@ async def test_cold_start_navigation_search_language_and_photo_cache(store, monk
         return next(method for method in reversed(sent) if method.__api_method__ == 'sendMessage')
     await deliver('/start')
     await deliver(callback='menu:start')
+    await deliver(tr('fa', 'btn_products'))
     category = next(button.text for row in last_text().reply_markup.keyboard for button in row if 'گوشی' in button.text)
     await deliver(category)
     # Usable product menu precedes potentially slow image transfer.
@@ -128,11 +132,20 @@ async def test_cold_start_navigation_search_language_and_photo_cache(store, monk
     assert requests[-1].url.params['q'] == 'phone'
     await deliver(tr('fa', 'btn_language'))
     await deliver('🇬🇧 English')
-    assert any(button.text == tr('en', 'btn_products') for row in last_text().reply_markup.keyboard for button in row)
+    assert any(button.text == '📦 Wholesale enquiry' for row in last_text().reply_markup.keyboard for button in row)
     previous = len(sent)
     await deliver('🇬🇧 English', repeat=True)
     assert len(sent) == previous
+    from customer_support import COPY
+    await deliver(COPY['en']['wholesale'])
+    for value in ['Test Buyer','09120000000','Store','Phones and headphones','25','Tehran','Test Street 25','-']:
+        await deliver(value)
+    assert 'review' in last_text().text.lower()
+    await deliver(COPY['en']['confirm'])
+    assert '88' in last_text().text
+    assert requests[-1].url.path == '/internal/telegram/customer-requests'
     await deliver(callback='menu:start', uid=456)
+    await deliver(tr('fa', 'btn_products'), uid=456)
     category = next(button.text for row in last_text().reply_markup.keyboard for button in row if 'گوشی' in button.text)
     await deliver(category, uid=456)
     assert sent[-1].photo == 'persistent-photo-id'

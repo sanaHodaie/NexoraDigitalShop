@@ -436,6 +436,30 @@ class NexoraClient:
     # Health check
     # --------------------------------------------------
 
+    async def _customer_request(self, method, path, payload=None):
+        try:
+            response = await self._client.request(method, path, headers=self._telegram_headers(), json=payload)
+        except httpx.HTTPError as exc:
+            raise ApiNetworkError("Customer service unavailable") from exc
+        if response.status_code >= 400:
+            raise ApiHttpError(response.status_code)
+        try:
+            return response.json()
+        except ValueError as exc:
+            raise ApiDataError("Invalid customer-service response") from exc
+
+    async def create_customer_request(self, payload):
+        result = await self._customer_request('POST', '/internal/telegram/customer-requests', payload)
+        if not isinstance(result, dict) or type(result.get('id')) is not int:
+            raise ApiDataError("Request registration was not confirmed")
+        return result
+
+    async def customer_requests(self, uid):
+        result = await self._customer_request('GET', f'/internal/telegram/customer-requests/{int(uid)}')
+        if not isinstance(result, dict) or not isinstance(result.get('items'), list):
+            raise ApiDataError("Invalid request list")
+        return result
+
     async def health(self) -> bool:
         """بررسی دسترسی به بک‌اند از مسیر /health."""
 

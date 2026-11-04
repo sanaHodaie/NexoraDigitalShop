@@ -9,7 +9,9 @@ import { Footer } from './components/Footer/Footer';
 import AssistantLauncher from './components/Assistant/AssistantLauncher';
 import { ToastContainer } from './components/Modals/ToastContainer';
 import { usePathname } from './navigation';
-import { BrowserRouter, Link, Route, Routes, useLocation } from 'react-router-dom';
+import ErrorPage from './pages/ErrorPage';
+import StoreErrorBoundary from './components/StoreErrorBoundary';
+import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom';
 
 const HomePage = lazy(() => import('./pages/HomePage'));
 const CategoryPage = lazy(() => import('./pages/CategoryPage'));
@@ -56,7 +58,7 @@ function Storefront() {
     <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:right-2 focus:z-[100] focus:bg-white focus:p-3">رفتن به محتوای اصلی</a>
     <Navbar />
     <main id="main-content" className="flex-1 min-w-0">
-      <Suspense fallback={<div role="status" className="min-h-[65vh] grid place-items-center text-slate-500">در حال آماده‌سازی صفحه…</div>}>
+      <StoreErrorBoundary resetKey={pathname}><Suspense fallback={<div role="status" className="min-h-[65vh] grid place-items-center text-slate-500">در حال آماده‌سازی صفحه…</div>}>
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/category/:categoryId" element={<CategoryPage />} />
@@ -68,9 +70,9 @@ function Storefront() {
           <Route path="/reset-password" element={<ResetPasswordPage />} />
           <Route path="/verify-email" element={<VerifyEmailPage />} />
           <Route path="/confirm-email-change" element={<VerifyEmailPage />} />
-          <Route path="*" element={<section dir="rtl" className="mx-auto max-w-7xl px-6 py-24 text-center"><h1 className="text-2xl font-bold">صفحه پیدا نشد</h1><Link to="/" className="mt-6 inline-block text-blue-600 dark:text-blue-400">بازگشت به خانه</Link></section>} />
+          <Route path="*" element={<ErrorPage />} />
         </Routes>
-      </Suspense>
+      </Suspense></StoreErrorBoundary>
     </main>
     <Footer />
     <AssistantLauncher />

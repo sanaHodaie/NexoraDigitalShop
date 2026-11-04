@@ -17,7 +17,7 @@ from app.infrastructure.crypto import valid_csrf
 from app.infrastructure.database import make_engine
 from app.infrastructure.database_security import check_runtime_role
 from app.infrastructure.rate_limit import LocalLimiter, RedisLimiter
-from app.presentation import account, assistant, auth, catalog, management, telegram
+from app.presentation import account, assistant, auth, catalog, customer_requests, management, telegram
 
 
 def create_app(settings: Settings | None = None, engine=None) -> FastAPI:
@@ -146,6 +146,7 @@ def create_app(settings: Settings | None = None, engine=None) -> FastAPI:
     def health():
         return {"status": "ok"}
 
+    app.include_router(customer_requests.router)
     app.include_router(telegram.router)
     app.include_router(auth.router)
     app.include_router(catalog.router)

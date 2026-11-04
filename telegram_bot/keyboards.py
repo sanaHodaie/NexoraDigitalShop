@@ -32,8 +32,9 @@ def start_kb(lang):
 
 
 def menu_rows(lang):
-    return [[tr(lang, 'btn_products'), tr(lang, 'btn_search')],
-            [tr(lang, 'btn_compare'), tr(lang, 'btn_language')]]
+    if lang=='en':
+        return [['📦 Wholesale enquiry', '💬 Support request'], ['❓ Frequently asked questions', '📋 My requests'], [tr(lang,'btn_language')]]
+    return [['📦 درخواست خرید عمده', '💬 درخواست پشتیبانی'], ['❓ سؤالات متداول', '📋 پیگیری درخواست‌ها'], [tr(lang,'btn_language')]]
 
 
 def main_menu_kb(lang):

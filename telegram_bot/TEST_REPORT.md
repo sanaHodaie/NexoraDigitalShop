@@ -53,3 +53,16 @@ Mini App conversion and visual redesign are deferred until user acceptance of th
 - Ruff and git diff checks passed. No backend/frontend application code changed.
 
 Not executed: deployment to a real Vercel/Render account, provisioning the user's Neon database, live Telegram webhook registration, or external end-to-end latency measurement. No live Telegram messages were sent. Free-tier eligibility and production behavior must be confirmed on the chosen host; Vercel Hobby should not be assumed suitable for commercial use.
+
+## Customer care, wholesale inbox and illustrated error pages — 2026-11-04
+
+- Bot suite: **69 passed** with dedicated PostgreSQL-backed webhook tests, including a wholesale form completed across fresh runtimes for every field.
+- Full backend regression run: **226 passed, 1 skipped** (optional Redis service test), one existing Starlette/httpx deprecation warning.
+- Follow-up customer-request security/real-client contract run: **4 passed**, including bot intake → authenticated admin API with correct customer, quantity and address.
+- Verified service-key authentication, replay-safe request IDs, validation, per-Telegram-user tracking, admin read/write capabilities, CSRF, private staff-note exclusion and optimistic version checks.
+- Production frontend/admin build, TypeScript and **48 JavaScript tests** passed; backend/new bot Python checks passed.
+- Chromium checks passed for unknown route/category/article pages, loaded generated artwork, noindex, light/dark 320–1440px layouts, admin customer/address rendering and authenticated status-edit CSRF headers (browser API mocked).
+- Browser also injected a real page-render failure, verified the illustrated unavailable fallback, then verified recovery through Retry after removing the injected fault.
+- Manual mobile screenshot visually inspected. Generated transparent artwork is encoded as error-navigation.webp (about 321 KB).
+
+Production rollout still requires Render deployment/migration 0010/runtime grants, the shared TELEGRAM_BOT_API_KEY in backend and bot, and frontend deployment. No live customer request was submitted to production and no live Telegram messages were sent during development. These enquiries are not paid orders and no wholesale price, minimum order policy or delivery promise is invented.

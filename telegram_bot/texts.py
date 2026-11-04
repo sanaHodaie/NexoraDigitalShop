@@ -2,7 +2,7 @@
 
 TEXTS = {
     "fa": {
-        "welcome": "سلام {name} عزیز! 👋\nبه ربات فروشگاه Nexora خوش آمدید.\nبرای دیدن دسته‌بندی‌ها دکمهٔ شروع را بزنید:",
+        "welcome": "سلام {name} عزیز! 👋\nبه میز ارتباط با مشتریان نکسورا خوش آمدید.\nبرای خرید عمده، پشتیبانی و پیگیری درخواست، دکمهٔ شروع را بزنید:",
         "main_menu": "منوی اصلی — یکی از گزینه‌ها را انتخاب کنید:",
         "btn_products": "🗂 دسته‌بندی محصولات",
         "btn_search": "🔍 جست‌وجو",
@@ -50,7 +50,7 @@ TEXTS = {
                 "/cancel — لغو عملیات جاری و بازگشت به منو",
     },
     "en": {
-        "welcome": "Hello {name}! 👋\nWelcome to the Nexora shop bot.\nTap Start below to browse the product categories:",
+        "welcome": "Hello {name}! 👋\nWelcome to Nexora customer care.\nTap Start for wholesale enquiries, support and tracking:",
         "main_menu": "Main menu — please choose an option:",
         "btn_products": "🗂 Product categories",
         "btn_search": "🔍 Search",
@@ -132,3 +132,5 @@ DEFAULT_LANG = "fa"
 def tr(lang: str, key: str) -> str:
     """متن موردنظر را در زبان خواسته‌شده برمی‌گرداند (پیش‌فرض: فارسی)."""
     return TEXTS.get(lang, TEXTS[DEFAULT_LANG]).get(key, key)
+TEXTS['fa']['help'] = ('📖 راهنمای ارتباط با مشتریان نکسورا\n\n📦 درخواست خرید عمده — ثبت اقلام، تعداد و نشانی برای بررسی تیم فروش\n💬 درخواست پشتیبانی — ثبت موضوع و اطلاعات تماس\n❓ سؤالات متداول — خرید عمده، قیمت، ارسال و پیگیری\n📋 پیگیری درخواست‌ها — مشاهدهٔ وضعیت درخواست‌های همین حساب تلگرام\n\nثبت فرم، خرید قطعی نیست؛ قیمت و شرایط باید توسط تیم فروش تأیید شوند.\n/cancel — کنار گذاشتن فرم\n/ping — بررسی اتصال سرور')
+TEXTS['en']['help'] = ('📖 Nexora customer care\n\n📦 Wholesale enquiry — products, quantities and destination for sales review\n💬 Support request — describe your issue\n❓ FAQ — pricing, shipping and tracking\n📋 My requests — status for this Telegram account\n\nAn enquiry is not a confirmed purchase. Sales must confirm pricing and terms.\n/cancel — leave the form\n/ping — check server connectivity')

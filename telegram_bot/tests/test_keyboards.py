@@ -18,8 +18,8 @@ def labels(kb):
 
 
 def test_main_menu_is_persistent_bottom_keyboard():
-    assert tr('fa', 'btn_products') in labels(main_menu_kb('fa'))
-    assert tr('en', 'btn_compare') in labels(main_menu_kb('en'))
+    assert '📦 درخواست خرید عمده' in labels(main_menu_kb('fa'))
+    assert '💬 Support request' in labels(main_menu_kb('en'))
 
 
 def test_categories_come_from_catalogue_and_keep_unknown_categories():
@@ -76,7 +76,7 @@ def test_categories_use_two_columns():
     kb = categories_kb(choices, 'fa')
     rows = [[button.text for button in row] for row in kb.keyboard]
     assert rows[:3] == [['Category 0', 'Category 1'], ['Category 2', 'Category 3'], ['Category 4']]
-    assert tr('fa', 'btn_products') in labels(kb)
+    assert '📦 درخواست خرید عمده' in labels(kb)
 
 
 def test_start_is_inline_below_welcome():

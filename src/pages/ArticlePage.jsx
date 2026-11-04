@@ -1,3 +1,4 @@
+import ErrorPage from './ErrorPage';
 import React, { useEffect } from 'react';
 import { Link, useLocation, useParams } from 'react-router-dom';
 import { ArrowLeft, BookOpen, Check, Clock } from 'lucide-react';
@@ -16,7 +17,7 @@ export default function ArticlePage() {
   useEffect(() => {
     if (hash) document.getElementById(hash.slice(1))?.scrollIntoView();
   }, [slug, hash, content]);
-  if (!article || !content) return <section className="editorial editorial-missing" dir="rtl"><title>مقاله پیدا نشد | نکسورا</title><meta name="robots" content="noindex" /><h1>این مقاله پیدا نشد</h1><Link to="/magazine">بازگشت به مجله فناوری</Link></section>;
+  if (!article || !content) return <ErrorPage />;
   return <div className="editorial" dir="rtl">
     <EditorialMeta title={article.title} description={article.excerpt} path={articleHref(article)} image={article.image} article={article} />
     <nav className="editorial-crumb" aria-label="مسیر صفحه"><Link to="/">خانه</Link><span>/</span><Link to="/magazine">مجله فناوری</Link><span>/</span><span aria-current="page">{article.tag}</span></nav>

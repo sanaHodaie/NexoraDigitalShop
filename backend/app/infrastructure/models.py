@@ -189,3 +189,18 @@ class TelegramLinkChallenge(Base):
     token_hash: Mapped[str] = mapped_column(String(64), primary_key=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), unique=True)
     expires_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), index=True)
+
+
+class CustomerRequest(Base):
+    __tablename__ = "customer_requests"
+    id: Mapped[int] = mapped_column(primary_key=True)
+    request_key: Mapped[str] = mapped_column(String(36), unique=True)
+    telegram_user_id: Mapped[int] = mapped_column(BigInteger, index=True)
+    telegram_username: Mapped[str] = mapped_column(String(64), default="")
+    kind: Mapped[str] = mapped_column(String(20))
+    details: Mapped[dict] = mapped_column(JSON)
+    status: Mapped[str] = mapped_column(String(20), default="new", index=True)
+    staff_note: Mapped[str] = mapped_column(Text, default="")
+    version: Mapped[int] = mapped_column(default=1)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, index=True)
+    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)

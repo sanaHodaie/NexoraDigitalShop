@@ -23,6 +23,8 @@ from api_client import (
     Product,
 )
 from config import Config
+from customer_support import COPY as CUSTOMER_COPY
+from customer_support import CustomerSupport
 from keyboards import (
     callback_id,
     categories,
@@ -117,7 +119,7 @@ def fmt_details(
     return "\n".join(lines)
 
 
-class NexoraHandlers:
+class NexoraHandlers(CustomerSupport):
 
     def __init__(
         self,
@@ -187,6 +189,8 @@ class NexoraHandlers:
             Command("cancel"),
         )
 
+        self.register_customer_support()
+
         # Reply-keyboard commands must win over the search state.
         labels = {tr(lang, key) for lang in ("fa", "en") for key in (
             "btn_start", "btn_products", "btn_search", "btn_compare", "btn_language", "btn_back_main",
@@ -194,6 +198,7 @@ class NexoraHandlers:
             "btn_add_compare", "btn_compare_show", "btn_compare_clear",
         )} | {"🇮🇷 فارسی", "🇬🇧 English"}
         r.message.register(self.reply_navigation, F.text.in_(labels))
+        self.register_customer_form_handlers()
 
         r.callback_query.register(self.cb_begin, F.data == "menu:start")
 
@@ -545,7 +550,7 @@ class NexoraHandlers:
         await cb.answer()
         uid = cb.from_user.id
         self._compare_mode[uid] = False
-        await self.show_categories(cb.message, self.lang_of(uid), uid)
+        await cb.message.answer(CUSTOMER_COPY[self.lang_of(uid)]["intro"], reply_markup=main_menu_kb(self.lang_of(uid)))
 
     async def cmd_help(
         self,
@@ -1134,7 +1139,9 @@ class NexoraHandlers:
             await self.cb_set_lang(cb, state)
         elif action == "btn_start":
             await self.cmd_start(message, state)
-        elif action in ("btn_products", "btn_categories", "btn_back_main"):
+        elif action == "btn_back_main":
+            await message.answer(CUSTOMER_COPY[lang]["intro"], reply_markup=main_menu_kb(lang))
+        elif action in ("btn_products", "btn_categories"):
             self._compare_mode[uid] = False
             await self.show_categories(message, lang, uid)
         elif action == "btn_compare":
