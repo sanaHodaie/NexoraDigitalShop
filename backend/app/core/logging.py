@@ -6,6 +6,7 @@ from datetime import datetime, timezone
 
 def redact(value):
     text = str(value)
+    text = re.sub(r"bot[0-9]+:[A-Za-z0-9_-]+", "bot[REDACTED]", text)
     text = re.sub(r"(?i)Bearer\s+[A-Za-z0-9._~+/=-]+", "Bearer [REDACTED]", text)
     text = re.sub(r"(?i)(postgres(?:ql)?(?:\+psycopg)?|rediss?)://[^\s]+", r"\1://[REDACTED]", text)
     text = re.sub(

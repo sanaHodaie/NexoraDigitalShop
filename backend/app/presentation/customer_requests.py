@@ -11,7 +11,7 @@ from app.presentation.dependencies import current_user, services
 from app.presentation.telegram import bot_auth
 
 router = APIRouter(tags=["customer requests"])
-Status = Literal["new", "reviewing", "contacted", "quoted", "closed", "cancelled"]
+Status = Literal["new", "reviewing", "contacted", "quoted", "closed", "cancelled", "approved"]
 Kind = Literal["wholesale", "support"]
 
 
@@ -56,6 +56,34 @@ def create(data: Create, request: Request, store=Depends(storage)):
     )
 
 
+@router.get("/internal/telegram/customer-requests/health", dependencies=[Depends(bot_auth)])
+def service_health(request: Request):
+    from sqlalchemy import select, text
+
+    from app.infrastructure.models import CustomerDelivery, CustomerRequest
+
+    with request.app.state.engine.connect() as connection:
+        connection.execute(
+            select(CustomerRequest.id, CustomerRequest.tracking_code, CustomerRequest.invoice_pdf).limit(0)
+        )
+        connection.execute(select(CustomerDelivery.request_id).limit(0))
+        if connection.dialect.name == "postgresql":
+            allowed = connection.scalar(
+                text(
+                    "SELECT has_table_privilege(current_user, 'customer_requests', 'INSERT') AND has_table_privilege(current_user, 'customer_requests', 'UPDATE') AND has_table_privilege(current_user, 'customer_deliveries', 'INSERT')"
+                )
+            )
+            if not allowed:
+                raise BusinessError(503, "CUSTOMER_REQUEST_GRANTS_REQUIRED")
+    return {
+        "status": "ready",
+        "notificationsConfigured": bool(
+            request.app.state.settings.telegram_bot_token
+            and request.app.state.settings.telegram_bot_token.get_secret_value().strip()
+        ),
+    }
+
+
 @router.get("/internal/telegram/customer-requests/{uid}", dependencies=[Depends(bot_auth)])
 def mine(uid: int, store=Depends(storage)):
     return store.mine(uid)
@@ -82,4 +110,74 @@ def listing(
 @router.patch("/api/admin/customer-requests/{rid}")
 def update(rid: int, data: Update, user=Depends(current_user), svc=Depends(services), store=Depends(storage)):
     permission(svc, user.id, "orders:cancel")
+    if data.status == "approved":
+        raise BusinessError(400, "تأیید فقط با صدور فاکتور انجام می‌شود.")
     return store.update(rid, user.id, data.status, data.staffNote, data.version)
+
+
+class InvoiceLine(BaseModel):
+    name: str = Field(min_length=1, max_length=300)
+    quantity: int = Field(strict=True, ge=1, le=1000000)
+    unitPriceRial: int = Field(strict=True, gt=0, le=10**12)
+
+
+class Approval(BaseModel):
+    version: int = Field(ge=1)
+    lines: list[InvoiceLine] = Field(min_length=1, max_length=50)
+    shippingRial: int = Field(default=0, strict=True, ge=0, le=10**12)
+    terms: str = Field(default="", max_length=1000)
+
+
+@router.post("/api/admin/customer-requests/{rid}/approve")
+def approve(
+    rid: int,
+    data: Approval,
+    request: Request,
+    user=Depends(current_user),
+    svc=Depends(services),
+    store=Depends(storage),
+):
+    permission(svc, user.id, "orders:confirm_payment")
+    token = request.app.state.settings.telegram_bot_token
+    if not token or not token.get_secret_value().strip():
+        raise BusinessError(503, "برای ارسال فاکتور، TELEGRAM_BOT_TOKEN را در تنظیمات امن بک‌اند وارد کنید.")
+    return store.approve(
+        rid, user.id, data.version, [line.model_dump() for line in data.lines], data.shippingRial, data.terms
+    )
+
+
+def pdf_response(store, rid, uid=None):
+    from fastapi import Response
+
+    data, code = store.pdf(rid, uid)
+    return Response(
+        data,
+        media_type="application/pdf",
+        headers={
+            "Content-Disposition": 'attachment; filename="Nexora-' + code + '.pdf"',
+            "Cache-Control": "no-store",
+        },
+    )
+
+
+@router.get("/api/admin/customer-requests/{rid}/invoice")
+def invoice(rid: int, user=Depends(current_user), svc=Depends(services), store=Depends(storage)):
+    permission(svc, user.id, "orders:read")
+    return pdf_response(store, rid)
+
+
+@router.get("/internal/telegram/customer-requests/{uid}/{rid}/invoice", dependencies=[Depends(bot_auth)])
+def customer_invoice(uid: int, rid: int, store=Depends(storage)):
+    return pdf_response(store, rid, uid)
+
+
+@router.post("/api/admin/customer-requests/{rid}/retry-delivery")
+def retry_delivery(rid: int, user=Depends(current_user), svc=Depends(services), store=Depends(storage)):
+    permission(svc, user.id, "orders:confirm_payment")
+    return store.retry(rid, user.id)
+
+
+@router.get("/api/admin/customer-request-stats")
+def statistics(user=Depends(current_user), svc=Depends(services), store=Depends(storage)):
+    permission(svc, user.id, "orders:read")
+    return store.stats()

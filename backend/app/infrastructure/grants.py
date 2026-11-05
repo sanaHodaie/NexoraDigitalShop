@@ -19,7 +19,7 @@ def grant_runtime(engine, role):
                  "telegram_links", "telegram_link_challenges"],
             ),
             ("SELECT", ["roles", "role_permissions", "user_roles"]),
-            ("SELECT, INSERT, UPDATE", ["products", "site_documents", "customer_requests"]),
+            ("SELECT, INSERT, UPDATE", ["products", "site_documents", "customer_requests", "customer_deliveries"]),
             ("SELECT, INSERT", ["security_audit_logs", "product_media"]),
         ]
         for permissions, tables in groups:

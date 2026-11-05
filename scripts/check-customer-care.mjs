@@ -50,12 +50,19 @@ try {
     if (path === '/api/auth/me') data = {email: 'test@example.com', fullName: 'Telegram UI Test', emailVerifiedAt: '2026-01-01'};
     if (path === '/api/auth/providers') data = {googleClientId: null};
     if (path === '/api/csrf') data = {token: 'fixture-csrf'};
-    if(path === '/api/admin/me') data = {email:'admin@example.com',fullName:'مدیر تست',permissions:['admin:access','orders:read','orders:cancel']};
+    if(path === '/api/admin/me') data = {email:'admin@example.com',fullName:'مدیر تست',permissions:['admin:access','orders:read','orders:cancel','orders:confirm_payment','dashboard:read']};
     if(path === '/api/admin/customer-requests') data = {items:[row],total:1,page:1,size:20};
     if(path === '/api/admin/customer-requests/42' && request.method === 'PATCH') {
       writes.push(request);
       Object.assign(row,JSON.parse(request.postData),{version:row.version+1});
       data = row;
+    }
+    if(path === '/api/admin/dashboard') data={revenue:0,orders:0,users:1,products:114,daily:[],statuses:{},lowStock:0,subscribers:0};
+    if(path === '/api/admin/customer-request-stats') data={total:1,statuses:{new:1},daily:[{day:'2026-11-04',requests:0},{day:'2026-11-05',requests:1}]};
+    if(path === '/api/admin/customer-requests/42/approve') {
+      writes.push(request);
+      Object.assign(row,{status:'approved',trackingCode:'12345678',hasInvoice:true,deliveryStatus:'pending',version:3});
+      data=row;
     }
     command('Fetch.fulfillRequest', {requestId, responseCode: status,
       responseHeaders: [{name: 'Content-Type', value: 'application/json'}],
@@ -105,12 +112,27 @@ try {
     await command('Emulation.setDeviceMetricsOverride', {width,height:1000,deviceScaleFactor:1,mobile:false});
     assert.ok(await evaluate('document.documentElement.scrollWidth <= innerWidth'));
   }
-  await evaluate('(() => {const select=document.querySelectorAll("select")[2];select.value="contacted";select.dispatchEvent(new Event("change",{bubbles:true}));})()');
+  await evaluate(`document.querySelector('[aria-label="وضعیت رسیدگی درخواست 42"]').click()`);
+  await until(`!!document.querySelector('[role="listbox"]')`);
+  await evaluate(`[...document.querySelectorAll('[role="option"]')].find(o=>o.textContent.includes("تماس گرفته شد")).click()`);
   await click('ذخیرهٔ رسیدگی');
   await until('[...document.querySelectorAll(".glass-panel header span")].some(s=>s.textContent.includes("تماس گرفته شد"))');
   assert.equal(writes.length,1);
   assert.equal(Object.entries(writes[0].headers).find(([key])=>key.toLowerCase()==='x-csrf-token')?.[1],'fixture-csrf');
   assert.equal(row.status,'contacted');
+  await click('بررسی و صدور فاکتور عمده');
+  await evaluate(`(() => {const input=document.querySelector('input[type="number"][min="1"][max="1000000000000"]');Object.getOwnPropertyDescriptor(HTMLInputElement.prototype,'value').set.call(input,'25000000');input.dispatchEvent(new Event('input',{bubbles:true}));})()`);
+  await click('تأیید نهایی و ارسال فاکتور در تلگرام');
+  await until('document.body.innerText.includes("12345678")');
+  assert.ok(await evaluate(`!!document.querySelector('a[href="/api/admin/customer-requests/42/invoice"]')`));
+  assert.equal(writes.length,2);
+  await command('Page.navigate',{url:ui+'/admin#dashboard'});
+  await until('document.body.innerText.includes("درخواست‌های واقعی تلگرام و عمده")');
+  await until('!!document.querySelector("svg[role=img]") || document.body.innerText.includes("مشاهدهٔ داده‌های نمودار")');
+  const menuLabels=await evaluate('[...document.querySelectorAll("aside button")].map(b=>b.textContent.trim())');
+  assert.ok(menuLabels.indexOf('درخواست‌های تلگرام و عمده')>menuLabels.indexOf('داشبورد اصلی'));
+  await command('Emulation.setDeviceMetricsOverride',{width:390,height:1000,deviceScaleFactor:1,mobile:false});
+  assert.ok(await evaluate('document.documentElement.scrollWidth <= innerWidth'));
   forceCrash = true;
   await command('Page.navigate',{url:ui+'/'});
   await until('document.querySelector("#error-title")?.textContent.includes("کمی مکث")');
@@ -118,7 +140,7 @@ try {
   await click('تلاش دوباره');
   await until('!!document.querySelector("#trending") && !document.querySelector(".nexora-error")');
   assert.deepEqual(errors,[]);
-  console.log('PASS: illustrated 404 routes, loaded artwork, noindex, light/dark 320–1440px; admin customer/address display and status update with CSRF (API mocked).');
+  console.log('PASS: error routes/recovery, styled dropdowns, admin status and invoice approval, PDF link, request chart and sidebar ordering (API mocked).');
 } finally {
   socket?.close(); chrome.kill();
   await new Promise(resolve => { if (chrome.exitCode !== null) resolve(); else chrome.once('exit', resolve); });

@@ -15,7 +15,8 @@ logger = logging.getLogger(__name__)
 
 
 class Worker:
-    def __init__(self, engine, cipher, identity, orders, sender):
+    def __init__(self, engine, cipher, identity, orders, sender, wholesale=None):
+        self.wholesale = wholesale
         self.engine, self.cipher, self.identity, self.orders, self.sender = (
             engine,
             cipher,
@@ -26,6 +27,7 @@ class Worker:
 
     def once(self):
         self.orders.expire_due()
+        delivered = self.wholesale.once() if self.wholesale else False
         now, lease = utcnow(), secrets.token_hex(16)
         with Session(self.engine) as db:
             row = db.scalar(
@@ -41,7 +43,7 @@ class Worker:
                 .limit(1)
             )
             if row is None:
-                return False
+                return delivered
             row.lease, row.locked_until = lease, now + timedelta(minutes=2)
             row.attempts += 1
             job_id, kind, encrypted, attempts = row.id, row.kind, row.payload, row.attempts
@@ -84,7 +86,9 @@ def main():
     if settings.environment == "production":
         check_runtime_role(engine)
     services = Services(settings, engine)
-    worker = Worker(engine, services.cipher, services.identity, services.orders, EmailSender(settings))
+    from app.infrastructure.wholesale_delivery import TelegramDocumentSender, WholesaleDelivery
+    worker = Worker(engine, services.cipher, services.identity, services.orders, EmailSender(settings),
+                    wholesale=WholesaleDelivery(engine, TelegramDocumentSender(settings)))
     try:
         while True:
             try:

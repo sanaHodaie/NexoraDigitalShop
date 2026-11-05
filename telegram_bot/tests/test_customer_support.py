@@ -108,3 +108,29 @@ async def test_tracking_uses_actual_sender_and_main_menu_avoids_catalogue(handle
     await handler.crm_navigation(result, State())
     handler.client.customer_requests.assert_awaited_once_with(123)
     assert "تماس گرفته شد" in result.answer.call_args.args[0]
+
+
+async def test_missing_shared_key_is_actionable_and_invoice_download_uses_sender(
+    handler,
+):
+    from api_client import ApiConfigurationError
+
+    state = await filled(handler)
+    handler.client.create_customer_request.side_effect = ApiConfigurationError(
+        "missing"
+    )
+    failed = message(COPY["fa"]["confirm"])
+    await handler.crm_submit(failed, state)
+    assert "کلید مشترک" in failed.answer.call_args.args[0] and state.state is not None
+    pdf = b"%PDF-test-exact-bytes"
+    handler.client.customer_invoice.return_value = pdf
+    response = SimpleNamespace(answer=AsyncMock(), answer_document=AsyncMock())
+    cb = SimpleNamespace(
+        answer=AsyncMock(),
+        data="invoice:42",
+        from_user=SimpleNamespace(id=123),
+        message=response,
+    )
+    await handler.crm_invoice(cb)
+    handler.client.customer_invoice.assert_awaited_once_with(123, 42)
+    assert response.answer_document.call_args.args[0].data == pdf

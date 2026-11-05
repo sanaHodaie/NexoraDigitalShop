@@ -66,3 +66,17 @@ Not executed: deployment to a real Vercel/Render account, provisioning the user'
 - Manual mobile screenshot visually inspected. Generated transparent artwork is encoded as error-navigation.webp (about 321 KB).
 
 Production rollout still requires Render deployment/migration 0010/runtime grants, the shared TELEGRAM_BOT_API_KEY in backend and bot, and frontend deployment. No live customer request was submitted to production and no live Telegram messages were sent during development. These enquiries are not paid orders and no wholesale price, minimum order policy or delivery promise is invented.
+
+## Approval, immutable Persian PDF and delivery — 2026-11-05
+
+- Backend full regression: **231 passed, 1 skipped** (optional Redis service check); existing Starlette deprecation warning remains.
+- Final invoice/worker/customer-service targeted checks after PDF-layout refinement: **12 passed**.
+- Bot regression: **70 passed**; missing-service-key feedback and invoice download ownership use the actual Telegram sender.
+- Unique code tests cover random collisions and simultaneous approval. Duplicate approval retains the same tracking code, PDF and single delivery job.
+- Admin download, owner-only bot download and the delivery sender receive the exact same stored PDF bytes; wrong Telegram user is rejected.
+- Leased queue tests cover retry, immutable payload, sent state, message ID and prevention of retrying an already delivered invoice.
+- PDF was rendered to an image and visually inspected for Persian shaping, embedded font, customer address, item columns and rial totals. Font license is bundled with the original font.
+- Browser checks cover styled Select interaction, approval with an entered unit price, PDF download link, sidebar order, real-data stats widget and responsive layout (API simulated; HTTP/DB separately tested).
+- Build, TypeScript, JavaScript and Python checks verified; actual Telegram delivery and the user's Render configuration require secure owner setup. No live customer messages were sent from development.
+- The exact uv version pinned by backend/Dockerfile (0.11.27) successfully parsed the updated lock and completed a frozen production dry-run.
+- Final PDF-generation locking checks: **4 invoice tests passed** after serializing ReportLab font state; the bundled PDF was visually reviewed with the final table layout.

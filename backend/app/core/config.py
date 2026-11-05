@@ -16,6 +16,7 @@ class Settings(BaseSettings):
     secret_key: SecretStr = SecretStr("local-development-only-change-before-deploying")
     run_worker: bool = True
     migrate_on_start: bool = True
+    telegram_bot_token: SecretStr | None = None
     telegram_bot_api_key: SecretStr | None = None
     telegram_bot_username: str = Field(default="", pattern=r"^([A-Za-z][A-Za-z0-9_]{4,31})?$")
     google_client_id: str | None = None

@@ -1,4 +1,3 @@
-
 """کلاینت اتصال به API بک‌اند فروشگاه NexoraDigitalShop.
 
 خطاها عمداً از هم تفکیک شده‌اند:
@@ -22,6 +21,10 @@ logger = logging.getLogger(__name__)
 
 class ApiError(Exception):
     """خطای پایه ارتباط با بک‌اند فروشگاه."""
+
+
+class ApiConfigurationError(ApiError):
+    """Missing private service binding; safe to identify without printing values."""
 
 
 class ApiNetworkError(ApiError):
@@ -161,11 +164,7 @@ def normalize_product(raw: Any) -> Product | None:
         available=available,
         stock=stock,
         image=str(image) if image is not None else None,
-        description=(
-            str(description)
-            if description is not None
-            else None
-        ),
+        description=(str(description) if description is not None else None),
         raw=raw,
     )
 
@@ -236,7 +235,10 @@ class NexoraClient:
             # Keep the cache bounded even if many different category strings arrive.
             if len(self._catalogue_cache) >= 64:
                 self._catalogue_cache.clear()
-            self._catalogue_cache[category] = (monotonic() + self._catalogue_cache_seconds, deepcopy(products))
+            self._catalogue_cache[category] = (
+                monotonic() + self._catalogue_cache_seconds,
+                deepcopy(products),
+            )
             return products
 
     async def _fetch_products(self, query=None, category=None):
@@ -257,9 +259,7 @@ class NexoraClient:
             )
 
         except httpx.HTTPError as exc:
-            raise ApiNetworkError(
-                "ارتباط با بک‌اند برقرار نشد."
-            ) from exc
+            raise ApiNetworkError("ارتباط با بک‌اند برقرار نشد.") from exc
 
         if response.status_code >= 400:
             raise ApiHttpError(response.status_code)
@@ -268,12 +268,11 @@ class NexoraClient:
             payload = response.json()
 
         except ValueError as exc:
-            raise ApiDataError(
-                "پاسخ JSON معتبر نبود."
-            ) from exc
+            raise ApiDataError("پاسخ JSON معتبر نبود.") from exc
 
         if not isinstance(payload, list) and not (
-            isinstance(payload, dict) and any(isinstance(payload.get(k), list) for k in _LIST_KEYS)
+            isinstance(payload, dict)
+            and any(isinstance(payload.get(k), list) for k in _LIST_KEYS)
         ):
             raise ApiDataError("ساختار فهرست محصولات معتبر نیست.")
 
@@ -286,9 +285,7 @@ class NexoraClient:
                 products.append(product)
 
         if not products:
-            logger.warning(
-                "فهرست محصولات خالی بود یا ساختار پاسخ قابل شناسایی نبود."
-            )
+            logger.warning("فهرست محصولات خالی بود یا ساختار پاسخ قابل شناسایی نبود.")
 
         return products
 
@@ -300,17 +297,13 @@ class NexoraClient:
         """دریافت جزئیات محصول یا جستجو در فهرست کش‌شده."""
 
         if self._product_detail_path:
-            url = self._product_detail_path.format(
-                id=quote(product_id, safe="")
-            )
+            url = self._product_detail_path.format(id=quote(product_id, safe=""))
 
             try:
                 response = await self._client.get(url)
 
             except httpx.HTTPError as exc:
-                raise ApiNetworkError(
-                    "ارتباط با بک‌اند برقرار نشد."
-                ) from exc
+                raise ApiNetworkError("ارتباط با بک‌اند برقرار نشد.") from exc
 
             if response.status_code == 404:
                 return None
@@ -322,14 +315,9 @@ class NexoraClient:
                 payload = response.json()
 
             except ValueError as exc:
-                raise ApiDataError(
-                    "پاسخ JSON معتبر نبود."
-                ) from exc
+                raise ApiDataError("پاسخ JSON معتبر نبود.") from exc
 
-            if (
-                isinstance(payload, dict)
-                and isinstance(payload.get("data"), dict)
-            ):
+            if isinstance(payload, dict) and isinstance(payload.get("data"), dict):
                 payload = payload["data"]
 
             product = normalize_product(payload)
@@ -352,9 +340,7 @@ class NexoraClient:
         """ساخت هدر احراز هویت ارتباط داخلی ربات."""
 
         if not self._telegram_bot_api_key:
-            raise ApiDataError(
-                "کلید ارتباط امن با بک‌اند تنظیم نشده است."
-            )
+            raise ApiConfigurationError("کلید ارتباط امن با بک‌اند تنظیم نشده است.")
 
         return {
             "X-Telegram-Bot-Key": self._telegram_bot_api_key,
@@ -377,22 +363,11 @@ class NexoraClient:
         به بک‌اند ارسال می‌کند.
         """
 
-        if (
-            not isinstance(token, str)
-            or not token
-            or len(token) > 128
-        ):
-            raise ApiDataError(
-                "توکن اتصال معتبر نیست."
-            )
+        if not isinstance(token, str) or not token or len(token) > 128:
+            raise ApiDataError("توکن اتصال معتبر نیست.")
 
-        if (
-            type(telegram_user_id) is not int
-            or telegram_user_id <= 0
-        ):
-            raise ApiDataError(
-                "شناسه تلگرام معتبر نیست."
-            )
+        if type(telegram_user_id) is not int or telegram_user_id <= 0:
+            raise ApiDataError("شناسه تلگرام معتبر نیست.")
 
         headers = self._telegram_headers()
 
@@ -418,17 +393,10 @@ class NexoraClient:
             payload = response.json()
 
         except ValueError as exc:
-            raise ApiDataError(
-                "پاسخ تکمیل اتصال معتبر نیست."
-            ) from exc
+            raise ApiDataError("پاسخ تکمیل اتصال معتبر نیست.") from exc
 
-        if (
-            not isinstance(payload, dict)
-            or payload.get("linked") is not True
-        ):
-            raise ApiDataError(
-                "بک‌اند اتصال حساب تلگرام را تأیید نکرد."
-            )
+        if not isinstance(payload, dict) or payload.get("linked") is not True:
+            raise ApiDataError("بک‌اند اتصال حساب تلگرام را تأیید نکرد.")
 
         return payload
 
@@ -438,7 +406,9 @@ class NexoraClient:
 
     async def _customer_request(self, method, path, payload=None):
         try:
-            response = await self._client.request(method, path, headers=self._telegram_headers(), json=payload)
+            response = await self._client.request(
+                method, path, headers=self._telegram_headers(), json=payload
+            )
         except httpx.HTTPError as exc:
             raise ApiNetworkError("Customer service unavailable") from exc
         if response.status_code >= 400:
@@ -448,15 +418,43 @@ class NexoraClient:
         except ValueError as exc:
             raise ApiDataError("Invalid customer-service response") from exc
 
+    async def customer_service_health(self):
+        result = await self._customer_request(
+            "GET", "/internal/telegram/customer-requests/health"
+        )
+        if not isinstance(result, dict) or result.get("status") != "ready":
+            raise ApiDataError("Customer service readiness was not confirmed")
+        return result
+
+    async def customer_invoice(self, uid, rid):
+        try:
+            response = await self._client.get(
+                f"/internal/telegram/customer-requests/{int(uid)}/{int(rid)}/invoice",
+                headers=self._telegram_headers(),
+            )
+        except httpx.HTTPError as exc:
+            raise ApiNetworkError("Invoice unavailable") from exc
+        if response.status_code >= 400:
+            raise ApiHttpError(response.status_code)
+        if response.headers.get("content-type", "").split(";")[
+            0
+        ] != "application/pdf" or not response.content.startswith(b"%PDF-"):
+            raise ApiDataError("Invalid invoice response")
+        return response.content
+
     async def create_customer_request(self, payload):
-        result = await self._customer_request('POST', '/internal/telegram/customer-requests', payload)
-        if not isinstance(result, dict) or type(result.get('id')) is not int:
+        result = await self._customer_request(
+            "POST", "/internal/telegram/customer-requests", payload
+        )
+        if not isinstance(result, dict) or type(result.get("id")) is not int:
             raise ApiDataError("Request registration was not confirmed")
         return result
 
     async def customer_requests(self, uid):
-        result = await self._customer_request('GET', f'/internal/telegram/customer-requests/{int(uid)}')
-        if not isinstance(result, dict) or not isinstance(result.get('items'), list):
+        result = await self._customer_request(
+            "GET", f"/internal/telegram/customer-requests/{int(uid)}"
+        )
+        if not isinstance(result, dict) or not isinstance(result.get("items"), list):
             raise ApiDataError("Invalid request list")
         return result
 

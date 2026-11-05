@@ -19,6 +19,7 @@ services:
     build: ./backend
     environment:
       ENVIRONMENT: development
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
       TELEGRAM_BOT_API_KEY: ${TELEGRAM_BOT_API_KEY:-}
       TELEGRAM_BOT_USERNAME: ${TELEGRAM_BOT_USERNAME:-}
       DATABASE_URL: postgresql+psycopg://nexora_app:local-app-only@db:5432/nexora

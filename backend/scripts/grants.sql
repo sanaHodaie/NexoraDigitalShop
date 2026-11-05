@@ -7,5 +7,5 @@ REVOKE ALL ON ALL TABLES IN SCHEMA public FROM :"app_role";
 GRANT SELECT, INSERT, UPDATE ON users, auth_sessions, orders, order_lines, subscribers TO :"app_role";
 GRANT SELECT, INSERT, UPDATE, DELETE ON cart_items, wishlist_items, password_resets, action_tokens, email_outbox, telegram_links, telegram_link_challenges TO :"app_role";
 GRANT SELECT ON roles, role_permissions, user_roles TO :"app_role";
-GRANT SELECT, INSERT, UPDATE ON products, site_documents, customer_requests TO :"app_role";
+GRANT SELECT, INSERT, UPDATE ON products, site_documents, customer_requests, customer_deliveries TO :"app_role";
 GRANT SELECT, INSERT ON security_audit_logs, product_media TO :"app_role";

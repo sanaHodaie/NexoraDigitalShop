@@ -194,6 +194,10 @@ class TelegramLinkChallenge(Base):
 class CustomerRequest(Base):
     __tablename__ = "customer_requests"
     id: Mapped[int] = mapped_column(primary_key=True)
+    tracking_code: Mapped[str | None] = mapped_column(String(8), unique=True, index=True)
+    invoice_pdf: Mapped[bytes | None] = mapped_column(LargeBinary)
+    invoice_data: Mapped[dict | None] = mapped_column(JSON)
+    approved_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     request_key: Mapped[str] = mapped_column(String(36), unique=True)
     telegram_user_id: Mapped[int] = mapped_column(BigInteger, index=True)
     telegram_username: Mapped[str] = mapped_column(String(64), default="")
@@ -204,3 +208,15 @@ class CustomerRequest(Base):
     version: Mapped[int] = mapped_column(default=1)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow, index=True)
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+
+class CustomerDelivery(Base):
+    __tablename__ = "customer_deliveries"
+    request_id: Mapped[int] = mapped_column(ForeignKey("customer_requests.id", ondelete="CASCADE"), primary_key=True)
+    attempts: Mapped[int] = mapped_column(default=0)
+    available_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+    locked_until: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    lease: Mapped[str | None] = mapped_column(String(64))
+    sent_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    failed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    message_id: Mapped[int | None] = mapped_column(BigInteger)

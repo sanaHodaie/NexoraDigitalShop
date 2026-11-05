@@ -5,8 +5,8 @@ from uuid import uuid4
 
 from aiogram import F
 from aiogram.fsm.state import State, StatesGroup
-from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-from api_client import ApiError
+from aiogram.types import BufferedInputFile, InlineKeyboardButton, InlineKeyboardMarkup
+from api_client import ApiConfigurationError, ApiError, ApiHttpError
 from keyboards import keyboard, main_menu_kb
 
 COPY = {
@@ -112,6 +112,7 @@ STATUS = {
     "quoted": "پیشنهاد قیمت ارائه شد",
     "closed": "بسته شد",
     "cancelled": "لغو شد",
+    "approved": "تأیید شد",
 }
 FIELDS = ("name", "phone", "company", "items", "quantity", "city", "address", "notes")
 MAX = {
@@ -138,6 +139,9 @@ class CustomerSupport:
             for key in ("wholesale", "support", "faq", "mine", "cancel")
         }
         self.router.message.register(self.crm_navigation, F.text.in_(labels))
+        self.router.callback_query.register(
+            self.crm_invoice, F.data.startswith("invoice:")
+        )
         self.router.callback_query.register(
             self.crm_faq_answer, F.data.startswith("faq:")
         )
@@ -203,12 +207,27 @@ class CustomerSupport:
                 return
             items = result["items"]
             lines = [
-                f"#{r['id']} · {text['wholesale'] if r['kind'] == 'wholesale' else text['support']} · {STATUS.get(r['status'], r['status']) if lang == 'fa' else r['status']}"
+                f"#{r['id']} · {r.get('trackingCode') or '—'} · {text['wholesale'] if r['kind'] == 'wholesale' else text['support']} · {STATUS.get(r['status'], r['status']) if lang == 'fa' else r['status']}"
                 for r in items
             ]
             await message.answer(
                 "\n".join(lines) or text["empty"], reply_markup=main_menu_kb(lang)
             )
+            invoices = [
+                [
+                    InlineKeyboardButton(
+                        text="📄 فاکتور " + str(r.get("trackingCode") or r["id"]),
+                        callback_data="invoice:" + str(r["id"]),
+                    )
+                ]
+                for r in items
+                if r.get("hasInvoice")
+            ]
+            if invoices:
+                await message.answer(
+                    "فاکتور تأییدشده را از اینجا دانلود کنید:",
+                    reply_markup=InlineKeyboardMarkup(inline_keyboard=invoices),
+                )
         else:
             await message.answer(text["cancelled"], reply_markup=main_menu_kb(lang))
 
@@ -293,6 +312,20 @@ class CustomerSupport:
                     "details": data["details"],
                 }
             )
+        except ApiConfigurationError:
+            await message.answer(
+                "ارتباط امن فروشگاه تنظیم نشده است؛ مسئول فروشگاه باید کلید مشترک بات و بک‌اند را تنظیم کند. فرم شما برای تلاش مجدد حفظ شد."
+            )
+            return
+        except ApiHttpError as exc:
+            reasons = {
+                401: "کلید ارتباط بات و فروشگاه تأیید نشد؛ تنظیمات باید توسط مسئول فروشگاه بررسی شود.",
+                404: "نسخهٔ ثبت درخواست روی سرور فروشگاه در دسترس نیست؛ بک‌اند باید به‌روز شود.",
+                400: "سرور اطلاعات فرم را نپذیرفت؛ با /cancel فرم جدیدی تکمیل کنید.",
+                503: "بخش ثبت درخواست موقتاً آماده نیست؛ مسئول فروشگاه باید وضعیت استقرار و دیتابیس را بررسی کند.",
+            }
+            await message.answer(reasons.get(exc.status_code, text["failed"]))
+            return
         except ApiError:
             await message.answer(text["failed"])
             return
@@ -300,4 +333,18 @@ class CustomerSupport:
         await message.answer(
             text["saved"].format(id=result["id"]),
             reply_markup=main_menu_kb(self.lang_of(uid)),
+        )
+
+    async def crm_invoice(self, cb):
+        await cb.answer()
+        try:
+            rid = int(cb.data.split(":", 1)[1])
+            if rid < 1:
+                return
+            pdf = await self.client.customer_invoice(cb.from_user.id, rid)
+        except (ApiError, ValueError):
+            await cb.message.answer("فاکتور در دسترس نیست یا به این حساب تعلق ندارد.")
+            return
+        await cb.message.answer_document(
+            BufferedInputFile(pdf, filename="Nexora-invoice-" + str(rid) + ".pdf")
         )

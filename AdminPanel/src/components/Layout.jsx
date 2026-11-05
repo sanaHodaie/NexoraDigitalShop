@@ -48,9 +48,9 @@ export default function Layout({
   const [isMutedState, setIsMutedState] = useState(getAudioMuted());
 
   const navItems = [
-    { id: 'customer-requests', label: 'درخواست‌های تلگرام و عمده', icon: MessageSquare, badge: null },
     { id: 'assistant', label: 'راهنمای هوشمند خرید', icon: Sparkles, badge: null },
     { id: 'dashboard', label: 'داشبورد اصلی', icon: LayoutDashboard, badge: null },
+    { id: 'customer-requests', label: 'درخواست‌های تلگرام و عمده', icon: MessageSquare, badge: null },
     { id: 'products', label: 'محصولات و موجودی', icon: Gem, badge: null },
     { id: 'orders', label: 'سفارشات و فاکتورها', icon: ShoppingBag, badge: null },
     { id: 'messages', label: 'اعضای خبرنامه', icon: MessageSquare, badge: unreadCount > 0 ? unreadCount : null },

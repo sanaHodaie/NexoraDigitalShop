@@ -48,7 +48,7 @@ export default function App() {
     onSearch={(value:string)=>{setSearch(value);navigate('products');}}>
     <ErrorBox message={error}/>
     {pagePermission && !can(pagePermission) && <ErrorBox message="دسترسی به این بخش برای حساب شما فعال نیست؛ از منو بخش مجاز را انتخاب کنید."/>}
-    {activePage==='dashboard' && can('dashboard:read') && <Dashboard onNavigate={navigate}/>}
+    {activePage==='dashboard' && can('dashboard:read') && <Dashboard onNavigate={navigate} can={can}/>}
     {activePage==='products' && can('products:read') && <Products can={can} search={search}/>}
     {activePage==='pricing' && can('products:write') && <BulkPricePage/>}
     {activePage==='customer-requests' && can('orders:read') && <CustomerRequests can={can}/>}
