@@ -17,7 +17,17 @@ from app.infrastructure.crypto import valid_csrf
 from app.infrastructure.database import make_engine
 from app.infrastructure.database_security import check_runtime_role
 from app.infrastructure.rate_limit import LocalLimiter, RedisLimiter
-from app.presentation import account, assistant, auth, catalog, customer_requests, management, telegram
+from app.presentation import (
+    account,
+    assistant,
+    auth,
+    catalog,
+    customer_requests,
+    management,
+    mobile,
+    telegram,
+)
+from app.presentation.dependencies import native_csrf_exempt
 
 
 def create_app(settings: Settings | None = None, engine=None) -> FastAPI:
@@ -53,7 +63,7 @@ def create_app(settings: Settings | None = None, engine=None) -> FastAPI:
             allow_origins=settings.allowed_origins,
             allow_credentials=True,
             allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE"],
-            allow_headers=["Content-Type", "X-CSRF-TOKEN"],
+            allow_headers=["Content-Type", "X-CSRF-TOKEN", "Authorization"],
         )
 
     @app.middleware("http")
@@ -61,7 +71,8 @@ def create_app(settings: Settings | None = None, engine=None) -> FastAPI:
         path = request.url.path.rstrip("/")
         response = None
         if path == "/api" or path.startswith("/api/"):
-            if request.method not in {"GET", "HEAD", "OPTIONS"} and not valid_csrf(request):
+            if (request.method not in {"GET", "HEAD", "OPTIONS"}
+                    and not native_csrf_exempt(request) and not valid_csrf(request)):
                 response = JSONResponse(
                     {"error": "Invalid CSRF token", "code": "INVALID_CSRF"}, status_code=400
                 )
@@ -149,6 +160,7 @@ def create_app(settings: Settings | None = None, engine=None) -> FastAPI:
     app.include_router(customer_requests.router)
     app.include_router(telegram.router)
     app.include_router(auth.router)
+    app.include_router(mobile.router)
     app.include_router(catalog.router)
     app.include_router(account.router)
     app.include_router(management.router)

@@ -10,7 +10,32 @@ def current_user(request: Request):
 
 
 def session_token(request):
+    if native_auth_path(request):
+        # Supplying Authorization must never fall back to a browser cookie.
+        if "authorization" in request.headers or request.url.path.rstrip("/") == "/api/mobile/session":
+            return bearer_token(request)
     return request.cookies.get(request.app.state.settings.session_cookie, "")
+
+
+def native_auth_path(request):
+    path = request.url.path.rstrip("/")
+    return path == "/api/mobile/session" or path.startswith("/api/admin/")
+
+
+def bearer_token(request):
+    parts = request.headers.get("authorization", "").split()
+    if len(parts) == 2 and parts[0].lower() == "bearer" and 1 <= len(parts[1]) <= 128:
+        return parts[1]
+    return ""
+
+
+def native_csrf_exempt(request):
+    path = request.url.path.rstrip("/")
+    # Native login creates a token, never a cookie session. Other exemptions
+    # require a bearer header and the route still authenticates it server-side.
+    return (path == "/api/mobile/session" and request.method == "POST") or (
+        native_auth_path(request) and bool(bearer_token(request))
+    )
 
 
 def session_cookie(request: Request, response: Response, token=None):

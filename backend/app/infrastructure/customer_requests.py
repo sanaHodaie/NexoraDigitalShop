@@ -121,6 +121,19 @@ class CustomerRequests:
             db.add(AuditLog(event="customer_request_updated", user_id=actor, subject_id=str(row.id)))
             return output(row, True)
 
+    def detail(self, rid):
+        with Session(self.engine) as db:
+            row = db.scalar(select(CustomerRequest).options(defer(CustomerRequest.invoice_pdf))
+                            .where(CustomerRequest.id == rid))
+            if row is None:
+                raise BusinessError(404, "درخواست پیدا نشد.")
+            item = output(row, True)
+            delivery = db.get(CustomerDelivery, rid)
+            item["deliveryStatus"] = ("sent" if delivery and delivery.sent_at else
+                                      "failed" if delivery and delivery.failed_at else
+                                      "pending" if delivery else "none")
+            return item
+
     def approve(self, rid, actor, version, lines, shipping, terms):
         with Session(self.engine) as db, db.begin():
             row = db.scalar(select(CustomerRequest).where(CustomerRequest.id == rid).with_for_update())

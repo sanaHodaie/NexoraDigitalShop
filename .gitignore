@@ -14,6 +14,10 @@ backend/**/*.db-wal
 backend/.venv/
 backend/.venv-audit/
 backend/.venv-local/
+backend/.venv-admin/
+backend/reset_admin_local.py
+backend/verify_admin_local.py
+backend/check_login_local.py
 **/.uv-cache/
 **/.npm-cache/
 **/__pycache__/

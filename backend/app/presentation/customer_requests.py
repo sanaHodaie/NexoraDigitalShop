@@ -115,6 +115,12 @@ def update(rid: int, data: Update, user=Depends(current_user), svc=Depends(servi
     return store.update(rid, user.id, data.status, data.staffNote, data.version)
 
 
+@router.get("/api/admin/customer-requests/{rid}")
+def detail(rid: int, user=Depends(current_user), svc=Depends(services), store=Depends(storage)):
+    permission(svc, user.id, "orders:read")
+    return store.detail(rid)
+
+
 class InvoiceLine(BaseModel):
     name: str = Field(min_length=1, max_length=300)
     quantity: int = Field(strict=True, ge=1, le=1000000)

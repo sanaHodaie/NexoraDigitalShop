@@ -3,6 +3,9 @@
 Persian/RTL React + Vite storefront with **Python, FastAPI, Pydantic 2,
 SQLAlchemy 2, PostgreSQL and Alembic**.
 
+The native management app is in [`apps/admin-mobile`](apps/admin-mobile/README.fa.md),
+with a Docker-free Windows/Expo setup guide and a phased BI roadmap. The web panel remains available during migration.
+
 The integrated management panel is available at `/admin`. See
 [the admin setup and permissions guide](backend/ADMIN_PANEL.fa.md).
 
