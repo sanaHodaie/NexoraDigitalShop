@@ -4,15 +4,27 @@ import { ActivityIndicator, KeyboardAvoidingView, Platform, Pressable, RefreshCo
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { date } from '../lib/format';
+import { LinearGradient } from 'expo-linear-gradient';
+import { BlurView } from 'expo-blur';
+import { useTheme } from '../state/theme';
+import { Bell } from './Bell';
 
 export const colors = { blue: '#2965ED', ink: '#132B4B', muted: '#687A93', background: '#F3F6FC',
   line: '#E3EAF5', pale: '#EAF0FF', green: '#107B60', danger: '#AE3045', gold: '#CF962C' };
 export function T({ style, ...props }: TextProps) {
-  return <Text {...props} style={[styles.text, style]} />;
+  const { c, dark } = useTheme();
+  const original = StyleSheet.flatten(style)?.color;
+  const adapted = original === colors.muted ? c.muted : original === colors.blue ? c.blue : original === colors.danger ? c.danger
+    : !original || original === colors.ink ? c.ink : original;
+  return <Text {...props} style={[styles.text, { color: c.ink }, style, dark && { color: adapted }]} />;
 }
 export function Page({ children, refreshing, onRefresh }: { children: React.ReactNode;
   refreshing?: boolean; onRefresh?: () => void }) {
-  return <SafeAreaView edges={['top', 'left', 'right']} style={styles.safe}>
+  const { c, dark } = useTheme();
+  return <SafeAreaView edges={['top', 'left', 'right']} style={[styles.safe, { backgroundColor: c.background }]}>
+    <LinearGradient colors={dark ? ['#18253F', '#18273D', '#251F42'] : ['#E0EAFE', '#F0F6FD', '#F9EAF6']} style={StyleSheet.absoluteFill} />
+    <View pointerEvents="none" style={{ position: 'absolute', width: 230, height: 230, borderRadius: 150, backgroundColor: dark ? '#253F6C' : '#C9DEFF', top: 65, right: -100, opacity: .55 }} />
+    <View pointerEvents="none" style={{ position: 'absolute', width: 190, height: 190, borderRadius: 120, backgroundColor: dark ? '#493651' : '#F5CBE7', bottom: 50, left: -95, opacity: .4 }} />
     <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.page}
         refreshControl={onRefresh ? <RefreshControl refreshing={!!refreshing} onRefresh={onRefresh} tintColor={colors.blue} /> : undefined}>
@@ -22,31 +34,37 @@ export function Page({ children, refreshing, onRefresh }: { children: React.Reac
   </SafeAreaView>;
 }
 export function Card({ children, style }: { children: React.ReactNode; style?: StyleProp<ViewStyle> }) {
-  return <View style={[styles.card, style]}>{children}</View>;
+  const { c, dark } = useTheme();
+  return <BlurView intensity={28} blurMethod="dimezisBlurViewSdk31Plus" tint={dark ? 'dark' : 'light'} style={[styles.card, { backgroundColor: c.card, borderColor: c.line }, style,
+    dark && { backgroundColor: c.card, borderColor: c.line }]}>{children}</BlurView>;
 }
 export function Title({ title, subtitle, back }: { title: string; subtitle?: string; back?: () => void }) {
+  const { c } = useTheme();
   return <View style={{ gap: 8, marginBottom: 8 }}><View style={styles.row}>
     <View style={styles.brand}><T style={{ color: 'white', fontFamily: 'Vazirmatn_700Bold', fontSize: 21 }}>N</T></View>
     <View style={{ flex: 1 }}><T style={styles.eyebrow}>NEXORA / BUSINESS</T><T style={styles.title}>{title}</T></View>
-    {back && <Pressable accessibilityRole="button" accessibilityLabel="بازگشت" onPress={back} style={styles.iconButton}>
-      <Ionicons name="arrow-forward" size={23} color={colors.ink} /></Pressable>}
+    <Bell />
+    {back && <Pressable accessibilityRole="button" accessibilityLabel="بازگشت" onPress={back} style={[styles.iconButton, { backgroundColor: c.card }]}>
+      <Ionicons name="arrow-forward" size={23} color={c.ink} /></Pressable>}
   </View>{subtitle && <T style={styles.muted}>{subtitle}</T>}</View>;
 }
 export function Button({ children, onPress, disabled, busy, secondary, danger, testID }: {
   children: React.ReactNode; onPress: () => void; disabled?: boolean; busy?: boolean;
   secondary?: boolean; danger?: boolean; testID?: string;
 }) {
+  const { c } = useTheme();
   return <Pressable testID={testID} accessibilityRole="button" accessibilityState={{ disabled: !!disabled || !!busy, busy: !!busy }}
     disabled={disabled || busy} onPress={onPress} style={({ pressed }) => [styles.button,
-      secondary && { backgroundColor: colors.pale }, danger && { backgroundColor: colors.danger },
+      secondary && { backgroundColor: c.pale }, danger && { backgroundColor: colors.danger },
       (disabled || busy) && { opacity: .5 }, pressed && { opacity: .75 }]}>
     {busy ? <ActivityIndicator color={secondary ? colors.blue : 'white'} /> :
       <T style={{ color: secondary ? colors.blue : 'white', textAlign: 'center', fontFamily: 'Vazirmatn_700Bold' }}>{children}</T>}
   </Pressable>;
 }
 export function Field({ label, error, ...props }: TextInputProps & { label: string; error?: string }) {
+  const { c } = useTheme();
   return <View style={{ gap: 7 }}><T style={styles.label}>{label}</T><TextInput accessibilityLabel={label}
-    placeholderTextColor="#8996AA" {...props} style={[styles.input, props.multiline && { minHeight: 95, textAlignVertical: 'top' }, props.style]} />
+    placeholderTextColor={c.muted} {...props} style={[styles.input, { color: c.ink, backgroundColor: c.input, borderColor: c.line }, props.multiline && { minHeight: 95, textAlignVertical: 'top' }, props.style]} />
     {!!error && <T accessibilityRole="alert" style={{ color: colors.danger, fontSize: 12 }}>{error}</T>}</View>;
 }
 export function ErrorBox({ error, retry }: { error: unknown; retry?: () => void }) {
@@ -61,14 +79,16 @@ export function Empty({ children }: { children: React.ReactNode }) {
   return <Card><Ionicons name="file-tray-outline" size={34} color={colors.muted} style={{ alignSelf: 'center' }} /><T style={{ textAlign: 'center' }}>{children}</T></Card>;
 }
 export function Badge({ children, green }: { children: React.ReactNode; green?: boolean }) {
-  return <View style={[styles.badge, green && { backgroundColor: '#E4F5ED' }]}><T style={{ fontSize: 11, color: green ? colors.green : colors.blue }}>{children}</T></View>;
+  const { c, dark } = useTheme();
+  return <View style={[styles.badge, { backgroundColor: green ? (dark ? '#163E39' : '#E4F5ED') : c.pale }]}><T style={{ fontSize: 11, color: green ? c.green : c.blue }}>{children}</T></View>;
 }
 export function Chips<TValue extends string>({ value, options, onChange, disabled }: {
   value: TValue; options: { value: TValue; label: string }[]; onChange: (value: TValue) => void; disabled?: boolean;
 }) {
+  const { c } = useTheme();
   return <View style={[styles.row, { flexWrap: 'wrap', gap: 8 }]}>{options.map(option =>
     <Pressable key={option.value} accessibilityRole="button" accessibilityState={{ selected: value === option.value, disabled }}
-      disabled={disabled} onPress={() => onChange(option.value)} style={[styles.chip, value === option.value && { backgroundColor: colors.blue, borderColor: colors.blue }]}>
+      disabled={disabled} onPress={() => onChange(option.value)} style={[styles.chip, { backgroundColor: c.card, borderColor: c.line }, value === option.value && { backgroundColor: colors.blue, borderColor: colors.blue }]}>
       <T style={{ fontSize: 12, color: value === option.value ? 'white' : colors.muted }}>{option.label}</T>
     </Pressable>)}</View>;
 }
@@ -92,7 +112,7 @@ export const styles = StyleSheet.create({
   muted: { color: colors.muted, fontSize: 12, lineHeight: 23 },
   label: { fontFamily: 'Vazirmatn_700Bold', fontSize: 12 },
   row: { flexDirection: 'row-reverse', alignItems: 'center', gap: 12 },
-  card: { borderRadius: 22, backgroundColor: 'white', padding: 20, gap: 12, borderWidth: 1, borderColor: colors.line },
+  card: { borderRadius: 26, overflow: 'hidden', backgroundColor: 'rgba(255,255,255,.68)', padding: 20, gap: 12, borderWidth: 1, borderColor: colors.line, boxShadow: '0 8px 28px rgba(33,58,107,0.06)' },
   input: { backgroundColor: '#F7F9FD', borderColor: colors.line, borderWidth: 1, borderRadius: 14, paddingHorizontal: 14,
     paddingVertical: 12, minHeight: 48, color: colors.ink, fontFamily: 'Vazirmatn_400Regular', fontSize: 14, textAlign: 'right' },
   button: { borderRadius: 14, backgroundColor: colors.blue, paddingHorizontal: 18, paddingVertical: 12, minHeight: 48, justifyContent: 'center' },

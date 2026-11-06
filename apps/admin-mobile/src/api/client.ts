@@ -16,14 +16,14 @@ export function normalizeApiUrl(raw: string, development = false): string {
   return url.origin;
 }
 
-type Options = { method?: 'GET' | 'POST' | 'PATCH' | 'DELETE'; body?: unknown; signal?: AbortSignal };
+type Options = { method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE'; body?: unknown; raw?: ArrayBuffer; contentType?: string; signal?: AbortSignal };
 
 export class AdminApi {
   constructor(public baseUrl: string, private token: string | null,
     private expired: () => void = () => {}, private fetcher: typeof fetch = fetch) {}
 
   async request<T>(path: string, options: Options = {}): Promise<T> {
-    if (!path.startsWith('/api/admin/') && path !== '/api/mobile/session' && path !== '/health') {
+    if (!path.startsWith('/api/admin/') && path !== '/api/mobile/session' && path !== '/api/mobile/health' && path !== '/health') {
       throw new Error('مسیر API مدیریتی معتبر نیست.');
     }
     const controller = new AbortController();
@@ -38,8 +38,8 @@ export class AdminApi {
         method: options.method ?? 'GET', credentials: 'omit', redirect: 'error',
         signal: controller.signal,
         headers: { Accept: 'application/json', ...(this.token ? { Authorization: `Bearer ${this.token}` } : {}),
-          ...(options.body === undefined ? {} : { 'Content-Type': 'application/json' }) },
-        ...(options.body === undefined ? {} : { body: JSON.stringify(options.body) }),
+          ...(options.body === undefined && !options.raw ? {} : { 'Content-Type': options.contentType || 'application/json' }) },
+        ...(options.raw ? { body: options.raw } : options.body === undefined ? {} : { body: JSON.stringify(options.body) }),
       });
       if (response.status === 204) return undefined as T;
       const json = await response.json().catch(() => null);

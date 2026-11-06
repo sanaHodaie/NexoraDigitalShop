@@ -56,3 +56,27 @@ test('writes are serialized once; conflicts stay errors and never claim success'
     (e: unknown) => e instanceof ApiError && e.status === 409);
   assert.equal(calls, 1);
 });
+
+test('spreadsheet uploads preserve exact binary bytes and content type', async () => {
+  const bytes = new Uint8Array([80, 75, 3, 4, 0, 255]).buffer;
+  const fetcher = (async (_input, init) => {
+    assert.equal(init?.method, 'POST');
+    assert.equal(init?.body, bytes);
+    assert.equal((init?.headers as Record<string, string>)['Content-Type'], 'application/test-xlsx');
+    return new Response('{"canImport":true}');
+  }) as typeof fetch;
+  const api = new AdminApi('https://api.test', 'session', undefined, fetcher);
+  assert.deepEqual(await api.request('/api/admin/products/import?commit=false', {
+    method: 'POST', raw: bytes, contentType: 'application/test-xlsx',
+  }), { canImport: true });
+});
+
+test('cancelled private queries propagate abort instead of becoming network errors', async () => {
+  const controller = new AbortController(); controller.abort();
+  const fetcher = (async (_input, init) => {
+    assert.ok(init?.signal?.aborted);
+    throw new DOMException('Cancelled', 'AbortError');
+  }) as typeof fetch;
+  await assert.rejects(new AdminApi('https://api.test', 'session', undefined, fetcher)
+    .request('/api/admin/products', { signal: controller.signal }), (error: unknown) => error instanceof DOMException && error.name === 'AbortError');
+});

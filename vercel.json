@@ -1,8 +1,15 @@
 {
   "framework": "vite",
-  "buildCommand": "npm run build",
+  "buildCommand": "npm run build:vercel",
   "outputDirectory": "dist",
   "headers": [
+    {
+      "source": "/business/:path*",
+      "headers": [
+        { "key": "X-Robots-Tag", "value": "noindex, nofollow" },
+        { "key": "Cache-Control", "value": "private, no-store" }
+      ]
+    },
     {
       "source": "/api/products",
       "headers": [
@@ -108,6 +115,14 @@
     }
   ],
   "rewrites": [
+    {
+      "source": "/business",
+      "destination": "/business/index.html"
+    },
+    {
+      "source": "/business/:path*",
+      "destination": "/business/index.html"
+    },
     {
       "source": "/api/:path*",
       "destination": "https://nexora-api-s2q3.onrender.com/api/:path*"

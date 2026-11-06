@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from fastapi import APIRouter, Depends, Query, Request, Response
 from fastapi.exceptions import RequestValidationError
 from pydantic import ValidationError
@@ -81,7 +83,8 @@ def me(user=Depends(current_user), svc=Depends(services)):
 @router.get('/orders/{oid}')
 def order_detail(oid: int, user=Depends(current_user), svc=Depends(services)):
     from app.domain.invoices import invoice_data
-    return invoice_data(svc.orders.document(user.id, oid, admin=True))
+    order = svc.orders.document(user.id, oid, admin=True)
+    return {**invoice_data(order), "paymentReference": order.payment_reference}
 
 
 @router.get('/orders/{oid}/invoice')
@@ -108,9 +111,10 @@ def dashboard(user=Depends(current_user), svc=Depends(services)):
 def listing(request: Request, page: int = Query(1, ge=1, le=100000),
             size: int = Query(24, ge=1, le=100), q: str = Query('', max_length=100),
             category: str | None = Query(None, max_length=50),
+            kind: str | None = Query(None, max_length=100),
             user=Depends(current_user), svc=Depends(services)):
     resource = request.url.path.rsplit('/', 1)[-1]
-    filters = {'category': category} if resource == 'products' else {}
+    filters = {'category': category, 'kind': kind} if resource == 'products' else {}
     return svc.management.read(user.id, resource, page=page, size=size, query=q, **filters)
 
 
@@ -134,8 +138,9 @@ def archive(pid: str, user=Depends(current_user), svc=Depends(services)):
 
 @router.get('/audit')
 def audit(before: int = Query(0, ge=0), after: int = Query(0, ge=0), event: str = Query('', max_length=64),
+          since: datetime | None = None, until: datetime | None = None,
           size: int = Query(50, ge=1, le=100), user=Depends(current_user), svc=Depends(services)):
-    return svc.management.read(user.id, 'audit_logs', before=before, after=after, event=event, size=size)
+    return svc.management.read(user.id, 'audit_logs', before=before, after=after, event=event, size=size, since=since, until=until)
 
 
 @router.get('/activity')

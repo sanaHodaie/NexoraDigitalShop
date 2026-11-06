@@ -18,8 +18,9 @@ export type Dashboard = { products: number; users: number; orders: number; reven
   lowStock: number; subscribers: number; statuses: Record<string, number>;
   daily: { date: string; value: number }[] };
 export type Product = { id: string; name: string; nameEn: string; category: string;
-  price: number; stock: number; isActive: boolean; image?: string };
+  price: number; stock: number; isActive: boolean; image: string; categoryFa?: string;
+  brand?: string; description?: string; specs?: string[]; badge?: string; kindLabel?: string };
 export type Order = { id: number; email: string; name: string; total: number; status: string;
   createdAt: string; lines: { name: string; quantity: number; unitPrice: number }[] };
 export type Audit = { id: number; event: string; createdAt: string; userId: number | null;
-  subjectId: string | null; email?: string };
+  subjectId: string | null; email?: string; fullName?: string | null };

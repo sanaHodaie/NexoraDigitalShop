@@ -13,6 +13,11 @@ from app.presentation.schemas import Login
 router = APIRouter(prefix="/api/mobile", tags=["mobile administration"])
 
 
+@router.get("/health")
+def health():
+    return {"status": "ok", "mobileVersion": 2}
+
+
 @router.post("/session")
 def login(data: Login, request: Request, svc=Depends(services)):
     enforce(request, "login", data.email)

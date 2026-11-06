@@ -19,6 +19,7 @@ from app.infrastructure.database_security import check_runtime_role
 from app.infrastructure.rate_limit import LocalLimiter, RedisLimiter
 from app.presentation import (
     account,
+    admin_app,
     assistant,
     auth,
     catalog,
@@ -163,6 +164,7 @@ def create_app(settings: Settings | None = None, engine=None) -> FastAPI:
     app.include_router(mobile.router)
     app.include_router(catalog.router)
     app.include_router(account.router)
+    app.include_router(admin_app.router)
     app.include_router(management.router)
     app.include_router(assistant.router)
     return app

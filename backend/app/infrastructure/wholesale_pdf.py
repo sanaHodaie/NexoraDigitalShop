@@ -14,7 +14,7 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfgen.canvas import Canvas
 
-FONT = "NexoraDejaVu"
+FONT = "NexoraVazirmatn"
 LOCK = Lock()
 
 
@@ -31,11 +31,11 @@ def render_invoice(data):
 def _render_invoice(data):
     if FONT not in pdfmetrics.getRegisteredFontNames():
         pdfmetrics.registerFont(
-            TTFont(FONT, str(Path(__file__).resolve().parents[1] / "assets/fonts/DejaVuSans.ttf"))
+            TTFont(FONT, str(Path(__file__).resolve().parents[1] / "assets/fonts/Vazirmatn-Regular.ttf"))
         )
     stream = BytesIO()
     canvas = Canvas(stream, pagesize=A4)
-    canvas.setTitle("Nexora Wholesale " + data["trackingCode"])
+    canvas.setTitle("Nexora Invoice " + data["trackingCode"])
     canvas.setAuthor("Nexora")
     width, height = A4
     y = height - 95
@@ -69,7 +69,7 @@ def _render_invoice(data):
         canvas.setStrokeColor(HexColor("#dce4ef"))
         canvas.line(40, 49, width - 40, 49)
         canvas.setFillColor(HexColor("#64748b"))
-        text("تأیید سفارش به معنی تأیید پرداخت نیست.", width - 40, 32, 8)
+        text(data.get("footer", "تأیید سفارش به معنی تأیید پرداخت نیست."), width - 40, 32, 8)
         canvas.drawString(40, 32, str(page))
         canvas.setFillColor(ink)
 
@@ -80,10 +80,10 @@ def _render_invoice(data):
         canvas.rect(0, height - 12, width, 12, fill=1, stroke=0)
         canvas.setFont(FONT, 21)
         canvas.drawString(40, height - 53, "NEXORA")
-        text("فاکتور سفارش عمده", width - 40, height - 50, 13)
+        text(data.get("title", "فاکتور سفارش عمده"), width - 40, height - 50, 13)
         canvas.setFillColor(ink)
         y = height - 90
-        text("کد رهگیری: " + data["trackingCode"], width - 40, y, 12)
+        text(data.get("identifierLabel", "کد رهگیری") + ": " + data["trackingCode"], width - 40, y, 12)
         stamp = (
             datetime.fromisoformat(data["approvedAt"])
             .astimezone(ZoneInfo("Asia/Tehran"))
@@ -114,6 +114,8 @@ def _render_invoice(data):
         ("phone", "تلفن"),
         ("city", "شهر"),
         ("address", "نشانی"),
+        ("postalCode", "کد پستی"),
+        ("email", "ایمیل"),
     ]:
         customer_lines.extend(wrap(label + ": " + str(customer.get(key) or "—"), 10, width - 110))
     panel_height = len(customer_lines) * 18 + 25
@@ -164,7 +166,7 @@ def _render_invoice(data):
     canvas.roundRect(width - 325, y - 91, 290, 110, 10, fill=1, stroke=0)
     canvas.setFillColor(ink)
     paragraph("جمع اقلام: " + format(int(data["subtotalRial"]), ",") + " ریال", 10)
-    paragraph("هزینه ارسال توافقی: " + format(int(data["shippingRial"]), ",") + " ریال", 10)
+    paragraph(data.get("shippingLabel", "هزینه ارسال توافقی") + ": " + format(int(data["shippingRial"]), ",") + " ریال", 10)
     canvas.setFillColor(blue)
     paragraph("مبلغ کل: " + format(int(data["totalRial"]), ",") + " ریال", 14)
     canvas.setFillColor(ink)
@@ -172,7 +174,7 @@ def _render_invoice(data):
     if data.get("terms"):
         paragraph("توضیحات فاکتور: " + data["terms"], 9)
     paragraph(
-        "این سند با اطلاعات مشتری و قیمت توافقی تأییدشدهٔ فروشگاه صادر شده است. مبلغی در بات دریافت نشده است.",
+        data.get("notice", "این سند با اطلاعات مشتری و قیمت توافقی تأییدشدهٔ فروشگاه صادر شده است. مبلغی در بات دریافت نشده است."),
         8,
     )
     footer()

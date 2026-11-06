@@ -53,10 +53,12 @@ class ManagementRepository:
                 "category": row.category, "price": float(row.price), "stock": row.stock,
                 "inStock": row.stock > 0, "isActive": row.is_active}
 
-    def products(self, page, size, query, category=None):
+    def products(self, page, size, query, category=None, kind=None):
         q = select(m.Product)
         if category:
             q = q.where(m.Product.category == category)
+        if kind:
+            q = q.where(m.Product.payload['kindLabel'].as_string() == kind)
         if query:
             text = search_column(m.Product.name + ' ' + m.Product.name_en + ' ' + m.Product.id + ' ' +
                                  func.coalesce(m.Product.payload['brand'].as_string(), ''))
@@ -156,7 +158,7 @@ class ManagementRepository:
                     'createdAt': aware(row.created_at) if row.created_at else None}
         return self.page(q.order_by(m.Subscriber.id.desc()), page, size, output)
 
-    def audit_logs(self, before, after, event, size):
+    def audit_logs(self, before, after, event, size, since=None, until=None):
         q = select(m.AuditLog).outerjoin(m.User, m.AuditLog.user_id == m.User.id)
         if before:
             q = q.where(m.AuditLog.id < before)
@@ -164,6 +166,10 @@ class ManagementRepository:
             q = q.where(m.AuditLog.id > after)
         if event:
             q = q.where(m.AuditLog.event == event)
+        if since:
+            q = q.where(m.AuditLog.created_at >= since)
+        if until:
+            q = q.where(m.AuditLog.created_at <= until)
         rows = list(self.db.scalars(q.order_by(m.AuditLog.id.desc()).limit(size + 1)))
         def output(row):
             user = self.db.get(m.User, row.user_id) if row.user_id else None

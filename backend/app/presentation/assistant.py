@@ -88,3 +88,11 @@ def admin_configuration(request: Request, user=Depends(current_user), svc=Depend
 @router.put("/api/admin/assistant")
 def save_configuration(body: ConfigInput, user=Depends(current_user), svc=Depends(services)):
     return svc.assistant.save(user.id, body.data.model_dump(), body.version)
+
+
+@router.post("/api/admin/assistant/test")
+async def test_configuration(body: ChatInput, request: Request, user=Depends(current_user), svc=Depends(services)):
+    manager = await run_in_threadpool(svc.management.me, user.id)
+    if "assistant:read" not in manager["permissions"]:
+        raise BusinessError(403, "دسترسی راهنمای خرید لازم است.")
+    return await chat(body, request, svc)

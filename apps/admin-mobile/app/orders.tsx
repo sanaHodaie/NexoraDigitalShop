@@ -22,10 +22,11 @@ function Orders() {
     {query.data && !query.error && <><T style={styles.muted}>{number(query.data.total)} سفارش</T>
       {!query.data.items.length && <Empty>سفارشی پیدا نشد.</Empty>}
       {query.data.items.map(item => <Card key={item.id}><Badge green={item.status === 'paid'}>{statusLabels[item.status] || item.status}</Badge>
-        <T style={styles.label}>سفارش #{number(item.id)} · {item.name || item.email}</T>
+        <T style={styles.label}>{item.name || item.email}</T>
+        <T style={styles.muted}>سفارش #{number(item.id)} · {item.email}</T>
         <T style={styles.muted}>{date(item.createdAt)}</T>
-        {item.lines.map((line, index) => <T key={index}>{line.name} · {number(line.quantity)} عدد</T>)}
         <T style={styles.label}>{catalogueRial(item.total)}</T>
+        <Button onPress={() => router.push(`/orders/${item.id}`)}>جزئیات سفارش و فاکتور</Button>
       </Card>)}
       <Pagination page={page} total={query.data.total} size={20} busy={query.isFetching} onPage={setPage} />
     </>}<Updated at={query.dataUpdatedAt} />

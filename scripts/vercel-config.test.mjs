@@ -6,11 +6,14 @@ const config = JSON.parse(await readFile(new URL('../vercel.json', import.meta.u
 
 test('the deployed JSON config routes API requests before the SPA', () => {
   assert.equal(config.framework, 'vite');
-  assert.equal(config.buildCommand, 'npm run build');
+  assert.equal(config.buildCommand, 'npm run build:vercel');
   assert.equal(config.outputDirectory, 'dist');
-  assert.equal(config.rewrites[0].source, '/api/:path*');
-  assert.match(config.rewrites[0].destination, /^https:\/\/[^/]+\/api\/:path\*$/);
-  assert.notEqual(new URL(config.rewrites[0].destination).hostname, 'nexora-digital-shop.vercel.app');
+  const apiIndex = config.rewrites.findIndex(rule => rule.source === '/api/:path*');
+  const api = config.rewrites[apiIndex];
+  assert.ok(apiIndex >= 0 && apiIndex < config.rewrites.length - 1);
+  assert.match(api.destination, /^https:\/\/[^/]+\/api\/:path\*$/);
+  assert.notEqual(new URL(api.destination).hostname, 'nexora-digital-shop.vercel.app');
+  assert.ok(config.rewrites.some(rule => rule.source === '/business/:path*' && rule.destination === '/business/index.html'));
   assert.deepEqual(config.rewrites.at(-1), { source: '/(.*)', destination: '/index.html' });
 });
 
@@ -27,7 +30,7 @@ test('frontend CSP allows the actual Google integration without arbitrary script
 });
 
 test('private and email-token pages are not cached or indexed', () => {
-  for (const page of ['account', 'reset-password', 'verify-email', 'confirm-email-change']) {
+  for (const page of ['account', 'business', 'reset-password', 'verify-email', 'confirm-email-change']) {
     const rule = config.headers.find(rule => rule.source === `/${page}/:path*`);
     assert.ok(rule, page);
     assert.ok(rule.headers.some(h => h.key === 'X-Robots-Tag' && h.value.includes('noindex')));

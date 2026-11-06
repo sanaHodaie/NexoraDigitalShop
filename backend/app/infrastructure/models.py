@@ -129,6 +129,12 @@ class Subscriber(Base):
     created_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), default=utcnow)
 
 
+class AdminNotificationRead(Base):
+    __tablename__ = "admin_notification_reads"
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), primary_key=True)
+    subscriber_id: Mapped[int] = mapped_column(default=0)
+
+
 class ActionToken(Base):
     __tablename__ = "action_tokens"
     token_hash: Mapped[str] = mapped_column(String(64), primary_key=True)

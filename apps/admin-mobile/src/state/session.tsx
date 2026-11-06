@@ -15,7 +15,8 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
     queries: { staleTime: 20_000, retry: (count, error) => count < 1 && error instanceof ApiError && error.status >= 500 },
     mutations: { retry: false },
   } }));
-  const baseUrl = normalizeApiUrl(process.env.EXPO_PUBLIC_API_URL || 'http://localhost:8000', __DEV__);
+  const webOrigin = Platform.OS === 'web' && process.env.EXPO_PUBLIC_WEB_SAME_ORIGIN === '1' ? window.location.origin : '';
+  const baseUrl = normalizeApiUrl(webOrigin || process.env.EXPO_PUBLIC_API_URL || 'http://localhost:8000', __DEV__);
   const [token, setToken] = useState<string | null>(null);
   const currentToken = useRef<string | null>(null);
   const [manager, setManager] = useState<Manager | null>(null);

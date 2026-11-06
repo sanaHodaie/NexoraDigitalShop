@@ -8,11 +8,16 @@ import { Vazirmatn_700Bold } from '@expo-google-fonts/vazirmatn/700Bold';
 import { ActivityIndicator, View } from 'react-native';
 import { SessionProvider } from '../src/state/session';
 import { colors } from '../src/ui';
+import { ThemeProvider, useTheme } from '../src/state/theme';
 
 export { ErrorBoundary } from 'expo-router';
 export default function Layout() {
   const [loaded, error] = useFonts({ Vazirmatn_400Regular, Vazirmatn_700Bold });
   if (error) throw error;
   if (!loaded) return <View style={{ flex: 1, justifyContent: 'center' }}><ActivityIndicator color={colors.blue} /></View>;
-  return <SafeAreaProvider><SessionProvider><StatusBar style="dark" /><Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.background } }} /></SessionProvider></SafeAreaProvider>;
+  return <SafeAreaProvider><ThemeProvider><SessionProvider><Navigation /></SessionProvider></ThemeProvider></SafeAreaProvider>;
+}
+function Navigation() {
+  const { dark, c } = useTheme();
+  return <><StatusBar style={dark ? 'light' : 'dark'} /><Stack screenOptions={{ headerShown: false, animation: 'fade', contentStyle: { backgroundColor: c.background } }} /></>;
 }
