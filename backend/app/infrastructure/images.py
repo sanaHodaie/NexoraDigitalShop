@@ -1,11 +1,37 @@
 """Decode only supported raster formats, limit resources, strip metadata and re-encode."""
+from collections import OrderedDict
 from io import BytesIO
+from threading import Lock
 
 from PIL import Image, ImageOps, UnidentifiedImageError
 
 from app.domain.errors import BusinessError
 
 MAX_UPLOAD_BYTES = 2 * 1024 * 1024
+_thumbnails = OrderedDict()
+_thumbnail_lock = Lock()
+
+
+def product_thumbnail(key, raw, width):
+    """Public, content-addressed variants; cache only small results, never large source keys."""
+    if width not in (320, 640):
+        raise ValueError('Unsupported thumbnail size')
+    cache_key = (key, width)
+    with _thumbnail_lock:
+        cached = _thumbnails.get(cache_key)
+        if cached is not None:
+            _thumbnails.move_to_end(cache_key)
+            return cached
+    with Image.open(BytesIO(raw), formats=['WEBP']) as image:
+        image.thumbnail((width, width), Image.Resampling.LANCZOS)
+        output = BytesIO()
+        image.save(output, 'WEBP', quality=76 if width == 320 else 82, method=4)
+        result = output.getvalue()
+    with _thumbnail_lock:
+        _thumbnails[cache_key] = result
+        while len(_thumbnails) > 128 or sum(map(len, _thumbnails.values())) > 8 * 1024 * 1024:
+            _thumbnails.popitem(last=False)
+    return result
 
 
 def product_image(raw):

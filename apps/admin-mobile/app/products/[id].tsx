@@ -1,11 +1,12 @@
 import { useState } from 'react';
-import { Image, Switch, View } from 'react-native';
+import { Switch, View } from 'react-native';
 import { router, useLocalSearchParams } from 'expo-router';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import * as ImagePicker from 'expo-image-picker';
 import { useSession } from '../../src/state/session';
 import { Product } from '../../src/api/types';
-import { fileBytes, productImage } from '../../src/api/files';
+import { fileBytes } from '../../src/api/files';
+import { ProductImage } from '../../src/ui/ProductImage';
 import { Filters, integer, productBody } from '../../src/lib/product';
 import { Gate } from '../../src/ui/Gate';
 import { Select } from '../../src/ui/Select';
@@ -36,7 +37,7 @@ function Editor({ product, create, filters }: { product: Product; create: boolea
     <Field editable={!busy} label="توضیحات محصول در سایت" value={form.description} onChangeText={v => change('description', v)} multiline maxLength={5000} />
     <Field editable={!busy} label="مشخصات؛ هر مورد در یک خط" value={form.specs} onChangeText={v => change('specs', v)} multiline />
     <Field editable={!busy} label="نشان محصول" value={form.badge} onChangeText={v => change('badge', v)} maxLength={50} />
-    <Image source={{ uri: productImage(form.image, baseUrl) }} resizeMode="contain" style={{ width: '100%', height: 180, backgroundColor: 'white', borderRadius: 18 }} />
+    <ProductImage path={form.image} baseUrl={baseUrl} label={form.name || 'پیش‌نمایش محصول'} large style={{ width: '100%', height: 180 }} />
     <Button secondary disabled={busy} onPress={async () => {
       const result = await ImagePicker.launchImageLibraryAsync({ mediaTypes: ['images'], quality: .85 }); if (result.canceled) return;
       const asset = result.assets[0]; setBusy(true); setError('');

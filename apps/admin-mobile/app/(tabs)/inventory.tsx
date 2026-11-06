@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { Image, View } from 'react-native';
+import { FlatList, Platform, View } from 'react-native';
 import { router } from 'expo-router';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import type { Page as ApiPage, Product } from '../../src/api/types';
 import { useSession } from '../../src/state/session';
 import { catalogueRial, number } from '../../src/lib/format';
 import { Filters, productBody } from '../../src/lib/product';
-import { productImage } from '../../src/api/files';
+import { ProductImage } from '../../src/ui/ProductImage';
 import { Gate } from '../../src/ui/Gate';
 import { Select } from '../../src/ui/Select';
 import { confirmAction } from '../../src/ui/confirm';
@@ -27,7 +27,11 @@ function Inventory() {
       void cache.invalidateQueries({ queryKey: ['product', item.id] });
     } catch (e) { setError((e as Error).message); } finally { setBusy(false); }
   };
-  return <Page refreshing={query.isRefetching} onRefresh={() => void query.refetch()}>
+  return <Page scroll={false}><FlatList<Product> style={{ flex: 1 }} contentContainerStyle={styles.page}
+    keyboardShouldPersistTaps="handled" initialNumToRender={4} maxToRenderPerBatch={4} windowSize={3}
+    removeClippedSubviews={Platform.OS === 'android'} refreshing={query.isRefetching} onRefresh={() => void query.refetch()}
+    data={query.data && !query.error ? query.data.items : []} keyExtractor={item => item.id}
+    ListHeaderComponent={<View style={{ gap: 16 }}>
     <Title title="ویترین محصولات" subtitle="محصول، قیمت، توضیحات و موجودی؛ همه در یک نگاه." />
     {can('products:write') && <Card><View style={[styles.row, { flexWrap: 'wrap' }]}>
       <Button onPress={() => router.push('/products/new')}>＋ محصول جدید</Button>
@@ -42,15 +46,17 @@ function Inventory() {
     </Card><ErrorBox error={error || filters.error || query.error} retry={() => { void filters.refetch(); void query.refetch(); }} />{query.isLoading && <Loading />}
     {query.data && !query.error && <><T style={styles.muted}>{number(query.data.total)} محصول</T>
       {!query.data.items.length && <Empty>محصولی پیدا نشد.</Empty>}
-      {query.data.items.map(item => <Card key={item.id}><View style={[styles.row, { alignItems: 'flex-start' }]}>
-          <Image source={{ uri: productImage(item.image, baseUrl) }} accessibilityLabel={item.name} resizeMode="contain" style={{ width: 94, height: 110, borderRadius: 18, backgroundColor: 'white' }} />
+    </>}</View>}
+    renderItem={({ item }) => <Card><View style={[styles.row, { alignItems: 'flex-start' }]}>
+          <ProductImage path={item.image} baseUrl={baseUrl} label={item.name} style={{ width: 94, height: 110 }} />
           <View style={{ flex: 1, gap: 7 }}><Badge green={item.isActive && item.stock >= 5}>{!item.isActive ? 'غیرفعال' : item.stock < 5 ? 'کم‌موجودی' : 'فعال'}</Badge>
             <T style={styles.label}>{item.name}</T><T style={styles.muted}>{item.brand} · {item.id}</T><T>{catalogueRial(item.price)}</T></View>
         </View><T numberOfLines={4}>{item.description || 'توضیحی ثبت نشده است.'}</T><T style={styles.muted}>{item.categoryFa || item.category} · موجودی: {number(item.stock)}</T>
         {can('products:write') && <View style={[styles.row, { flexWrap: 'wrap' }]}><Button onPress={() => router.push(`/products/${item.id}`)}>ویرایش محصول</Button>
           <Button secondary disabled={busy} onPress={() => void toggle(item)}>{item.isActive ? 'غیرفعال کردن' : 'فعال کردن'}</Button></View>}
-      </Card>)}<Pagination page={page} total={query.data.total} size={20} busy={query.isFetching} onPage={setPage} />
-    </>}<Updated at={query.dataUpdatedAt} />
-  </Page>;
+      </Card>}
+    ListFooterComponent={<View style={{ gap: 16 }}>{query.data && <Pagination page={page} total={query.data.total} size={20} busy={query.isFetching} onPage={setPage} />}
+      <Updated at={query.dataUpdatedAt} /></View>}
+  /></Page>;
 }
 export default function InventoryPage() { return <Gate permission="products:read"><Inventory /></Gate>; }

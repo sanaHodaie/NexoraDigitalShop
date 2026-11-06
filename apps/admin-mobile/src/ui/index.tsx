@@ -18,18 +18,18 @@ export function T({ style, ...props }: TextProps) {
     : !original || original === colors.ink ? c.ink : original;
   return <Text {...props} style={[styles.text, { color: c.ink }, style, dark && { color: adapted }]} />;
 }
-export function Page({ children, refreshing, onRefresh }: { children: React.ReactNode;
-  refreshing?: boolean; onRefresh?: () => void }) {
+export function Page({ children, refreshing, onRefresh, scroll = true }: { children: React.ReactNode;
+  refreshing?: boolean; onRefresh?: () => void; scroll?: boolean }) {
   const { c, dark } = useTheme();
   return <SafeAreaView edges={['top', 'left', 'right']} style={[styles.safe, { backgroundColor: c.background }]}>
     <LinearGradient colors={dark ? ['#18253F', '#18273D', '#251F42'] : ['#E0EAFE', '#F0F6FD', '#F9EAF6']} style={StyleSheet.absoluteFill} />
     <View pointerEvents="none" style={{ position: 'absolute', width: 230, height: 230, borderRadius: 150, backgroundColor: dark ? '#253F6C' : '#C9DEFF', top: 65, right: -100, opacity: .55 }} />
     <View pointerEvents="none" style={{ position: 'absolute', width: 190, height: 190, borderRadius: 120, backgroundColor: dark ? '#493651' : '#F5CBE7', bottom: 50, left: -95, opacity: .4 }} />
     <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-      <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.page}
+      {scroll ? <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.page}
         refreshControl={onRefresh ? <RefreshControl refreshing={!!refreshing} onRefresh={onRefresh} tintColor={colors.blue} /> : undefined}>
         {children}
-      </ScrollView>
+      </ScrollView> : <View style={{ flex: 1 }}>{children}</View>}
     </KeyboardAvoidingView>
   </SafeAreaView>;
 }

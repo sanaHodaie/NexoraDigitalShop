@@ -31,3 +31,11 @@ No default administrator password is distributed. Online password reset is an ex
 Not verified here: physical Android/iOS execution, device keychain restore, native sharing/file pickers,
 APK/IPA installation, live newsletter/PDF delivery, actual Vercel deployment completion and the user's production account login.
 Follow README.fa.md on the user's local setup for these checks. No cloud service was newly provisioned.
+
+## Image-loading follow-up
+
+- 105 catalogue previews generated and reproducibility checked: 6796 KiB of unique original files → 422 KiB of 320px WebP previews (93.8% smaller).
+- Product list now virtualizes rendering in batches of four. Known catalogue previews are bundled; uploads use bounded 320/640px variants.
+- API test verifies dimensions, response-size reduction, distinct ETags, immutable caching, original-byte preservation and unsupported-size rejection.
+- Relevant management/API tests, app TypeScript and 10 unit tests, Vercel build, Android/iOS bundle exports and production-prefix browser workflow passed.
+- Browser test verifies the bundled product image actually decodes. User-network latency was not benchmarked.

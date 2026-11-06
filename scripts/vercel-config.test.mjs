@@ -37,3 +37,12 @@ test('private and email-token pages are not cached or indexed', () => {
     assert.ok(rule.headers.some(h => h.key === 'Cache-Control' && h.value.includes('no-store')));
   }
 });
+
+test('hashed app assets keep their own immutable public cache policy', () => {
+  const privateIndex = config.headers.findIndex(rule => rule.source === '/business/:path*');
+  for (const source of ['/business/assets/:path*', '/business/_expo/static/:path*']) {
+    const index = config.headers.findIndex(rule => rule.source === source);
+    assert.ok(index > privateIndex, 'Asset policy overrides the broad management-page policy');
+    assert.ok(config.headers[index].headers.some(h => h.key === 'Cache-Control' && h.value.includes('immutable')));
+  }
+});

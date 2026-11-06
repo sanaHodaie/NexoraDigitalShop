@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Request, Response
+from fastapi import APIRouter, Depends, Query, Request, Response
 
 from app.application.shopping import CATALOG_LIMIT
 from app.infrastructure.rate_limit import enforce
@@ -9,13 +9,19 @@ router = APIRouter(prefix="/api", tags=["catalog"])
 
 
 @router.get('/media/{filename}')
-def media(filename: str, svc=Depends(services)):
+def media(filename: str, width: int | None = Query(None), svc=Depends(services)):
     import re
 
     from app.domain.errors import BusinessError
     if not re.fullmatch(r'[a-f0-9]{64}\.webp', filename):
         raise BusinessError(404, 'Image not found')
-    return Response(svc.management.media(filename[:-5]), media_type='image/webp')
+    if width is not None and width not in (320, 640):
+        raise BusinessError(400, 'Unsupported image size')
+    content = svc.management.media(filename[:-5])
+    if width:
+        from app.infrastructure.images import product_thumbnail
+        content = product_thumbnail(filename[:-5], content, width)
+    return Response(content, media_type='image/webp', headers={'ETag': f'"{filename}-{width or "original"}"'})
 
 
 @router.get('/content')

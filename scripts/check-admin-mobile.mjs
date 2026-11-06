@@ -184,7 +184,7 @@ try {
   await click('محصولات'); await until(`document.body.innerText.includes('ویترین محصولات')`);
   await command('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 1, mobile: false });
   await wait(700);
-  if (new URL(ui).pathname.startsWith('/business')) await until(`[...document.images].some(x=>x.src.includes('phone-01.webp')&&x.complete&&x.naturalWidth>0)`);
+  if (new URL(ui).pathname.startsWith('/business')) await until(`[...document.images].some(x=>x.alt==='گوشی تست'&&x.complete&&x.naturalWidth>0)`);
   const tabGeometry = await evaluate(`[...document.querySelectorAll('[role="tab"]')].map(x=>({label:x.getAttribute('aria-label'),top:x.getBoundingClientRect().top,bottom:x.getBoundingClientRect().bottom}))`);
   assert.ok(tabGeometry.length === 5 && tabGeometry.every(x => x.top >= 0 && x.bottom <= 844), 'Bottom navigation stays inside the viewport');
   assert.ok(await evaluate(`[...document.querySelectorAll('[role="tab"]')].every(x=>{const r=x.getBoundingClientRect();return document.elementFromPoint(r.x+r.width/2,r.y+r.height/2)?.closest('[role="tab"]')===x;})`), 'Bottom tabs are visible and receive pointer input');
