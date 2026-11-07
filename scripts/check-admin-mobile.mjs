@@ -142,7 +142,7 @@ try {
   await writeFile('/tmp/nexora-mobile-shots/login-glass.png', Buffer.from((await command('Page.captureScreenshot')).data, 'base64'));
   await command('Emulation.setDeviceMetricsOverride', { width: 1440, height: 1000, deviceScaleFactor: 1, mobile: false });
   await until(`!!document.querySelector('[data-testid="login-desktop-story"]')`);
-  assert.ok(await evaluate(`document.querySelector('input[aria-label="ایمیل"]').getBoundingClientRect().x > document.querySelector('[data-testid="login-desktop-story"]').getBoundingClientRect().x`), 'Desktop login places the form on the right and story on the left');
+  assert.ok(await evaluate(`document.querySelector('input[aria-label="ایمیل"]').getBoundingClientRect().x < document.querySelector('[data-testid="login-desktop-story"]').getBoundingClientRect().x`), 'Desktop login uses a real two-column RTL layout');
   assert.equal(await evaluate(`getComputedStyle(document.querySelector('input[aria-label="ایمیل"]')).textAlign`), 'right');
   await until(`[...document.images].some(x=>x.alt==='تصویر لپ‌تاپ'&&x.complete&&x.naturalWidth>0)`);
   assert.ok(await evaluate(`document.querySelector('[data-testid="login-brand"]').getBoundingClientRect().x > document.querySelector('[data-testid="login-header"] [aria-label="فعال کردن حالت تیره"]').getBoundingClientRect().x`), 'Login brand is right and theme toggle left');

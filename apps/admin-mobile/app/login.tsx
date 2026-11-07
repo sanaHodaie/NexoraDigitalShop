@@ -34,7 +34,7 @@ export default function Login() {
         <View><T style={{ fontFamily: 'Vazirmatn_700Bold', letterSpacing: 2, fontSize: 16 }}>NEXORA</T><T style={[styles.muted, { fontSize: 9, letterSpacing: 1.4 }]}>BUSINESS CONTROL</T></View>
       </View><ThemeToggle />
     </View>
-    <View style={{ flexDirection: desktop ? 'row' : 'column', alignItems: 'stretch', gap: desktop ? 44 : 22 }}>
+    <View style={{ flexDirection: desktop ? 'row-reverse' : 'column', alignItems: 'stretch', gap: desktop ? 44 : 22 }}>
       {desktop && <View testID="login-desktop-story" style={{ flex: 1, justifyContent: 'center', gap: 14 }}>
         <View style={{ alignSelf: 'flex-end', flexDirection: 'row-reverse', alignItems: 'center', gap: 8, backgroundColor: dark ? '#293362' : '#DDDFFF', paddingHorizontal: 16, paddingVertical: 6, borderRadius: 24 }}>
           <Ionicons name="bar-chart" size={18} color={dark ? '#B7B9FF' : '#263CF1'} /><T style={{ color: dark ? '#C3CAFF' : '#2633AD', fontSize: 12, fontFamily: 'Vazirmatn_700Bold' }}>راهکار جامع مدیریت فروشگاه</T>
