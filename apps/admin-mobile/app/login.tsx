@@ -77,9 +77,19 @@ export default function Login() {
           {!!health && <T accessibilityRole="alert" style={styles.muted}>{health}</T>}</Card>}
       </View>
     </View>
-    <View style={{ flexDirection: desktop ? 'row-reverse' : 'column', alignItems: 'center', justifyContent: 'space-around', gap: 14, padding: 15, borderRadius: 24, backgroundColor: dark ? 'rgba(35,44,77,.7)' : 'rgba(255,255,255,.46)', borderWidth: 1, borderColor: dark ? '#3A4770' : 'rgba(255,255,255,.8)' }}>{[
+    <View testID="login-benefits" style={{ flexDirection: desktop ? 'row-reverse' : 'column', alignItems: 'stretch', gap: desktop ? 22 : 30, marginTop: 16, paddingTop: 12 }}>{[
       ['desktop-outline', 'قابل استفاده در همه دستگاه‌ها'], ['flash-outline', 'مدیریت یکپارچهٔ فروشگاه'], ['shield-checkmark-outline', 'دسترسی امن بر اساس نقش'],
-    ].map(([icon, label]) => <View key={label} style={[styles.row, { gap: 9 }]}><Ionicons name={icon as 'desktop-outline'} size={21} color={dark ? '#AAB7FF' : '#324BFF'} /><T style={{ color: c.ink, fontSize: 11 }}>{label}</T></View>)}</View>
+    ].map(([icon, label]) => <View key={label} style={{ flex: desktop ? 1 : undefined, minHeight: 62, borderRadius: 22,
+      backgroundColor: dark ? 'rgba(35,44,77,.6)' : 'rgba(255,255,255,.4)', borderWidth: 1,
+      borderColor: dark ? '#43517D' : 'rgba(255,255,255,.95)', alignItems: 'center', justifyContent: 'center',
+      boxShadow: dark ? '0 8px 22px rgba(0,0,0,.1)' : '0 8px 22px rgba(83,86,179,.07)' }}>
+      <View style={{ position: 'absolute', top: -14, maxWidth: '94%', paddingHorizontal: 14, paddingVertical: 3, borderRadius: 13,
+        backgroundColor: dark ? '#2C355A' : '#F1F0FF', borderWidth: 1, borderColor: dark ? '#4C5982' : 'rgba(255,255,255,.9)',
+        boxShadow: '0 5px 12px rgba(73,75,160,.12)' }}>
+        <T style={{ color: c.ink, fontSize: 12, textAlign: 'center', fontFamily: 'Vazirmatn_700Bold' }}>{label}</T>
+      </View>
+      <Ionicons name={icon as 'desktop-outline'} size={23} color={dark ? '#AAB7FF' : '#324BFF'} style={{ marginTop: 12 }} />
+    </View>)}</View>
   </View></Page>;
 }
 
@@ -107,6 +117,18 @@ function LoginArtwork() {
         { rotateX: drift.interpolate({ inputRange: [-1, 1], outputRange: ['-1deg', '1deg'] }) }],
         backgroundColor: 'transparent' }}>
         <Image accessibilityIgnoresInvertColors accessibilityLabel="تصویر لپ‌تاپ" source={require('../assets/illustrations/login-laptop.webp')} contentFit="contain" style={{ width: '100%', height: '100%' }} />
+        <View pointerEvents="none" accessible={false} style={{ position: 'absolute', inset: 0 }}>{[
+          { icon: 'bag-handle-outline', top: -7, left: '20%' as const, rotate: '-9deg' },
+          { icon: 'bar-chart-outline', top: 30, right: 30, rotate: '8deg' },
+          { icon: 'people-outline', bottom: 3, left: 7, rotate: '-7deg' },
+          { icon: 'cube-outline', bottom: -12, right: '19%' as const, rotate: '8deg' },
+        ].map(({ icon, rotate, ...position }) => <View key={icon} style={{ position: 'absolute', ...position,
+          width: 43, height: 43, borderRadius: 14, alignItems: 'center', justifyContent: 'center',
+          backgroundColor: dark ? 'rgba(42,52,93,.94)' : 'rgba(250,250,255,.88)', borderWidth: 1,
+          borderColor: dark ? '#596994' : 'rgba(255,255,255,.98)', boxShadow: '0 7px 16px rgba(60,72,159,.18)',
+          transform: [{ rotate }] }}>
+          <Ionicons name={icon as 'cube-outline'} size={22} color={dark ? '#BBC5FF' : '#354CF2'} />
+        </View>)}</View>
       </Animated.View>
     </View>
     <View style={{ gap: 13, alignSelf: 'flex-end', width: '43%' }}>{[
