@@ -39,3 +39,11 @@ Follow README.fa.md on the user's local setup for these checks. No cloud service
 - API test verifies dimensions, response-size reduction, distinct ETags, immutable caching, original-byte preservation and unsupported-size rejection.
 - Relevant management/API tests, app TypeScript and 10 unit tests, Vercel build, Android/iOS bundle exports and production-prefix browser workflow passed.
 - Browser test verifies the bundled product image actually decodes. User-network latency was not benchmarked.
+
+## Responsive blue theme follow-up (2026-11-07)
+
+- TypeScript and all 10 existing client/financial tests passed. Production Vercel build and Android/iOS bundle exports passed.
+- Chromium tested the production `/business` build: two-column RTL login, theme toggles before/after login, persistence through reload, full-width desktop home, right sidebar pointer hover and navigation, mobile bottom tabs, decoded product images and notification animation respecting reduced-motion.
+- Existing mocked management workflow passed: wholesale preview/approval, product editing, bulk prices, XLSX selection/import, newsletter read state, site-order details and logout.
+- Layout overflow checked at 320, 390 and 1024 pixels; desktop screenshots checked at 1440 pixels in both themes. API responses were fixtures; no production data or Telegram messages were sent.
+- Actual deployment completion and physical-device behavior remain operator checks.

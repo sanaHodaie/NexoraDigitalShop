@@ -9,6 +9,7 @@ import { ActivityIndicator, View } from 'react-native';
 import { SessionProvider } from '../src/state/session';
 import { colors } from '../src/ui';
 import { ThemeProvider, useTheme } from '../src/state/theme';
+import { AppShell } from '../src/ui/AppShell';
 
 export { ErrorBoundary } from 'expo-router';
 export default function Layout() {
@@ -19,5 +20,5 @@ export default function Layout() {
 }
 function Navigation() {
   const { dark, c } = useTheme();
-  return <><StatusBar style={dark ? 'light' : 'dark'} /><Stack screenOptions={{ headerShown: false, animation: 'fade', contentStyle: { backgroundColor: c.background } }} /></>;
+  return <><StatusBar style={dark ? 'light' : 'dark'} /><AppShell><Stack screenOptions={{ headerShown: false, animation: 'fade', contentStyle: { backgroundColor: c.background } }} /></AppShell></>;
 }

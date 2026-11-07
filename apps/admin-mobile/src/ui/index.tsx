@@ -8,6 +8,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { BlurView } from 'expo-blur';
 import { useTheme } from '../state/theme';
 import { Bell } from './Bell';
+import { ThemeToggle } from './ThemeToggle';
+import { useLayout } from '../state/layout';
 
 export const colors = { blue: '#2965ED', ink: '#132B4B', muted: '#687A93', background: '#F3F6FC',
   line: '#E3EAF5', pale: '#EAF0FF', green: '#107B60', danger: '#AE3045', gold: '#CF962C' };
@@ -21,12 +23,13 @@ export function T({ style, ...props }: TextProps) {
 export function Page({ children, refreshing, onRefresh, scroll = true }: { children: React.ReactNode;
   refreshing?: boolean; onRefresh?: () => void; scroll?: boolean }) {
   const { c, dark } = useTheme();
+  const { desktop, compact } = useLayout();
   return <SafeAreaView edges={['top', 'left', 'right']} style={[styles.safe, { backgroundColor: c.background }]}>
-    <LinearGradient colors={dark ? ['#18253F', '#18273D', '#251F42'] : ['#E0EAFE', '#F0F6FD', '#F9EAF6']} style={StyleSheet.absoluteFill} />
+    <LinearGradient colors={dark ? ['#0F1D35', '#122741', '#102239'] : ['#ECF3FF', '#F5F9FF', '#E8F6FA']} style={StyleSheet.absoluteFill} />
     <View pointerEvents="none" style={{ position: 'absolute', width: 230, height: 230, borderRadius: 150, backgroundColor: dark ? '#253F6C' : '#C9DEFF', top: 65, right: -100, opacity: .55 }} />
-    <View pointerEvents="none" style={{ position: 'absolute', width: 190, height: 190, borderRadius: 120, backgroundColor: dark ? '#493651' : '#F5CBE7', bottom: 50, left: -95, opacity: .4 }} />
+    <View pointerEvents="none" style={{ position: 'absolute', width: 250, height: 250, borderRadius: 150, backgroundColor: dark ? '#15445B' : '#BFEFF4', bottom: 50, left: -100, opacity: .35 }} />
     <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-      {scroll ? <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={styles.page}
+      {scroll ? <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={[styles.page, { padding: desktop ? 32 : compact ? 16 : 22 }]}
         refreshControl={onRefresh ? <RefreshControl refreshing={!!refreshing} onRefresh={onRefresh} tintColor={colors.blue} /> : undefined}>
         {children}
       </ScrollView> : <View style={{ flex: 1 }}>{children}</View>}
@@ -40,10 +43,11 @@ export function Card({ children, style }: { children: React.ReactNode; style?: S
 }
 export function Title({ title, subtitle, back }: { title: string; subtitle?: string; back?: () => void }) {
   const { c } = useTheme();
-  return <View style={{ gap: 8, marginBottom: 8 }}><View style={styles.row}>
+  const { compact } = useLayout();
+  return <View style={{ gap: 8, marginBottom: 8 }}><View style={[styles.row, { gap: compact ? 7 : 12 }]}>
     <View style={styles.brand}><T style={{ color: 'white', fontFamily: 'Vazirmatn_700Bold', fontSize: 21 }}>N</T></View>
-    <View style={{ flex: 1 }}><T style={styles.eyebrow}>NEXORA / BUSINESS</T><T style={styles.title}>{title}</T></View>
-    <Bell />
+    <View style={{ flex: 1, minWidth: 0 }}><T style={styles.eyebrow}>NEXORA / BUSINESS</T><T style={[styles.title, compact && { fontSize: 20, lineHeight: 31 }]}>{title}</T></View>
+    <View style={{ flexDirection: 'row-reverse', gap: 6, alignItems: 'center' }}><ThemeToggle /><Bell /></View>
     {back && <Pressable accessibilityRole="button" accessibilityLabel="بازگشت" onPress={back} style={[styles.iconButton, { backgroundColor: c.card }]}>
       <Ionicons name="arrow-forward" size={23} color={c.ink} /></Pressable>}
   </View>{subtitle && <T style={styles.muted}>{subtitle}</T>}</View>;
@@ -95,8 +99,9 @@ export function Chips<TValue extends string>({ value, options, onChange, disable
 export function Updated({ at }: { at: number }) {
   return at ? <T style={[styles.muted, { fontSize: 11 }]}>آخرین دریافت: {date(at)} · برای تازه‌سازی صفحه را پایین بکشید.</T> : null;
 }
-export function Metric({ label, value, icon }: { label: string; value: string; icon: keyof typeof Ionicons.glyphMap }) {
-  return <Card style={{ flexGrow: 1, flexBasis: '44%' }}><Ionicons name={icon} color={colors.blue} size={22} style={{ alignSelf: 'flex-end' }} />
+export function Metric({ label, value, icon, accent }: { label: string; value: string; icon: keyof typeof Ionicons.glyphMap; accent?: string }) {
+  const { desktop } = useLayout(); const { c } = useTheme();
+  return <Card style={{ flexGrow: 1, flexBasis: desktop ? '22%' : '44%' }}><Ionicons name={icon} color={accent || c.blue} size={22} style={{ alignSelf: 'flex-end' }} />
     <T style={{ fontFamily: 'Vazirmatn_700Bold', fontSize: 20 }}>{value}</T><T style={styles.muted}>{label}</T></Card>;
 }
 export function Pagination({ page, total, size, busy, onPage }: { page: number; total: number; size: number; busy: boolean; onPage: (page: number) => void }) {
@@ -105,7 +110,7 @@ export function Pagination({ page, total, size, busy, onPage }: { page: number; 
 }
 export const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.background },
-  page: { padding: 22, gap: 16, paddingBottom: 32, width: '100%', maxWidth: 840, alignSelf: 'center', flexGrow: 1 },
+  page: { padding: 22, gap: 20, paddingBottom: 32, width: '100%', maxWidth: 1340, alignSelf: 'center', flexGrow: 1 },
   text: { fontFamily: 'Vazirmatn_400Regular', color: colors.ink, fontSize: 14, lineHeight: 25, textAlign: 'right', writingDirection: 'rtl' },
   title: { fontFamily: 'Vazirmatn_700Bold', fontSize: 24, lineHeight: 36, color: colors.ink },
   eyebrow: { color: colors.muted, fontSize: 10, letterSpacing: 1.5, writingDirection: 'ltr' },

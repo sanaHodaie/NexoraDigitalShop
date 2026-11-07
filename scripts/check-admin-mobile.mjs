@@ -86,7 +86,7 @@ try {
       Object.assign(row, { status: 'approved', version: row.version + 1, hasInvoice: true, trackingCode: '12345678', deliveryStatus: 'pending',
         invoice: { totalRial: '250000000', lines: body.lines, shippingRial: '0', terms: '' } });
       data = row;
-    } else if (path === '/api/admin/products') data = { items: [product], total: 1, page: 1 };
+    } else if (path === '/api/admin/products') data = { items: [product, { ...product, id: 'phone-second', name: 'گوشی دوم' }], total: 2, page: 1 };
     else if (path === '/api/admin/products/filters') data = { categories: [{ id: 'smartphones', title: 'گوشی هوشمند' }, { id: 'audio', title: 'تجهیزات صوتی' }], kinds: { smartphones: ['گوشی'], audio: ['هندزفری'] } };
     else if (path === '/api/admin/products/phone-test') { if (request.method === 'PUT') { productWrites++; const body = JSON.parse(request.postData); Object.assign(product, body, { price: body.priceRial / 600000 }); } data = product; }
     else if (path === '/api/admin/products/pricing/brands') data = { items: ['Test'] };
@@ -127,25 +127,63 @@ try {
   async function click(text) { await evaluate(`(() => {const b=[...document.querySelectorAll('button,[role="button"],[role="tab"]')].find(x=>x.getAttribute('aria-label')===${JSON.stringify(text)}||x.textContent.trim()===${JSON.stringify(text)});if(!b)throw new Error('Missing button: '+${JSON.stringify(text)});b.click();})()`); }
   async function trustedClick(text) {
     await wait(600);
-    const point = await evaluate(`(() => {const b=[...document.querySelectorAll('button,[role="button"]')].find(x=>x.textContent.trim()===${JSON.stringify(text)});b.scrollIntoView({block:'center'});const r=b.getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2};})()`);
+    const point = await evaluate(`(() => {const b=[...document.querySelectorAll('button,[role="button"]')].find(x=>x.getAttribute('aria-label')===${JSON.stringify(text)}||x.textContent.trim()===${JSON.stringify(text)});b.scrollIntoView({block:'center'});const r=b.getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2};})()`);
     await command('Input.dispatchMouseEvent', { type: 'mousePressed', button: 'left', clickCount: 1, ...point });
     await command('Input.dispatchMouseEvent', { type: 'mouseReleased', button: 'left', clickCount: 1, ...point });
   }
   async function input(label, value) { await evaluate(`(() => {const e=document.querySelector('input[aria-label=${JSON.stringify(label)}],textarea[aria-label=${JSON.stringify(label)}]');if(!e)throw new Error('Missing input');const proto=e.tagName==='TEXTAREA'?HTMLTextAreaElement.prototype:HTMLInputElement.prototype;Object.getOwnPropertyDescriptor(proto,'value').set.call(e,${JSON.stringify(value)});e.dispatchEvent(new Event('input',{bubbles:true}));})()`); }
   await command('Page.enable'); await command('Page.setInterceptFileChooserDialog', { enabled: true }); await command('Runtime.enable'); await command('Network.enable'); await command('Log.enable');
+  await command('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-color-scheme', value: 'light' }, { name: 'prefers-reduced-motion', value: 'no-preference' }] });
   await command('Fetch.enable', { patterns: [{ urlPattern: `${apiRoot}/api/*` }, { urlPattern: `${apiRoot}/health` }, { urlPattern: 'https://nexora-digital-shop.vercel.app/assets/*' }] });
   await command('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 1, mobile: false });
   await command('Page.navigate', { url: ui });
   await until(`document.body.innerText.includes('ورود مدیران')`);
   await mkdir('/tmp/nexora-mobile-shots', { recursive: true });
   await writeFile('/tmp/nexora-mobile-shots/login-glass.png', Buffer.from((await command('Page.captureScreenshot')).data, 'base64'));
+  await command('Emulation.setDeviceMetricsOverride', { width: 1440, height: 1000, deviceScaleFactor: 1, mobile: false });
+  await until(`!!document.querySelector('[data-testid="login-desktop-story"]')`);
+  assert.ok(await evaluate(`document.querySelector('input[aria-label="ایمیل"]').getBoundingClientRect().x < document.querySelector('[data-testid="login-desktop-story"]').getBoundingClientRect().x`), 'Desktop login uses a real two-column RTL layout');
+  await writeFile('/tmp/nexora-mobile-shots/login-desktop-light.png', Buffer.from((await command('Page.captureScreenshot')).data, 'base64'));
+  await click('فعال کردن حالت تیره'); await until(`document.documentElement.dataset.theme==='dark'`);
+  await writeFile('/tmp/nexora-mobile-shots/login-desktop-dark.png', Buffer.from((await command('Page.captureScreenshot')).data, 'base64'));
+  await click('فعال کردن حالت روشن');
+  await command('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 1, mobile: false });
   await input('ایمیل', manager.email); await input('رمز عبور', 'wrong-password'); await click('ورود به مرکز مدیریت');
   await until(`document.body.innerText.includes('ایمیل یا رمز عبور نادرست است.')`);
   await input('رمز عبور', 'test-password-12345'); await click('ورود به مرکز مدیریت');
   await until(`document.body.innerText.includes('نمای امروز کسب‌وکار')`);
   await until(`document.body.innerText.includes('روند درخواست‌های تلگرام')`);
+  await click('فعال کردن حالت تیره'); await until(`document.documentElement.dataset.theme==='dark'`);
+  assert.ok(await evaluate(`!!document.querySelector('[aria-label="فعال کردن حالت روشن"]')`), 'Theme toggle remains available after login');
+  await click('فعال کردن حالت روشن');
   await mkdir('/tmp/nexora-mobile-shots', { recursive: true });
   await writeFile('/tmp/nexora-mobile-shots/home.png', Buffer.from((await command('Page.captureScreenshot')).data, 'base64'));
+  await command('Emulation.setDeviceMetricsOverride', { width: 1440, height: 1000, deviceScaleFactor: 1, mobile: false });
+  await until(`!!document.querySelector('[data-testid="desktop-navigation"]')`);
+  await until(`document.querySelector('[data-testid="desktop-navigation"]').getBoundingClientRect().width < 90`);
+  assert.equal(await evaluate(`document.querySelectorAll('[role="tab"]').length`), 0, 'Desktop uses the right rail instead of the bottom bar');
+  assert.ok(await evaluate(`document.querySelector('[data-testid="home-hero"]').getBoundingClientRect().width > 900`), 'Desktop content is no longer constrained to phone/tablet width');
+  await command('Input.dispatchMouseEvent', { type: 'mouseMoved', x: 1400, y: 200 });
+  await until(`document.querySelector('[data-testid="desktop-navigation"]').getBoundingClientRect().width > 250`);
+  await command('Input.dispatchMouseEvent', { type: 'mouseMoved', x: 500, y: 500 });
+  await until(`document.querySelector('[data-testid="desktop-navigation"]').getBoundingClientRect().width < 90`);
+  await writeFile('/tmp/nexora-mobile-shots/home-desktop-light.png', Buffer.from((await command('Page.captureScreenshot')).data, 'base64'));
+  await click('فعال کردن حالت تیره'); await until(`document.documentElement.dataset.theme==='dark'`);
+  await wait(250); await writeFile('/tmp/nexora-mobile-shots/home-desktop-dark.png', Buffer.from((await command('Page.captureScreenshot')).data, 'base64'));
+  // Observe a real animated bell, then verify the operating-system motion preference stops it.
+  const bellRotation = `(() => {const e=[...document.querySelectorAll('[data-testid="notification-bell-motion"]')].find(x=>{const r=x.getBoundingClientRect();return r.width>0&&r.top>=0&&r.top<innerHeight});if(!e)return 0;const t=getComputedStyle(e).transform;return t==='none'?0:Math.abs(new DOMMatrix(t).b);})()`;
+  await until(`(${bellRotation}) > .005`);
+  await command('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] });
+  await until(`(${bellRotation}) < .001`); await wait(250); assert.ok(await evaluate(`(${bellRotation}) < .001`));
+  await command('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'no-preference' }] });
+  await trustedClick('محصولات'); await until(`document.body.innerText.includes('گوشی دوم')`);
+  await wait(700); await writeFile('/tmp/nexora-mobile-shots/products-desktop.png', Buffer.from((await command('Page.captureScreenshot')).data, 'base64'));
+  await trustedClick('سفارش‌های سایت'); await until(`document.body.innerText.includes('خریدار سایت')`);
+  assert.ok(await evaluate(`!!document.querySelector('[data-testid="desktop-navigation"]')`), 'Desktop rail remains available outside tab pages');
+  await click('خانه'); await until(`document.body.innerText.includes('نمای امروز کسب‌وکار')`);
+  await click('فعال کردن حالت روشن');
+  await command('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 1, mobile: false });
+  await until(`[...document.querySelectorAll('[role="tab"]')].filter(x=>x.getBoundingClientRect().width>0).length===5`);
   await click('درخواست‌ها'); await until(`document.body.innerText.includes('مشتری آزمایشی')`);
   await evaluate(`document.querySelector('[aria-label="مشاهدهٔ درخواست 42، مشتری آزمایشی"]').click()`);
   await until(`document.body.innerText.includes('خیابان تست، پلاک ۱۲')`);
@@ -185,9 +223,9 @@ try {
   await command('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 1, mobile: false });
   await wait(700);
   if (new URL(ui).pathname.startsWith('/business')) await until(`[...document.images].some(x=>x.alt==='گوشی تست'&&x.complete&&x.naturalWidth>0)`);
-  const tabGeometry = await evaluate(`[...document.querySelectorAll('[role="tab"]')].map(x=>({label:x.getAttribute('aria-label'),top:x.getBoundingClientRect().top,bottom:x.getBoundingClientRect().bottom}))`);
+  const tabGeometry = await evaluate(`[...document.querySelectorAll('[role="tab"]')].filter(x=>x.getBoundingClientRect().width>0).map(x=>({label:x.getAttribute('aria-label'),top:x.getBoundingClientRect().top,bottom:x.getBoundingClientRect().bottom}))`);
   assert.ok(tabGeometry.length === 5 && tabGeometry.every(x => x.top >= 0 && x.bottom <= 844), 'Bottom navigation stays inside the viewport');
-  assert.ok(await evaluate(`[...document.querySelectorAll('[role="tab"]')].every(x=>{const r=x.getBoundingClientRect();return document.elementFromPoint(r.x+r.width/2,r.y+r.height/2)?.closest('[role="tab"]')===x;})`), 'Bottom tabs are visible and receive pointer input');
+  assert.ok(await evaluate(`[...document.querySelectorAll('[role="tab"]')].filter(x=>x.getBoundingClientRect().width>0).every(x=>{const r=x.getBoundingClientRect();return document.elementFromPoint(r.x+r.width/2,r.y+r.height/2)?.closest('[role="tab"]')===x;})`), 'Bottom tabs are visible and receive pointer input');
   await writeFile('/tmp/nexora-mobile-shots/products-dark.png', Buffer.from((await command('Page.captureScreenshot')).data, 'base64'));
   await writeFile('/tmp/nexora-mobile-shots/navigation.png', Buffer.from((await command('Page.captureScreenshot', { clip: { x: 0, y: 730, width: 390, height: 114, scale: 1 } })).data, 'base64'));
   await click('حساب'); await click('روشن');
@@ -198,9 +236,13 @@ try {
   await until(`document.body.innerText.includes('نشانی کامل سفارش سایت')`); assert.ok(await evaluate(`document.body.textContent.includes('دانلود فاکتور PDF')`));
   await evaluate(`document.querySelector('[aria-label="بازگشت"]').click()`); await evaluate(`document.querySelector('[aria-label="بازگشت"]').click()`);
   await click('خروج از حساب'); await click('تأیید خروج'); await until(`document.body.innerText.includes('ورود مدیران')`);
-  assert.equal(logins, 2);
+  await click('فعال کردن حالت تیره'); await until(`document.documentElement.dataset.theme==='dark'`);
+  await command('Page.reload'); await until(`document.body?.innerText.includes('ورود مدیران')&&document.documentElement.dataset.theme==='dark'`);
+  await input('ایمیل', manager.email); await input('رمز عبور', 'test-password-12345'); await click('ورود به مرکز مدیریت');
+  await until(`document.body.innerText.includes('نمای امروز کسب‌وکار')&&document.documentElement.dataset.theme==='dark'`);
+  assert.equal(logins, 3, 'Saved dark mode survives reload and login');
   assert.deepEqual(errors, []);
-  console.log('PASS: glass login, sessions, wholesale approval, product edit, bulk pricing preview/confirm, XLSX file picker and import confirmation, audit, dark/light theme, newsletter read badge, full site order detail, logout and responsive widths. API mocked; no Telegram send.');
+  console.log('PASS: responsive two-column login, persistent theme after login/reload, wide desktop home, right hover/touch rail, mobile bottom tabs, notification motion/reduced-motion, product edit, wholesale approval, bulk pricing, XLSX picker, newsletter and order detail. API mocked; no Telegram send.');
 } finally {
   socket?.close(); chrome.kill();
   await new Promise(resolve => { if (chrome.exitCode !== null) resolve(); else chrome.once('exit', resolve); });

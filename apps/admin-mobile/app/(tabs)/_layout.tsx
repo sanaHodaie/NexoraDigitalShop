@@ -7,6 +7,7 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Gate } from '../../src/ui/Gate';
 import { colors, T } from '../../src/ui';
+import { useLayout } from '../../src/state/layout';
 
 const icons: Record<string, keyof typeof Ionicons.glyphMap> = {
   index: 'grid-outline', requests: 'chatbubbles-outline', inventory: 'cube-outline', activity: 'pulse-outline', account: 'person-circle-outline',
@@ -14,7 +15,8 @@ const icons: Record<string, keyof typeof Ionicons.glyphMap> = {
 export default function TabsLayout() {
   const insets = useSafeAreaInsets();
   const { c, dark } = useTheme();
-  return <Gate><Tabs screenOptions={{ headerShown: false, animation: 'fade', sceneStyle: { backgroundColor: c.background } }} tabBar={({ state, descriptors, emitter, navigateToTab }) =>
+  const { desktop } = useLayout();
+  return <Gate><Tabs screenOptions={{ headerShown: false, animation: 'fade', sceneStyle: { backgroundColor: c.background } }} tabBar={({ state, descriptors, emitter, navigateToTab }) => desktop ? null :
     <View style={{ zIndex: 100, elevation: 20, backgroundColor: c.background, paddingBottom: Math.max(insets.bottom, 10), paddingHorizontal: 14, paddingTop: 8 }}>
     <BlurView intensity={70} blurMethod="dimezisBlurViewSdk31Plus" tint={dark ? 'dark' : 'light'} style={{ flexDirection: 'row-reverse', paddingVertical: 9, paddingHorizontal: 8,
       backgroundColor: c.card, borderWidth: 1, borderColor: c.line, borderRadius: 32, overflow: 'hidden', boxShadow: '0 8px 28px rgba(24,49,92,.15)' }}>

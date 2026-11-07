@@ -7,12 +7,14 @@ import { useSession } from '../../src/state/session';
 import { catalogueRial, number } from '../../src/lib/format';
 import { Filters, productBody } from '../../src/lib/product';
 import { ProductImage } from '../../src/ui/ProductImage';
+import { useLayout } from '../../src/state/layout';
 import { Gate } from '../../src/ui/Gate';
 import { Select } from '../../src/ui/Select';
 import { confirmAction } from '../../src/ui/confirm';
 import { Badge, Button, Card, Empty, ErrorBox, Field, Loading, Page, Pagination, styles, T, Title, Updated } from '../../src/ui';
 function Inventory() {
   const { api, can, baseUrl } = useSession(); const cache = useQueryClient();
+  const { width } = useLayout(); const columns = width >= 1200 ? 2 : 1;
   const [text, setText] = useState(''), [search, setSearch] = useState('');
   const [page, setPage] = useState(1), [category, setCategory] = useState(''), [kind, setKind] = useState('');
   const [error, setError] = useState(''), [busy, setBusy] = useState(false);
@@ -27,7 +29,8 @@ function Inventory() {
       void cache.invalidateQueries({ queryKey: ['product', item.id] });
     } catch (e) { setError((e as Error).message); } finally { setBusy(false); }
   };
-  return <Page scroll={false}><FlatList<Product> style={{ flex: 1 }} contentContainerStyle={styles.page}
+  return <Page scroll={false}><FlatList<Product> key={columns} numColumns={columns} columnWrapperStyle={columns > 1 ? { gap: 16, alignItems: 'stretch' } : undefined}
+    style={{ flex: 1 }} contentContainerStyle={styles.page}
     keyboardShouldPersistTaps="handled" initialNumToRender={4} maxToRenderPerBatch={4} windowSize={3}
     removeClippedSubviews={Platform.OS === 'android'} refreshing={query.isRefetching} onRefresh={() => void query.refetch()}
     data={query.data && !query.error ? query.data.items : []} keyExtractor={item => item.id}
@@ -47,7 +50,7 @@ function Inventory() {
     {query.data && !query.error && <><T style={styles.muted}>{number(query.data.total)} محصول</T>
       {!query.data.items.length && <Empty>محصولی پیدا نشد.</Empty>}
     </>}</View>}
-    renderItem={({ item }) => <Card><View style={[styles.row, { alignItems: 'flex-start' }]}>
+    renderItem={({ item }) => <Card style={{ flex: 1 }}><View style={[styles.row, { alignItems: 'flex-start' }]}>
           <ProductImage path={item.image} baseUrl={baseUrl} label={item.name} style={{ width: 94, height: 110 }} />
           <View style={{ flex: 1, gap: 7 }}><Badge green={item.isActive && item.stock >= 5}>{!item.isActive ? 'غیرفعال' : item.stock < 5 ? 'کم‌موجودی' : 'فعال'}</Badge>
             <T style={styles.label}>{item.name}</T><T style={styles.muted}>{item.brand} · {item.id}</T><T>{catalogueRial(item.price)}</T></View>
