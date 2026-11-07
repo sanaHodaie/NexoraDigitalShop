@@ -22,7 +22,7 @@ export default function Home() {
   const max = Math.max(1, ...daily.map(x => x.requests));
   return <Page onRefresh={reload} refreshing={dashboard.isRefetching || requests.isRefetching}>
     <Title title="نمای امروز کسب‌وکار" subtitle={`سلام ${manager?.name || 'مدیر نکسورا'}؛ کارهای مهم را از اینجا دنبال کنید.`} />
-    <HomeHero requests={r} onOpen={can('orders:read') ? () => router.push('/(tabs)/requests') : undefined} />
+    <HomeHero name={manager?.name} onOpen={can('orders:read') ? () => router.push('/(tabs)/requests') : undefined} />
     <ErrorBox error={dashboard.error || requests.error} retry={reload} />
     {(dashboard.isLoading || requests.isLoading) && <Loading />}
     {d && <View style={[styles.row, { flexWrap: 'wrap', alignItems: 'stretch' }]}>

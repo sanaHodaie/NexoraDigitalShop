@@ -167,6 +167,7 @@ try {
   assert.ok(await evaluate(`!!document.querySelector('[aria-label="فعال کردن حالت روشن"]')`), 'Theme toggle remains available after login');
   await click('فعال کردن حالت روشن');
   await mkdir('/tmp/nexora-mobile-shots', { recursive: true });
+  await until(`[...document.querySelectorAll('[data-testid="home-hero"] img')].some(x=>x.complete&&x.naturalWidth>0)`);
   await writeFile('/tmp/nexora-mobile-shots/home.png', Buffer.from((await command('Page.captureScreenshot')).data, 'base64'));
   await command('Emulation.setDeviceMetricsOverride', { width: 1440, height: 1000, deviceScaleFactor: 1, mobile: false });
   await until(`!!document.querySelector('[data-testid="desktop-navigation"]')`);

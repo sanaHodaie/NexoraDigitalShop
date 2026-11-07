@@ -70,3 +70,9 @@ Follow README.fa.md on the user's local setup for these checks. No cloud service
 - Login artwork direction follow-up: generated a right-facing photorealistic laptop cutout from the previous photo, exported as an 800px RGBA WebP with transparent corners. Removed the image frame and decorative shape behind it. Swapped the brand to the right and theme toggle to the left. TypeScript and production web build passed; desktop screenshot inspected.
 
 - Login decoration follow-up: three glass benefit cards have raised text labels extending above their top edge. Four small administrative icons surround the transparent laptop and share its subtle motion/reduced-motion behavior. Desktop and mobile screenshots reviewed; TypeScript, production web build and existing browser workflow passed.
+
+## Dashboard poster
+
+- Replaced the first dashboard card with a compact blue/lilac poster, original transparent laptop-and-plant artwork, selectable Persian copy and permission-gated request navigation. Image charts are decorative; live metrics remain in dashboard cards/charts.
+- Bundled 760px WebP is about 49 KiB. Mobile stacks the artwork below the text; desktop keeps it left of the text. Both screenshots reviewed.
+- TypeScript, production web build and Chromium management workflow passed, including poster image decoding. No live production or Telegram mutations performed.
