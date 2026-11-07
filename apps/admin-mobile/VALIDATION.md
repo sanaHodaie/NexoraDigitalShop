@@ -61,3 +61,8 @@ Follow README.fa.md on the user's local setup for these checks. No cloud service
 - Blue/lilac glass form, raised lock badge, gradient submit button and original bundled SVG laptop/plant illustration. Responsive two-column desktop layout and single-column phone form; both themes visually inspected in Chromium screenshots.
 - No SSO or persistent-web-session controls were introduced because those auth capabilities are not implemented. Existing password visibility, validation, error reporting and connection diagnostics remain.
 - TypeScript, 10 existing tests, Vercel build, Android/iOS exports and Chromium management regression passed. Browser login uses fixtures; production credentials and physical devices were not tested.
+
+## Login photograph follow-up
+
+- Email placeholder/input aligned right. Replaced the vector workspace with the existing catalogue laptop photograph, bundled locally (20,200 bytes), with perspective, subtle float and hover tilt. Motion stops when the OS reduced-motion preference is enabled.
+- TypeScript, production web build and Android/iOS exports passed. Chromium checked email alignment and successful image decoding; desktop screenshot inspected. Browser checks also compare animation frames and verify reduced-motion freezes the laptop.

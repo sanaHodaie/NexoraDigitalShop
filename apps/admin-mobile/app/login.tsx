@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Image } from 'expo-image';
-import { Pressable, View } from 'react-native';
+import { Animated, Pressable, View } from 'react-native';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Redirect } from 'expo-router';
@@ -8,6 +8,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useTheme } from '../src/state/theme';
+import { useReducedMotion } from '../src/state/motion';
 import { useLayout } from '../src/state/layout';
 import { useSession } from '../src/state/session';
 import { ThemeToggle } from '../src/ui/ThemeToggle';
@@ -50,7 +51,7 @@ export default function Login() {
           {!!session.notice && <T accessibilityRole="alert" style={styles.muted}>{session.notice}</T>}
           <Controller control={form.control} name="email" render={({ field }) => <Field label="ایمیل" autoCapitalize="none" autoCorrect={false}
             placeholder="ایمیل خود را وارد کنید" keyboardType="email-address" autoComplete="email" value={field.value} onChangeText={field.onChange} editable={!form.formState.isSubmitting}
-            onBlur={field.onBlur} error={form.formState.errors.email?.message} style={{ textAlign: 'left', writingDirection: 'ltr' }} />} />
+            onBlur={field.onBlur} error={form.formState.errors.email?.message} style={{ textAlign: 'right', writingDirection: 'ltr' }} />} />
           <Controller control={form.control} name="password" render={({ field }) => <View><Field label="رمز عبور" secureTextEntry={!showPassword}
             placeholder="رمز عبور خود را وارد کنید" autoCapitalize="none" autoCorrect={false} autoComplete="current-password" value={field.value} onChangeText={field.onChange} editable={!form.formState.isSubmitting}
             style={{ paddingLeft: 52 }} error={form.formState.errors.password?.message} onSubmitEditing={() => void submit()} />
@@ -84,9 +85,31 @@ export default function Login() {
 
 function LoginArtwork() {
   const { dark, c } = useTheme();
+  const reduced = useReducedMotion();
+  const drift = useRef(new Animated.Value(0)).current;
+  const tilt = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    if (reduced) { drift.setValue(0); tilt.setValue(0); return; }
+    const motion = Animated.loop(Animated.sequence([
+      Animated.timing(drift, { toValue: 1, duration: 2700, useNativeDriver: true }),
+      Animated.timing(drift, { toValue: -1, duration: 5400, useNativeDriver: true }),
+      Animated.timing(drift, { toValue: 0, duration: 2700, useNativeDriver: true }),
+    ]));
+    motion.start(); return () => { motion.stop(); drift.setValue(0); };
+  }, [reduced, drift, tilt]);
+  const hover = (value: number) => { if (!reduced) Animated.spring(tilt, { toValue: value, damping: 18, stiffness: 100, useNativeDriver: true }).start(); };
+  useEffect(() => () => { tilt.stopAnimation(); }, [tilt]);
   return <View style={{ height: 290, justifyContent: 'center' }}>
     <View pointerEvents="none" style={{ position: 'absolute', left: -50, top: -50, width: 300, height: 300, borderRadius: 120, backgroundColor: dark ? 'rgba(82,76,174,.22)' : 'rgba(161,157,255,.22)', transform: [{ rotate: '-25deg' }] }} />
-    <Image accessibilityIgnoresInvertColors accessible={false} source={require('../assets/illustrations/login-workspace.svg')} contentFit="contain" style={{ position: 'absolute', width: '78%', height: 310, left: -38, bottom: -15 }} />
+    <View onPointerEnter={() => hover(1)} onPointerLeave={() => hover(0)} style={{ position: 'absolute', width: '59%', height: 230, left: 0, alignSelf: 'center' }}>
+      <Animated.View testID="login-laptop-motion" style={{ flex: 1, transform: [{ perspective: 1000 },
+        { translateY: drift.interpolate({ inputRange: [-1, 1], outputRange: [5, -5] }) },
+        { rotateY: tilt.interpolate({ inputRange: [0, 1], outputRange: [reduced ? '0deg' : '-3deg', reduced ? '0deg' : '3deg'] }) },
+        { rotateX: drift.interpolate({ inputRange: [-1, 1], outputRange: ['-1deg', '1deg'] }) }],
+        borderRadius: 28, boxShadow: '0 20px 32px rgba(47,54,139,.24)' }}>
+        <Image accessibilityIgnoresInvertColors accessibilityLabel="تصویر لپ‌تاپ" source={require('../assets/illustrations/login-laptop.webp')} contentFit="cover" style={{ width: '100%', height: '100%', borderRadius: 28 }} />
+      </Animated.View>
+    </View>
     <View style={{ gap: 13, alignSelf: 'flex-end', width: '43%' }}>{[
       ['bag-handle-outline', 'مدیریت سفارش‌ها'], ['cube-outline', 'محصولات و موجودی'], ['people-outline', 'ارتباط با مشتریان'],
     ].map(([icon, label], index) => <View key={label} style={{ flexDirection: 'row-reverse', alignItems: 'center', gap: 9, padding: 13, marginLeft: index === 2 ? 15 : 0, borderRadius: 18, backgroundColor: dark ? 'rgba(38,47,84,.9)' : 'rgba(255,255,255,.8)', borderWidth: 1, borderColor: 'rgba(255,255,255,.35)', boxShadow: '0 8px 18px rgba(62,76,175,.13)' }}>

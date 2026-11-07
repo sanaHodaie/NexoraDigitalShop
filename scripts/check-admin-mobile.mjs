@@ -143,6 +143,15 @@ try {
   await command('Emulation.setDeviceMetricsOverride', { width: 1440, height: 1000, deviceScaleFactor: 1, mobile: false });
   await until(`!!document.querySelector('[data-testid="login-desktop-story"]')`);
   assert.ok(await evaluate(`document.querySelector('input[aria-label="ایمیل"]').getBoundingClientRect().x < document.querySelector('[data-testid="login-desktop-story"]').getBoundingClientRect().x`), 'Desktop login uses a real two-column RTL layout');
+  assert.equal(await evaluate(`getComputedStyle(document.querySelector('input[aria-label="ایمیل"]')).textAlign`), 'right');
+  await until(`[...document.images].some(x=>x.alt==='تصویر لپ‌تاپ'&&x.complete&&x.naturalWidth>0)`);
+  const laptopTransform = `getComputedStyle(document.querySelector('[data-testid="login-laptop-motion"]')).transform`;
+  const beforeMotion = await evaluate(laptopTransform); await wait(350);
+  assert.notEqual(await evaluate(laptopTransform), beforeMotion, 'Laptop gently floats');
+  await command('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] });
+  await wait(350); const stillLaptop = await evaluate(laptopTransform); await wait(200);
+  assert.equal(await evaluate(laptopTransform), stillLaptop, 'Reduced motion stops the laptop animation');
+  await command('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'no-preference' }] });
   await writeFile('/tmp/nexora-mobile-shots/login-desktop-light.png', Buffer.from((await command('Page.captureScreenshot')).data, 'base64'));
   await click('فعال کردن حالت تیره'); await until(`document.documentElement.dataset.theme==='dark'`);
   await writeFile('/tmp/nexora-mobile-shots/login-desktop-dark.png', Buffer.from((await command('Page.captureScreenshot')).data, 'base64'));
