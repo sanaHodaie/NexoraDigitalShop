@@ -110,25 +110,13 @@ function LoginArtwork() {
   const hover = (value: number) => { if (!reduced) Animated.spring(tilt, { toValue: value, damping: 18, stiffness: 100, useNativeDriver: true }).start(); };
   useEffect(() => () => { tilt.stopAnimation(); }, [tilt]);
   return <View style={{ height: 290, justifyContent: 'center' }}>
-    <View onPointerEnter={() => hover(1)} onPointerLeave={() => hover(0)} style={{ position: 'absolute', width: '59%', height: 230, left: 0, alignSelf: 'center' }}>
+    <View onPointerEnter={() => hover(1)} onPointerLeave={() => hover(0)} style={{ position: 'absolute', width: '59%', height: 230, left: 0, top: 6 }}>
       <Animated.View testID="login-laptop-motion" style={{ flex: 1, transform: [{ perspective: 1000 },
         { translateY: drift.interpolate({ inputRange: [-1, 1], outputRange: [5, -5] }) },
         { rotateY: tilt.interpolate({ inputRange: [0, 1], outputRange: [reduced ? '0deg' : '-3deg', reduced ? '0deg' : '3deg'] }) },
         { rotateX: drift.interpolate({ inputRange: [-1, 1], outputRange: ['-1deg', '1deg'] }) }],
         backgroundColor: 'transparent' }}>
         <Image accessibilityIgnoresInvertColors accessibilityLabel="تصویر لپ‌تاپ" source={require('../assets/illustrations/login-laptop.webp')} contentFit="contain" style={{ width: '100%', height: '100%' }} />
-        <View pointerEvents="none" accessible={false} style={{ position: 'absolute', inset: 0 }}>{[
-          { icon: 'bag-handle-outline', top: -7, left: '20%' as const, rotate: '-9deg' },
-          { icon: 'bar-chart-outline', top: 30, right: 30, rotate: '8deg' },
-          { icon: 'people-outline', bottom: 3, left: 7, rotate: '-7deg' },
-          { icon: 'cube-outline', bottom: -12, right: '19%' as const, rotate: '8deg' },
-        ].map(({ icon, rotate, ...position }) => <View key={icon} style={{ position: 'absolute', ...position,
-          width: 43, height: 43, borderRadius: 14, alignItems: 'center', justifyContent: 'center',
-          backgroundColor: dark ? 'rgba(42,52,93,.94)' : 'rgba(250,250,255,.88)', borderWidth: 1,
-          borderColor: dark ? '#596994' : 'rgba(255,255,255,.98)', boxShadow: '0 7px 16px rgba(60,72,159,.18)',
-          transform: [{ rotate }] }}>
-          <Ionicons name={icon as 'cube-outline'} size={22} color={dark ? '#BBC5FF' : '#354CF2'} />
-        </View>)}</View>
       </Animated.View>
     </View>
     <View style={{ gap: 13, alignSelf: 'flex-end', width: '43%' }}>{[
