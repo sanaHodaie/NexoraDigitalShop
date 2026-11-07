@@ -20,16 +20,16 @@ export function T({ style, ...props }: TextProps) {
     : !original || original === colors.ink ? c.ink : original;
   return <Text {...props} style={[styles.text, { color: c.ink }, style, dark && { color: adapted }]} />;
 }
-export function Page({ children, refreshing, onRefresh, scroll = true }: { children: React.ReactNode;
+export function Page({ children, refreshing, onRefresh, scroll = true, login = false }: { login?: boolean; children: React.ReactNode;
   refreshing?: boolean; onRefresh?: () => void; scroll?: boolean }) {
   const { c, dark } = useTheme();
   const { desktop, compact } = useLayout();
   return <SafeAreaView edges={['top', 'left', 'right']} style={[styles.safe, { backgroundColor: c.background }]}>
-    <LinearGradient colors={dark ? ['#0F1D35', '#122741', '#102239'] : ['#ECF3FF', '#F5F9FF', '#E8F6FA']} style={StyleSheet.absoluteFill} />
+    <LinearGradient colors={login ? (dark ? ['#13182E', '#25264B', '#18233D'] : ['#F4F2FF', '#E7E7FF', '#D9E3FF']) : dark ? ['#0F1D35', '#122741', '#102239'] : ['#ECF3FF', '#F5F9FF', '#E8F6FA']} style={StyleSheet.absoluteFill} />
     <View pointerEvents="none" style={{ position: 'absolute', width: 230, height: 230, borderRadius: 150, backgroundColor: dark ? '#253F6C' : '#C9DEFF', top: 65, right: -100, opacity: .55 }} />
-    <View pointerEvents="none" style={{ position: 'absolute', width: 250, height: 250, borderRadius: 150, backgroundColor: dark ? '#15445B' : '#BFEFF4', bottom: 50, left: -100, opacity: .35 }} />
+    <View pointerEvents="none" style={{ position: 'absolute', width: 250, height: 250, borderRadius: 150, backgroundColor: login ? (dark ? '#534C99' : '#ADA8FF') : dark ? '#15445B' : '#BFEFF4', bottom: 50, left: -100, opacity: .35 }} />
     <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-      {scroll ? <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={[styles.page, { padding: desktop ? 32 : compact ? 16 : 22, paddingBottom: desktop ? 32 : 130 }]}
+      {scroll ? <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={[styles.page, { padding: desktop ? 32 : compact ? 16 : 22, paddingBottom: desktop || login ? 32 : 130 }]}
         refreshControl={onRefresh ? <RefreshControl refreshing={!!refreshing} onRefresh={onRefresh} tintColor={colors.blue} /> : undefined}>
         {children}
       </ScrollView> : <View style={{ flex: 1 }}>{children}</View>}

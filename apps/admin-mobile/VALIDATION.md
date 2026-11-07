@@ -55,3 +55,9 @@ Follow README.fa.md on the user's local setup for these checks. No cloud service
 - TypeScript, production web build and Chromium management regression passed. Browser assertions cover blue scrollbar styling, overlay placement, usable mobile tabs and desktop auto-close after selecting Products.
 
 - Follow-up: hid app/sidebar scrollbar tracks while retaining scrolling; removed the sidebar chevron and moved its touch/keyboard toggle to the N logo. TypeScript and production web build passed; desktop screenshot inspected.
+
+## Reference-inspired login redesign
+
+- Blue/lilac glass form, raised lock badge, gradient submit button and original bundled SVG laptop/plant illustration. Responsive two-column desktop layout and single-column phone form; both themes visually inspected in Chromium screenshots.
+- No SSO or persistent-web-session controls were introduced because those auth capabilities are not implemented. Existing password visibility, validation, error reporting and connection diagnostics remain.
+- TypeScript, 10 existing tests, Vercel build, Android/iOS exports and Chromium management regression passed. Browser login uses fixtures; production credentials and physical devices were not tested.
