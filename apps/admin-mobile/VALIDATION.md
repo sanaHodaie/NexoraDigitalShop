@@ -47,3 +47,9 @@ Follow README.fa.md on the user's local setup for these checks. No cloud service
 - Existing mocked management workflow passed: wholesale preview/approval, product editing, bulk prices, XLSX selection/import, newsletter read state, site-order details and logout.
 - Layout overflow checked at 320, 390 and 1024 pixels; desktop screenshots checked at 1440 pixels in both themes. API responses were fixtures; no production data or Telegram messages were sent.
 - Actual deployment completion and physical-device behavior remain operator checks.
+
+## Navigation follow-up
+
+- Blue web scrollbars and an overlay mobile tab bar keep scrolling behind the bottom navigation, with extra content padding for the last controls.
+- Navigation hover uses a 160ms blue highlight/lift and respects reduced motion. Desktop navigation closes on selection and route changes.
+- TypeScript, production web build and Chromium management regression passed. Browser assertions cover blue scrollbar styling, overlay placement, usable mobile tabs and desktop auto-close after selecting Products.

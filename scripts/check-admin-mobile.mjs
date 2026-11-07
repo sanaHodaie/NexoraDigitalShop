@@ -176,7 +176,10 @@ try {
   await command('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'reduce' }] });
   await until(`(${bellRotation}) < .001`); await wait(250); assert.ok(await evaluate(`(${bellRotation}) < .001`));
   await command('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: 'no-preference' }] });
+  await command('Input.dispatchMouseEvent', { type: 'mouseMoved', x: 1400, y: 260 });
+  await until(`document.querySelector('[data-testid="desktop-navigation"]').getBoundingClientRect().width > 250`);
   await trustedClick('محصولات'); await until(`document.body.innerText.includes('گوشی دوم')`);
+  await until(`document.querySelector('[data-testid="desktop-navigation"]').getBoundingClientRect().width < 90`);
   await wait(700); await writeFile('/tmp/nexora-mobile-shots/products-desktop.png', Buffer.from((await command('Page.captureScreenshot')).data, 'base64'));
   await trustedClick('سفارش‌های سایت'); await until(`document.body.innerText.includes('خریدار سایت')`);
   assert.ok(await evaluate(`!!document.querySelector('[data-testid="desktop-navigation"]')`), 'Desktop rail remains available outside tab pages');
@@ -223,6 +226,8 @@ try {
   await command('Emulation.setDeviceMetricsOverride', { width: 390, height: 844, deviceScaleFactor: 1, mobile: false });
   await wait(700);
   if (new URL(ui).pathname.startsWith('/business')) await until(`[...document.images].some(x=>x.alt==='گوشی تست'&&x.complete&&x.naturalWidth>0)`);
+  assert.equal(await evaluate(`getComputedStyle(document.querySelector('[role="tab"]').closest('[data-testid="mobile-navigation"]')).position`), 'absolute', 'Mobile navigation overlays the scrolling page');
+  assert.ok(await evaluate(`getComputedStyle(document.querySelector('[role="tab"]')).scrollbarColor.includes('57, 120, 237')`), 'App scrollbar is blue');
   const tabGeometry = await evaluate(`[...document.querySelectorAll('[role="tab"]')].filter(x=>x.getBoundingClientRect().width>0).map(x=>({label:x.getAttribute('aria-label'),top:x.getBoundingClientRect().top,bottom:x.getBoundingClientRect().bottom}))`);
   assert.ok(tabGeometry.length === 5 && tabGeometry.every(x => x.top >= 0 && x.bottom <= 844), 'Bottom navigation stays inside the viewport');
   assert.ok(await evaluate(`[...document.querySelectorAll('[role="tab"]')].filter(x=>x.getBoundingClientRect().width>0).every(x=>{const r=x.getBoundingClientRect();return document.elementFromPoint(r.x+r.width/2,r.y+r.height/2)?.closest('[role="tab"]')===x;})`), 'Bottom tabs are visible and receive pointer input');

@@ -8,6 +8,7 @@ import { useReducedMotion } from '../state/motion';
 import { useSession } from '../state/session';
 import { useTheme } from '../state/theme';
 import { ThemeToggle } from './ThemeToggle';
+import { NavHover } from './NavHover';
 
 type Item = { label: string; href: string; icon: keyof typeof Ionicons.glyphMap; permission?: string; match: string[] };
 const items: Item[] = [
@@ -28,7 +29,16 @@ const tools: Item[] = [
 ];
 export function AppShell({ children }: { children: ReactNode }) {
   const { desktop } = useLayout(); const { manager } = useSession(); const { c } = useTheme();
-  return <View style={{ flex: 1, backgroundColor: c.background }}>
+  useEffect(() => {
+    if (Platform.OS !== 'web') return;
+    const style = document.createElement('style');
+    style.textContent = `[data-testid="admin-shell"] * { scrollbar-color: #3978ed transparent; scrollbar-width: thin; }
+      [data-testid="admin-shell"] *::-webkit-scrollbar { width: 6px; height: 6px; }
+      [data-testid="admin-shell"] *::-webkit-scrollbar-track { background: transparent; }
+      [data-testid="admin-shell"] *::-webkit-scrollbar-thumb { background: #3978ed; border-radius: 12px; }`;
+    document.head.appendChild(style); return () => style.remove();
+  }, []);
+  return <View testID="admin-shell" style={{ flex: 1, backgroundColor: c.background }}>
     <View style={{ flex: 1, marginRight: desktop && manager ? 104 : 0 }}>{children}</View>
     {desktop && manager && <DesktopNavigation />}
   </View>;
@@ -38,6 +48,8 @@ function DesktopNavigation() {
   const reduced = useReducedMotion();
   const [hovered, setHovered] = useState(false), [pinned, setPinned] = useState(false), [focused, setFocused] = useState(false);
   const keyboard = useRef(false);
+  const close = () => { setHovered(false); setPinned(false); setFocused(false); };
+  useEffect(() => { close(); }, [path]);
   const expanded = hovered || pinned || focused;
   const progress = useRef(new Animated.Value(0)).current;
   useEffect(() => { const animation = Animated.timing(progress, { toValue: expanded ? 1 : 0, duration: reduced ? 0 : 180, useNativeDriver: false });
@@ -56,14 +68,14 @@ function DesktopNavigation() {
   const link = (item: Item) => {
     if (item.permission && !can(item.permission)) return null;
     const selected = active(item);
-    return <Pressable key={item.href} accessibilityRole="button" accessibilityLabel={item.label}
-      accessibilityState={{ selected }} onFocus={focus} onBlur={blur} onPress={() => router.navigate(item.href as Href)}
+    return <NavHover key={item.href} style={{ borderRadius: 16, marginVertical: 3 }}><Pressable accessibilityRole="button" accessibilityLabel={item.label}
+      accessibilityState={{ selected }} onFocus={focus} onBlur={blur} onPress={() => { close(); router.navigate(item.href as Href); }}
       style={({ pressed }) => ({ flexDirection: 'row-reverse', alignItems: 'center', gap: 12, minHeight: 47, borderRadius: 16,
         marginVertical: 3, paddingHorizontal: 12, backgroundColor: selected ? c.pale : pressed ? c.input : 'transparent' })}>
       <Ionicons name={item.icon} size={23} color={selected ? c.blue : c.muted} />
       <Animated.Text numberOfLines={1} style={{ opacity: progress, width: 164, fontFamily: selected ? 'Vazirmatn_700Bold' : 'Vazirmatn_400Regular',
         textAlign: 'right', color: selected ? c.blue : c.ink, fontSize: 13 }}>{item.label}</Animated.Text>
-    </Pressable>;
+    </Pressable></NavHover>;
   };
   return <Animated.View testID="desktop-navigation" style={{ position: 'absolute', top: 16, bottom: 16, right: 14, zIndex: 1000, elevation: 30,
     width: progress.interpolate({ inputRange: [0, 1], outputRange: [80, 270] }), borderRadius: 28, overflow: 'hidden',

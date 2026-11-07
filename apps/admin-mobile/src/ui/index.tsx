@@ -29,7 +29,7 @@ export function Page({ children, refreshing, onRefresh, scroll = true }: { child
     <View pointerEvents="none" style={{ position: 'absolute', width: 230, height: 230, borderRadius: 150, backgroundColor: dark ? '#253F6C' : '#C9DEFF', top: 65, right: -100, opacity: .55 }} />
     <View pointerEvents="none" style={{ position: 'absolute', width: 250, height: 250, borderRadius: 150, backgroundColor: dark ? '#15445B' : '#BFEFF4', bottom: 50, left: -100, opacity: .35 }} />
     <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-      {scroll ? <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={[styles.page, { padding: desktop ? 32 : compact ? 16 : 22 }]}
+      {scroll ? <ScrollView keyboardShouldPersistTaps="handled" contentContainerStyle={[styles.page, { padding: desktop ? 32 : compact ? 16 : 22, paddingBottom: desktop ? 32 : 130 }]}
         refreshControl={onRefresh ? <RefreshControl refreshing={!!refreshing} onRefresh={onRefresh} tintColor={colors.blue} /> : undefined}>
         {children}
       </ScrollView> : <View style={{ flex: 1 }}>{children}</View>}
@@ -110,7 +110,7 @@ export function Pagination({ page, total, size, busy, onPage }: { page: number; 
 }
 export const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: colors.background },
-  page: { padding: 22, gap: 20, paddingBottom: 32, width: '100%', maxWidth: 1340, alignSelf: 'center', flexGrow: 1 },
+  page: { padding: 22, gap: 20, paddingBottom: 130, width: '100%', maxWidth: 1340, alignSelf: 'center', flexGrow: 1 },
   text: { fontFamily: 'Vazirmatn_400Regular', color: colors.ink, fontSize: 14, lineHeight: 25, textAlign: 'right', writingDirection: 'rtl' },
   title: { fontFamily: 'Vazirmatn_700Bold', fontSize: 24, lineHeight: 36, color: colors.ink },
   eyebrow: { color: colors.muted, fontSize: 10, letterSpacing: 1.5, writingDirection: 'ltr' },
