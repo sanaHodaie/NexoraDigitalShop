@@ -32,10 +32,8 @@ export function AppShell({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (Platform.OS !== 'web') return;
     const style = document.createElement('style');
-    style.textContent = `[data-testid="admin-shell"] * { scrollbar-color: #3978ed transparent; scrollbar-width: thin; }
-      [data-testid="admin-shell"] *::-webkit-scrollbar { width: 6px; height: 6px; }
-      [data-testid="admin-shell"] *::-webkit-scrollbar-track { background: transparent; }
-      [data-testid="admin-shell"] *::-webkit-scrollbar-thumb { background: #3978ed; border-radius: 12px; }`;
+    style.textContent = `[data-testid="admin-shell"] * { scrollbar-width: none; }
+      [data-testid="admin-shell"] *::-webkit-scrollbar { display: none; width: 0; height: 0; }`;
     document.head.appendChild(style); return () => style.remove();
   }, []);
   return <View testID="admin-shell" style={{ flex: 1, backgroundColor: c.background }}>
@@ -83,16 +81,14 @@ function DesktopNavigation() {
     <View onPointerEnter={() => setHovered(true)} onPointerLeave={() => setHovered(false)} style={{ flex: 1 }}>
       <BlurView intensity={65} blurMethod="dimezisBlurViewSdk31Plus" tint={dark ? 'dark' : 'light'} style={{ flex: 1, backgroundColor: c.card, padding: 12 }}>
         <View style={{ flexDirection: 'row-reverse', alignItems: 'center', gap: 12, height: 52 }}>
-          <View style={{ width: 48, height: 48, borderRadius: 17, backgroundColor: '#285DDB', alignItems: 'center', justifyContent: 'center' }}>
-            <Text style={{ color: 'white', fontSize: 24, fontFamily: 'Vazirmatn_700Bold' }}>N</Text></View>
+          <Pressable accessibilityRole="button" accessibilityLabel={expanded ? 'بستن منوی مدیریت' : 'باز کردن منوی مدیریت'}
+            onFocus={focus} onBlur={blur} onPress={() => { setPinned(!expanded); setHovered(false); setFocused(false); }}
+            style={{ width: 48, height: 48, borderRadius: 17, backgroundColor: '#285DDB', alignItems: 'center', justifyContent: 'center' }}>
+            <Text style={{ color: 'white', fontSize: 24, fontFamily: 'Vazirmatn_700Bold' }}>N</Text>
+          </Pressable>
           <Animated.Text numberOfLines={1} style={{ opacity: progress, color: c.ink, fontSize: 16, fontFamily: 'Vazirmatn_700Bold' }}>Nexora Business</Animated.Text>
         </View>
-        <Pressable accessibilityRole="button" accessibilityLabel={expanded ? 'بستن منوی مدیریت' : 'باز کردن منوی مدیریت'}
-          onFocus={focus} onBlur={blur} onPress={() => { setPinned(!expanded); setHovered(false); setFocused(false); }}
-          style={{ alignItems: 'center', padding: 8, marginTop: 8, borderRadius: 12 }}>
-          <Ionicons name={expanded ? 'chevron-forward-outline' : 'chevron-back-outline'} size={18} color={c.muted} />
-        </Pressable>
-        <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
+        <ScrollView style={{ flex: 1, marginTop: 14 }} showsVerticalScrollIndicator={false} keyboardShouldPersistTaps="handled">
           {items.map(link)}
           {expanded && <View style={{ borderTopWidth: 1, borderColor: c.line, marginTop: 10, paddingTop: 10 }}>{tools.map(link)}</View>}
         </ScrollView>

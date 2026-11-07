@@ -227,7 +227,7 @@ try {
   await wait(700);
   if (new URL(ui).pathname.startsWith('/business')) await until(`[...document.images].some(x=>x.alt==='گوشی تست'&&x.complete&&x.naturalWidth>0)`);
   assert.equal(await evaluate(`getComputedStyle(document.querySelector('[role="tab"]').closest('[data-testid="mobile-navigation"]')).position`), 'absolute', 'Mobile navigation overlays the scrolling page');
-  assert.ok(await evaluate(`getComputedStyle(document.querySelector('[role="tab"]')).scrollbarColor.includes('57, 120, 237')`), 'App scrollbar is blue');
+  assert.ok(await evaluate(`getComputedStyle(document.querySelector('[role="tab"]')).scrollbarWidth==='none'`), 'App scrollbars are hidden without disabling scrolling');
   const tabGeometry = await evaluate(`[...document.querySelectorAll('[role="tab"]')].filter(x=>x.getBoundingClientRect().width>0).map(x=>({label:x.getAttribute('aria-label'),top:x.getBoundingClientRect().top,bottom:x.getBoundingClientRect().bottom}))`);
   assert.ok(tabGeometry.length === 5 && tabGeometry.every(x => x.top >= 0 && x.bottom <= 844), 'Bottom navigation stays inside the viewport');
   assert.ok(await evaluate(`[...document.querySelectorAll('[role="tab"]')].filter(x=>x.getBoundingClientRect().width>0).every(x=>{const r=x.getBoundingClientRect();return document.elementFromPoint(r.x+r.width/2,r.y+r.height/2)?.closest('[role="tab"]')===x;})`), 'Bottom tabs are visible and receive pointer input');
