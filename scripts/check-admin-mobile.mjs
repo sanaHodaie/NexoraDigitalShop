@@ -145,6 +145,7 @@ try {
   assert.ok(await evaluate(`document.querySelector('input[aria-label="ایمیل"]').getBoundingClientRect().x < document.querySelector('[data-testid="login-desktop-story"]').getBoundingClientRect().x`), 'Desktop login uses a real two-column RTL layout');
   assert.equal(await evaluate(`getComputedStyle(document.querySelector('input[aria-label="ایمیل"]')).textAlign`), 'right');
   await until(`[...document.images].some(x=>x.alt==='تصویر لپ‌تاپ'&&x.complete&&x.naturalWidth>0)`);
+  assert.ok(await evaluate(`document.querySelector('[data-testid="login-brand"]').getBoundingClientRect().x > document.querySelector('[data-testid="login-header"] [aria-label="فعال کردن حالت تیره"]').getBoundingClientRect().x`), 'Login brand is right and theme toggle left');
   const laptopTransform = `getComputedStyle(document.querySelector('[data-testid="login-laptop-motion"]')).transform`;
   const beforeMotion = await evaluate(laptopTransform); await wait(350);
   assert.notEqual(await evaluate(laptopTransform), beforeMotion, 'Laptop gently floats');

@@ -29,8 +29,8 @@ export default function Login() {
   });
   return <Page login><View style={{ width: '100%', maxWidth: 1240, alignSelf: 'center', gap: desktop ? 28 : 30,
     minHeight: desktop ? Math.max(680, height - 70) : undefined, justifyContent: desktop ? 'center' : undefined }}>
-    <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-      <View style={styles.row}><View style={[styles.brand, { width: 44, height: 44 }]}><T style={{ color: 'white', fontFamily: 'Vazirmatn_700Bold', fontSize: 23 }}>N</T></View>
+    <View testID="login-header" style={{ flexDirection: 'row-reverse', alignItems: 'center', justifyContent: 'space-between' }}>
+      <View testID="login-brand" style={styles.row}><View style={[styles.brand, { width: 44, height: 44 }]}><T style={{ color: 'white', fontFamily: 'Vazirmatn_700Bold', fontSize: 23 }}>N</T></View>
         <View><T style={{ fontFamily: 'Vazirmatn_700Bold', letterSpacing: 2, fontSize: 16 }}>NEXORA</T><T style={[styles.muted, { fontSize: 9, letterSpacing: 1.4 }]}>BUSINESS CONTROL</T></View>
       </View><ThemeToggle />
     </View>
@@ -100,14 +100,13 @@ function LoginArtwork() {
   const hover = (value: number) => { if (!reduced) Animated.spring(tilt, { toValue: value, damping: 18, stiffness: 100, useNativeDriver: true }).start(); };
   useEffect(() => () => { tilt.stopAnimation(); }, [tilt]);
   return <View style={{ height: 290, justifyContent: 'center' }}>
-    <View pointerEvents="none" style={{ position: 'absolute', left: -50, top: -50, width: 300, height: 300, borderRadius: 120, backgroundColor: dark ? 'rgba(82,76,174,.22)' : 'rgba(161,157,255,.22)', transform: [{ rotate: '-25deg' }] }} />
     <View onPointerEnter={() => hover(1)} onPointerLeave={() => hover(0)} style={{ position: 'absolute', width: '59%', height: 230, left: 0, alignSelf: 'center' }}>
       <Animated.View testID="login-laptop-motion" style={{ flex: 1, transform: [{ perspective: 1000 },
         { translateY: drift.interpolate({ inputRange: [-1, 1], outputRange: [5, -5] }) },
         { rotateY: tilt.interpolate({ inputRange: [0, 1], outputRange: [reduced ? '0deg' : '-3deg', reduced ? '0deg' : '3deg'] }) },
         { rotateX: drift.interpolate({ inputRange: [-1, 1], outputRange: ['-1deg', '1deg'] }) }],
-        borderRadius: 28, boxShadow: '0 20px 32px rgba(47,54,139,.24)' }}>
-        <Image accessibilityIgnoresInvertColors accessibilityLabel="تصویر لپ‌تاپ" source={require('../assets/illustrations/login-laptop.webp')} contentFit="cover" style={{ width: '100%', height: '100%', borderRadius: 28 }} />
+        backgroundColor: 'transparent' }}>
+        <Image accessibilityIgnoresInvertColors accessibilityLabel="تصویر لپ‌تاپ" source={require('../assets/illustrations/login-laptop.webp')} contentFit="contain" style={{ width: '100%', height: '100%' }} />
       </Animated.View>
     </View>
     <View style={{ gap: 13, alignSelf: 'flex-end', width: '43%' }}>{[

@@ -66,3 +66,5 @@ Follow README.fa.md on the user's local setup for these checks. No cloud service
 
 - Email placeholder/input aligned right. Replaced the vector workspace with the existing catalogue laptop photograph, bundled locally (20,200 bytes), with perspective, subtle float and hover tilt. Motion stops when the OS reduced-motion preference is enabled.
 - TypeScript, production web build and Android/iOS exports passed. Chromium checked email alignment and successful image decoding; desktop screenshot inspected. Browser checks also compare animation frames and verify reduced-motion freezes the laptop.
+
+- Login artwork direction follow-up: generated a right-facing photorealistic laptop cutout from the previous photo, exported as an 800px RGBA WebP with transparent corners. Removed the image frame and decorative shape behind it. Swapped the brand to the right and theme toggle to the left. TypeScript and production web build passed; desktop screenshot inspected.
