@@ -104,7 +104,7 @@ def test_invoice_auth_snapshot_escaping_and_admin_parity(client, app, engine):
     with Session(engine) as db, db.begin():
         db.scalar(select(User).where(User.email == "changed@example.com")).email = "user@example.com"
     grant(engine)
-    assert client.get(f"/api/admin/orders/{oid}").json() == after
+    assert client.get(f"/api/admin/orders/{oid}").json() == {**after, "paymentReference": None}
     assert client.get(f"/api/admin/orders/{oid}/invoice").text == doc.text
 
 
@@ -120,7 +120,7 @@ def test_payment_updates_both_invoices_and_unlocks_warranty(client, engine):
     assert result.status_code == 204, result.text
     customer = client.get(f"/api/account/orders/{oid}").json()
     assert customer["status"] == "paid" and customer["paidAt"]
-    assert client.get(base).json() == customer
+    assert client.get(base).json() == {**customer, "paymentReference": "verified-bank-transfer-1"}
     assert client.get(base + "/warranty").status_code == 200
     assert f"nexora-warranty-{oid}.html" in client.get(base + "/warranty").headers["content-disposition"]
 

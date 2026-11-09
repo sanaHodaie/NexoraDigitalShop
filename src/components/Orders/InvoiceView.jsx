@@ -40,6 +40,7 @@ export default function InvoiceView({ id, admin = false, onUpdate, version = 0 }
       <div className="invoice-meta"><p><span>تاریخ صدور</span><b>{date(invoice.createdAt)}</b></p><p><span>تعداد کالاها</span><b>{number(invoice.lines.reduce((sum, line) => sum + line.quantity, 0))} عدد · {number(invoice.lines.length)} ردیف</b></p>{invoice.paidAt && <p><span>تاریخ پرداخت</span><b>{date(invoice.paidAt)}</b></p>}</div>
     </header>
     <div className="invoice-actions">
+      {admin&&<a className="invoice-download" href={`/api${path}/invoice.pdf`} download><Download size={16}/>دانلود فاکتور PDF</a>}
       <a className="invoice-download" href={`/api${path}/invoice`} download><Download size={16}/>دانلود فاکتور HTML</a>
       <a href={`/api${path}/invoice?download=false`} target="_blank" rel="noreferrer"><Printer size={16}/>چاپ / ذخیره PDF</a>
       <button type="button" disabled={busy} onClick={() => load()} aria-label="به‌روزرسانی فاکتور"><RefreshCw size={16}/>به‌روزرسانی</button>
@@ -62,6 +63,7 @@ export default function InvoiceView({ id, admin = false, onUpdate, version = 0 }
         </div>
         <div className="invoice-totals"><p><span>جمع کالاها</span><b>{money(invoice.subtotalRial)}</b></p><p><span>هزینهٔ ارسال</span><b>{invoice.shippingRial ? money(invoice.shippingRial) : 'رایگان'}</b></p><p className="invoice-grand"><span>جمع فاکتور</span><b>{number(invoice.totalRial)} <small>ریال</small></b></p></div>
       </div>
+      {admin && invoice.paymentReference && <p>شناسهٔ تراکنش: <bdi>{invoice.paymentReference}</bdi></p>}
       {admin && <div className="invoice-signatures"><div><span>تأیید فروشنده</span><b>محل مهر و امضا</b><small>تاریخ: ........................</small></div><div><span>تأیید تحویل‌گیرنده</span><b>محل امضا</b><small>تاریخ تحویل: ........................</small></div></div>}
       <footer className="invoice-footer"><span className="invoice-footer-brand">NEXORA</span><p className="invoice-footnote">نسخهٔ دانلودشده وضعیت زمان دریافت را نشان می‌دهد؛ برای وضعیت جدید دوباره دانلود کنید. این سند جایگزین صورتحساب رسمی مالیاتی نیست.</p></footer>
     </div>

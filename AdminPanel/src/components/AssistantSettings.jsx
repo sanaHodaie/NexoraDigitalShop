@@ -20,7 +20,7 @@ function Editor({document, canEdit, reload}) {
   }
   async function test(e) {
     e.preventDefault(); setTesting(true); setError('');
-    try {setPreview(await write('/assistant/chat','POST',{messages:[{role:'user',content:question}]}));}
+    try {setPreview(await write('/admin/assistant/test','POST',{messages:[{role:'user',content:question}]}));}
     catch(e) {setError(e.message);} finally {setTesting(false);}
   }
   return <div className="grid lg:grid-cols-2 gap-6"><Panel><ErrorBox message={error}/>

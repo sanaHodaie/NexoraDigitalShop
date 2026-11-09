@@ -1,4 +1,5 @@
 import pytest
+from conftest import write
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -25,6 +26,6 @@ def test_local_setup_hashes_password_and_can_reset_same_account(engine, client):
         assert len(users) == 1
         assert PasswordAdapter().verify("new-local-password-12345", users[0].password_hash)
         assert db.get(UserRole, (users[0].id, "nexora_manager")) is not None
-    result = client.post("/api/mobile/session", json={"email": "local@example.test", "password": "new-local-password-12345"})
+    result = write(client, "POST", "/api/auth/login", json={"email": "local@example.test", "password": "new-local-password-12345"})
     assert result.status_code == 200
-    assert "orders:confirm_payment" in result.json()["manager"]["permissions"]
+    assert "orders:confirm_payment" in client.get("/api/admin/me").json()["permissions"]

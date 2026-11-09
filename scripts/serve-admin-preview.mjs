@@ -14,7 +14,7 @@ const handler = async (req, res) => {
     let path = resolve(root, '.' + pathname);
     if (!path.startsWith(root)) { res.writeHead(403).end(); return; }
     try { if (!(await stat(path)).isFile()) throw new Error(); }
-    catch { path = root + (pathname.startsWith('/business') ? 'business/index.html' : 'index.html'); }
+    catch { path = root + (pathname.startsWith('/admin') || pathname.startsWith('/business') ? 'AdminPanel/index.html' : 'index.html'); }
     for (const { key, value } of security) res.setHeader(key, value);
     // localhost uses HTTP; production's upgrade-insecure-requests would upgrade fixture requests.
     res.setHeader('Content-Security-Policy', res.getHeader('Content-Security-Policy').replace('; upgrade-insecure-requests', ''));

@@ -1,4 +1,5 @@
 import React, {useEffect, useState} from 'react';
+import Account from './components/Account';
 import Layout from './components/Layout';
 import LoginModal from './components/LoginModal';
 import Dashboard from './components/Dashboard';
@@ -25,7 +26,7 @@ export default function App() {
   });
   useEffect(()=>{
     const media=matchMedia('(prefers-color-scheme: dark)');
-    const apply=()=>{document.documentElement.classList.toggle('dark',themeMode==='dark'||(themeMode==='auto'&&media.matches));document.body.classList.toggle('dark',document.documentElement.classList.contains('dark'));};
+    const apply=()=>{document.documentElement.classList.toggle('dark',themeMode==='dark'||(themeMode==='auto'&&media.matches));document.body.classList.toggle('dark',document.documentElement.classList.contains('dark'));document.documentElement.style.colorScheme=document.documentElement.classList.contains('dark')?'dark':'light';};
     apply();localStorage.setItem('nexora_admin_theme',themeMode);media.addEventListener('change',apply);return()=>media.removeEventListener('change',apply);
   },[themeMode]);
   useEffect(()=>{
@@ -40,7 +41,7 @@ export default function App() {
   const can=(permission:string)=>Boolean(user?.permissions.includes(permission));
   const pagePermission = ({'customer-requests':'orders:read',pricing:'products:write',assistant:'assistant:read',dashboard:'dashboard:read',products:'products:read',orders:'orders:read',customers:'users:read',logs:'audit:read',messages:'subscribers:read',analytics:'dashboard:read',gold_rates:'content:read',content:'content:read',articles:'content:read',settings:'content:read'})[activePage];
   const logout=async()=>{try{await write('/auth/logout','POST');resetCsrf();setUser(null);setError('');}catch(e){setError(e instanceof Error ? e.message : "خطای ارتباط با سرور");}};
-  const toggle=()=>setThemeMode(m=>m==='light'?'dark':m==='dark'?'auto':'light');
+  const toggle=()=>setThemeMode(document.documentElement.classList.contains('dark')?'light':'dark');
   if(loading)return <main className="min-h-screen grid place-items-center" role="status">در حال بررسی دسترسی مدیریت…</main>;
   if(!user)return <LoginModal isOpen initialError={error} onLoginSuccess={u=>{setUser(u);setError('');}} themeMode={themeMode} onToggleTheme={toggle}/>;
   return <Layout activePage={activePage} onNavigate={navigate} themeMode={themeMode} onToggleTheme={toggle}
@@ -48,7 +49,7 @@ export default function App() {
     onSearch={(value:string)=>{setSearch(value);navigate('products');}}>
     <ErrorBox message={error}/>
     {pagePermission && !can(pagePermission) && <ErrorBox message="دسترسی به این بخش برای حساب شما فعال نیست؛ از منو بخش مجاز را انتخاب کنید."/>}
-    {activePage==='dashboard' && can('dashboard:read') && <Dashboard onNavigate={navigate} can={can}/>}
+    {activePage==='dashboard' && can('dashboard:read') && <Dashboard onNavigate={navigate} name={user.name} can={can}/>}
     {activePage==='products' && can('products:read') && <Products can={can} search={search}/>}
     {activePage==='pricing' && can('products:write') && <BulkPricePage/>}
     {activePage==='customer-requests' && can('orders:read') && <CustomerRequests can={can}/>}
@@ -56,8 +57,9 @@ export default function App() {
     {activePage==='customers' && can('users:read') && <Customers can={can}/>}
     {activePage==='logs' && can('audit:read') && <AuditLog/>}
     {activePage==='messages' && can('subscribers:read') && <Subscribers/>}
+    {activePage==='account'&&<Account user={user} themeMode={themeMode} onSetThemeMode={setThemeMode} onLogout={logout}/>}
     {activePage==='assistant' && can('assistant:read') && <AssistantSettings can={can}/>}
     {['content','articles','settings'].includes(activePage) && can('content:read') && <ContentManager key={activePage} documentKey={({gold_rates:'categories',content:'home',articles:'articles',settings:'settings'})[activePage]} canEdit={can('content:write')} themeMode={themeMode} onSetThemeMode={setThemeMode}/>}
-    {!['customer-requests','pricing','assistant','dashboard','products','orders','customers','logs','messages','content','articles','settings'].includes(activePage) && <Button onClick={()=>navigate('dashboard')}>بازگشت به داشبورد</Button>}
+    {!['account','customer-requests','pricing','assistant','dashboard','products','orders','customers','logs','messages','content','articles','settings'].includes(activePage) && <Button onClick={()=>navigate('dashboard')}>بازگشت به داشبورد</Button>}
   </Layout>;
 }

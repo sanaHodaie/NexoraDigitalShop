@@ -1,14 +1,11 @@
-﻿# Nexora Digital Shop
+# Nexora Digital Shop
 
 Persian/RTL React + Vite storefront with **Python, FastAPI, Pydantic 2,
 SQLAlchemy 2, PostgreSQL and Alembic**.
 
-The native management app is in [`apps/admin-mobile`](apps/admin-mobile/README.fa.md),
-with a Docker-free Windows/Expo setup guide and a phased BI roadmap. The web panel remains available during migration.
-The Vercel build also publishes the management app at `/business`; it uses the existing same-origin API proxy.
-See [panel feature parity](apps/admin-mobile/PANEL_PARITY.fa.md) and the app guide for online administrator credentials.
-
-The integrated management panel is available at `/admin`. See
+The single responsive management panel is available at `/admin`, including all former app features.
+The standalone Expo app has been retired; `/business` redirects to `/admin`.
+See [the migration and local testing guide](AdminPanel/MIGRATION.fa.md) and
 [the admin setup and permissions guide](backend/ADMIN_PANEL.fa.md).
 
 ## Structure

@@ -13,7 +13,8 @@ test('the deployed JSON config routes API requests before the SPA', () => {
   assert.ok(apiIndex >= 0 && apiIndex < config.rewrites.length - 1);
   assert.match(api.destination, /^https:\/\/[^/]+\/api\/:path\*$/);
   assert.notEqual(new URL(api.destination).hostname, 'nexora-digital-shop.vercel.app');
-  assert.ok(config.rewrites.some(rule => rule.source === '/business/:path*' && rule.destination === '/business/index.html'));
+  assert.ok(config.redirects.some(rule=>rule.source==='/business/:path*'&&rule.destination==='/admin'));
+  assert.ok(config.rewrites.some(rule=>rule.source==='/admin/:path*'&&rule.destination==='/AdminPanel/index.html'));
   assert.deepEqual(config.rewrites.at(-1), { source: '/(.*)', destination: '/index.html' });
 });
 
@@ -38,11 +39,12 @@ test('private and email-token pages are not cached or indexed', () => {
   }
 });
 
-test('hashed app assets keep their own immutable public cache policy', () => {
-  const privateIndex = config.headers.findIndex(rule => rule.source === '/business/:path*');
-  for (const source of ['/business/assets/:path*', '/business/_expo/static/:path*']) {
-    const index = config.headers.findIndex(rule => rule.source === source);
-    assert.ok(index > privateIndex, 'Asset policy overrides the broad management-page policy');
-    assert.ok(config.headers[index].headers.some(h => h.key === 'Cache-Control' && h.value.includes('immutable')));
-  }
+test('the retired app redirects to the single management panel', () => {
+  assert.ok(!config.rewrites.some(rule=>rule.source.startsWith('/business')));
+  for (const source of ['/business','/business/:path*']) assert.ok(config.redirects.some(rule=>rule.source===source&&rule.destination==='/admin'));
+});
+
+test('content-addressed admin thumbnails retain immutable public caching',()=>{
+ const rule=config.headers.find(row=>row.source==='/assets/admin/catalogue/:path*');
+ assert.ok(rule.headers.some(h=>h.key==='Cache-Control'&&h.value.includes('immutable')));
 });

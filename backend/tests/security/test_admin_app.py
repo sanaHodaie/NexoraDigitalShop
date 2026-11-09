@@ -16,9 +16,9 @@ from app.setup_local_admin import save
 @pytest.fixture
 def admin(client, engine):
     save(engine, "manager@example.test", "manager-password-12345")
-    response = client.post('/api/mobile/session', json={"email": "manager@example.test", "password": "manager-password-12345"})
+    response = write(client, 'POST', '/api/auth/login', json={"email": "manager@example.test", "password": "manager-password-12345"})
     assert response.status_code == 200
-    return {"Authorization": "Bearer " + response.json()["token"]}
+    return {"X-CSRF-TOKEN": client.get("/api/csrf").json()["token"]}
 
 
 def test_filter_options_and_kind_are_real_database_filters(client, engine, admin):
@@ -47,8 +47,8 @@ def test_newsletter_cursor_is_per_admin_monotonic_and_does_not_hide_new_arrivals
     assert client.post('/api/admin/newsletter-notifications/read', headers=admin, json={'throughId': 0}).status_code == 204
     assert client.get('/api/admin/newsletter-notifications', headers=admin).json()['unread'] == 1
     save(engine, 'second-manager@example.test', 'manager-password-12345')
-    token = client.post('/api/mobile/session', json={'email': 'second-manager@example.test', 'password': 'manager-password-12345'}).json()['token']
-    assert client.get('/api/admin/newsletter-notifications', headers={'Authorization': 'Bearer ' + token}).json()['unread'] == 2
+    assert write(client, 'POST', '/api/auth/login', json={'email': 'second-manager@example.test', 'password': 'manager-password-12345'}).status_code == 200
+    assert client.get('/api/admin/newsletter-notifications').json()['unread'] == 2
 
 
 def test_exports_are_real_office_documents_and_inert(client, engine, admin):
@@ -86,6 +86,7 @@ def test_site_order_detail_and_vazirmatn_pdf_are_consistent(client, engine, admi
     result = write(client, 'POST', '/api/account/orders', json=CHECKOUT)
     assert result.status_code == 200, result.text
     oid = result.json()['id']
+    assert write(client, 'POST', '/api/auth/login', json={'email': 'manager@example.test', 'password': 'manager-password-12345'}).status_code == 200
     detail = client.get(f'/api/admin/orders/{oid}', headers=admin).json()
     assert detail['shippingAddress']['phone'] == CHECKOUT['shippingAddress']['phone']
     assert detail['shippingAddress']['postalCode'] == '1234567890'
@@ -95,23 +96,23 @@ def test_site_order_detail_and_vazirmatn_pdf_are_consistent(client, engine, admi
     assert b'Vazirmatn' in pdf.content
 
 
-def test_native_raw_excel_preview_and_commit(client, admin):
+def test_browser_raw_excel_preview_and_commit(client, admin):
     book = Workbook()
     book.active.append(HEADERS)
-    book.active.append(['native-import-01', 'تست اپ', 'App test', 'smartphones', 1200000, 4, 'Test', 'توضیح', 'RAM: 8', ''])
+    book.active.append(['browser-import-01', 'تست اپ', 'App test', 'smartphones', 1200000, 4, 'Test', 'توضیح', 'RAM: 8', ''])
     stream = BytesIO()
     book.save(stream)
     headers = {**admin, 'Content-Type': XLSX_TYPE}
     preview = client.post('/api/admin/products/import?commit=false', content=stream.getvalue(), headers=headers)
     assert preview.status_code == 200 and preview.json()['canImport']
-    assert client.get('/api/admin/products/native-import-01', headers=admin).status_code == 404
+    assert client.get('/api/admin/products/browser-import-01', headers=admin).status_code == 404
     committed = client.post('/api/admin/products/import?commit=true', content=stream.getvalue(), headers=headers)
     assert committed.status_code == 200 and committed.json()['created'] == 1
-    row = client.get('/api/admin/products/native-import-01', headers=admin).json()
+    row = client.get('/api/admin/products/browser-import-01', headers=admin).json()
     assert not row['isActive'] and row['stock'] == 4
 
 
-def test_native_bulk_pricing_keeps_confirmation_snapshot(client, admin):
+def test_browser_bulk_pricing_keeps_confirmation_snapshot(client, admin):
     body = {'category': 'smartphones', 'percent': '10', 'brand': None}
     preview = client.post('/api/admin/products/pricing', headers=admin, json=body)
     assert preview.status_code == 200 and not preview.json()['applied']
@@ -137,5 +138,5 @@ def test_operator_password_reset_updates_hash_and_invalidates_sessions(client, e
     monkeypatch.setattr(provision_admin, 'make_engine', lambda _: engine)
     monkeypatch.setattr(provision_admin, 'getpass', lambda _: next(values))
     provision_admin.main()
-    assert client.get('/api/mobile/session', headers=admin).status_code == 401
-    assert client.post('/api/mobile/session', json={'email': 'manager@example.test', 'password': 'new-manager-password-12345'}).status_code == 200
+    assert client.get('/api/admin/me').status_code == 401
+    assert write(client, 'POST', '/api/auth/login', json={'email': 'manager@example.test', 'password': 'new-manager-password-12345'}).status_code == 200

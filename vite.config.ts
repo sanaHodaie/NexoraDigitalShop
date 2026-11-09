@@ -8,7 +8,8 @@ export default defineConfig(() => {
     plugins: [react(), tailwindcss(), {
       name: 'nexora-admin-entry',
       configureServer(server) {
-        server.middlewares.use((req, _res, next) => {
+        server.middlewares.use((req, res, next) => {
+          if (req.url?.split('?')[0].match(/^\/business(?:\/|$)/)) { res.writeHead(302, {Location:'/admin'}).end(); return; }
           if (req.url?.split('?')[0].match(/^\/admin\/?$/)) req.url = '/AdminPanel/index.html';
           next();
         });

@@ -1,7 +1,7 @@
 # پنل مدیریت نکسورا
 
-اپ جدید مدیران و راهنمای اجرای بدون Docker در
-[apps/admin-mobile/README.fa.md](../apps/admin-mobile/README.fa.md) قرار دارد.
+پنل وب واحد، تمام امکانات اپ قبلی را دارد؛ اپ جداگانه حذف شده است.
+راهنمای امکانات و اجرای بدون Docker در [AdminPanel/MIGRATION.fa.md](../AdminPanel/MIGRATION.fa.md) است.
 برای ساخت/تنظیم حساب آزمایشی فقط روی localhost می‌توانید از
 `python -m app.setup_local_admin your-email@example.com` استفاده کنید؛ رمز مخفی دریافت می‌شود
 و اتصال Neon یا محیط production پذیرفته نمی‌شود. این دستور جایگزین تنظیم حساب آنلاین نیست.
@@ -15,7 +15,8 @@
 
 ```powershell
 cd D:\nexoraShop\backend
-& .\.venv-audit\Scripts\python.exe start.py
+$env:UV_PROJECT_ENVIRONMENT = ".venv-admin"
+uv run --frozen python start.py
 ```
 
 اگر محیط Python شما نام دیگری دارد، مسیر همان محیط نصب‌شده را جایگزین کنید.

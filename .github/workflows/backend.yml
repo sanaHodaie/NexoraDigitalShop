@@ -1,9 +1,9 @@
 name: Backend checks
 on:
   push:
-    paths: ['backend/**', 'src/**', 'public/assets/**', 'AdminPanel/**', 'apps/admin-mobile/**', 'scripts/**', 'package*.json', 'vercel.json', '.github/workflows/backend.yml']
+    paths: ['backend/**', 'src/**', 'public/assets/**', 'AdminPanel/**', 'scripts/**', 'package*.json', 'vercel.json', '.github/workflows/backend.yml']
   pull_request:
-    paths: ['backend/**', 'src/**', 'public/assets/**', 'AdminPanel/**', 'apps/admin-mobile/**', 'scripts/**', 'package*.json', 'vercel.json', '.github/workflows/backend.yml']
+    paths: ['backend/**', 'src/**', 'public/assets/**', 'AdminPanel/**', 'scripts/**', 'package*.json', 'vercel.json', '.github/workflows/backend.yml']
 permissions:
   contents: read
 jobs:
@@ -56,18 +56,3 @@ jobs:
       - run: npm run build:vercel
       - run: node --test scripts/*.test.mjs
       - run: npm audit --audit-level=high
-  mobile:
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: apps/admin-mobile
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-          cache: npm
-          cache-dependency-path: apps/admin-mobile/package-lock.json
-      - run: npm ci --no-audit --no-fund
-      - run: npm run typecheck
-      - run: npm test

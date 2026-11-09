@@ -25,10 +25,8 @@ from app.presentation import (
     catalog,
     customer_requests,
     management,
-    mobile,
     telegram,
 )
-from app.presentation.dependencies import native_csrf_exempt
 
 
 def create_app(settings: Settings | None = None, engine=None) -> FastAPI:
@@ -64,7 +62,7 @@ def create_app(settings: Settings | None = None, engine=None) -> FastAPI:
             allow_origins=settings.allowed_origins,
             allow_credentials=True,
             allow_methods=["GET", "POST", "PUT", "PATCH", "DELETE"],
-            allow_headers=["Content-Type", "X-CSRF-TOKEN", "Authorization"],
+            allow_headers=["Content-Type", "X-CSRF-TOKEN"],
         )
 
     @app.middleware("http")
@@ -73,7 +71,7 @@ def create_app(settings: Settings | None = None, engine=None) -> FastAPI:
         response = None
         if path == "/api" or path.startswith("/api/"):
             if (request.method not in {"GET", "HEAD", "OPTIONS"}
-                    and not native_csrf_exempt(request) and not valid_csrf(request)):
+                    and not valid_csrf(request)):
                 response = JSONResponse(
                     {"error": "Invalid CSRF token", "code": "INVALID_CSRF"}, status_code=400
                 )
@@ -154,6 +152,7 @@ def create_app(settings: Settings | None = None, engine=None) -> FastAPI:
             {"error": "Service temporarily unavailable", "code": "DATABASE_UNAVAILABLE"}, status_code=503
         )
 
+    @app.get("/api/health", tags=["health"])
     @app.get("/health", tags=["health"])
     def health():
         return {"status": "ok"}
@@ -161,7 +160,6 @@ def create_app(settings: Settings | None = None, engine=None) -> FastAPI:
     app.include_router(customer_requests.router)
     app.include_router(telegram.router)
     app.include_router(auth.router)
-    app.include_router(mobile.router)
     app.include_router(catalog.router)
     app.include_router(account.router)
     app.include_router(admin_app.router)

@@ -24,6 +24,7 @@ import {
   UserCheck
 } from 'lucide-react';
 import { playTactileClick, setAudioMuted, getAudioMuted } from '../utils/sound';
+import NewsletterBell from './NewsletterBell';
 import AdminSearch from './AdminSearch';
 import { toPersianDigits } from '../utils/formatters';
 
@@ -48,18 +49,20 @@ export default function Layout({
   const [isMutedState, setIsMutedState] = useState(getAudioMuted());
 
   const navItems = [
-    { id: 'assistant', label: 'راهنمای هوشمند خرید', icon: Sparkles, badge: null },
     { id: 'dashboard', label: 'داشبورد اصلی', icon: LayoutDashboard, badge: null },
     { id: 'customer-requests', label: 'درخواست‌های تلگرام و عمده', icon: MessageSquare, badge: null },
     { id: 'products', label: 'محصولات و موجودی', icon: Gem, badge: null },
     { id: 'orders', label: 'سفارشات و فاکتورها', icon: ShoppingBag, badge: null },
     { id: 'messages', label: 'اعضای خبرنامه', icon: MessageSquare, badge: unreadCount > 0 ? unreadCount : null },
     { id: 'customers', label: 'حساب‌های کاربران', icon: Users, badge: null },
-    { id: 'logs', label: 'گزارش ورود و ثبت‌نام', icon: ShieldCheck, badge: null },
+    { id: 'logs', label: 'گزارش رویدادهای مدیریت', icon: ShieldCheck, badge: null },
     { id: 'content', label: 'محتوای صفحه اصلی', icon: LayoutDashboard, badge: null },
     { id: 'articles', label: 'مجله فناوری', icon: MessageSquare, badge: null },
-    { id: 'settings', label: 'تنظیمات سیستم', icon: SettingsIcon, badge: null }
-  ].filter(item => can(({'customer-requests':'orders:read',assistant:'assistant:read',dashboard:'dashboard:read',gold_rates:'content:read',products:'products:read',orders:'orders:read',messages:'subscribers:read',customers:'users:read',analytics:'dashboard:read',settings:'content:read',content:'content:read',articles:'content:read',logs:'audit:read'})[item.id]));
+    { id: 'settings', label: 'تنظیمات سیستم', icon: SettingsIcon, badge: null },
+    { id: 'assistant', label: 'راهنمای هوشمند خرید', icon: Sparkles, badge: null },
+    { id: 'pricing', label: 'تغییر گروهی قیمت', icon: BarChart3, badge: null },
+    { id: 'account', label: 'حساب مدیریت', icon: UserCheck, badge: null }
+  ].filter(item => item.id==='account' || can(({pricing:'products:write','customer-requests':'orders:read',assistant:'assistant:read',dashboard:'dashboard:read',gold_rates:'content:read',products:'products:read',orders:'orders:read',messages:'subscribers:read',customers:'users:read',analytics:'dashboard:read',settings:'content:read',content:'content:read',articles:'content:read',logs:'audit:read'})[item.id]));
 
   const handleNavClick = (pageId) => {
     playTactileClick();
@@ -233,28 +236,10 @@ export default function Layout({
                 className="p-2 sm:p-2.5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:text-amber-500 shadow-xs transition-colors"
                 title="تغییر تم تاریک / روشن"
               >
-                {themeMode === 'dark' ? (
-                  <Sun className="w-4 h-4 text-amber-400" />
-                ) : (
-                  <Moon className="w-4 h-4 text-purple-600" />
-                )}
+                <Sun className="w-4 h-4 text-amber-400 hidden dark:block"/><Moon className="w-4 h-4 text-purple-600 dark:hidden"/>
               </motion.button>
 
-              {/* Messages Quick Badge */}
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => handleNavClick('messages')}
-                className="relative p-2 sm:p-2.5 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:text-pink-600 shadow-xs transition-colors"
-                title="اعضای خبرنامه"
-              >
-                <MessageSquare className="w-4 h-4" />
-                {unreadCount > 0 && (
-                  <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-pink-600 text-white text-[10px] font-bold flex items-center justify-center shadow-md">
-                    {toPersianDigits(unreadCount)}
-                  </span>
-                )}
-              </motion.button>
+              {can('subscribers:read') && <NewsletterBell key={currentUser?.id} onOpen={()=>handleNavClick('messages')}/>}
 
               {/* Quick Login / Logout Screen Trigger */}
               <motion.button

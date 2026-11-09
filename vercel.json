@@ -6,20 +6,14 @@
     {
       "source": "/business/:path*",
       "headers": [
-        { "key": "X-Robots-Tag", "value": "noindex, nofollow" },
-        { "key": "Cache-Control", "value": "private, no-store" }
-      ]
-    },
-    {
-      "source": "/business/assets/:path*",
-      "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
-      ]
-    },
-    {
-      "source": "/business/_expo/static/:path*",
-      "headers": [
-        { "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "private, no-store"
+        }
       ]
     },
     {
@@ -124,17 +118,18 @@
           "value": "private, no-store"
         }
       ]
+    },
+    {
+      "source": "/assets/admin/catalogue/:path*",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
     }
   ],
   "rewrites": [
-    {
-      "source": "/business",
-      "destination": "/business/index.html"
-    },
-    {
-      "source": "/business/:path*",
-      "destination": "/business/index.html"
-    },
     {
       "source": "/api/:path*",
       "destination": "https://nexora-api-s2q3.onrender.com/api/:path*"
@@ -146,6 +141,18 @@
     {
       "source": "/(.*)",
       "destination": "/index.html"
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/business",
+      "destination": "/admin",
+      "permanent": true
+    },
+    {
+      "source": "/business/:path*",
+      "destination": "/admin",
+      "permanent": true
     }
   ]
 }

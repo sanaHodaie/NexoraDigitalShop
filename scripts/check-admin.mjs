@@ -59,7 +59,7 @@ try {
     }
   })()`);
   await evaluate(`document.querySelector('form').requestSubmit()`);
-  await until(`document.body.innerText.includes('نمایی از مسیر رشد')`);
+  await until(`document.body.innerText.includes('فروش واقعی ۳۰ روز اخیر')`);
   assert.equal(await evaluate(`document.body.innerText.includes('گزارشات و چارت‌ها')`),false);
   assert.equal(await evaluate(`document.body.innerText.includes('دسته‌بندی‌های فروشگاه')`),false);
   for (const width of [375,768,1440]) {
