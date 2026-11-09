@@ -1,3 +1,19 @@
+// Retired bundled illustrations may still arrive from an older API or browser cache.
+// Replace only those exact defaults; merchant-selected photos remain authoritative.
+const dealPhotos = {
+  'flash-1': ['collection_smart_home_1790528023441', 'flash-1'],
+  'flash-2': ['collection_gaming_gear_1790528013982', 'accessory-01'],
+  'flash-3': ['collection_laptop_pc_1790528088687', 'flash-3'],
+  'flash-4': ['collection_audio_headphones_1790528002919', 'flash-4'],
+};
+function currentPhotos(products) {
+  return products.map(product => {
+    const photo = dealPhotos[product.id];
+    if (!photo || !['jpg', 'webp'].some(ext => product.image === `/assets/${photo[0]}.${ext}`)) return product;
+    return {...product, image: `/assets/products/${photo[1]}.webp`};
+  });
+}
+
 // Cache public catalogue data only; account/session data never enters storage.
 const KEY = 'nexora:catalog:v1';
 const FRESH_MS = 60_000;
@@ -14,7 +30,7 @@ export function createProductResource({ fetchProducts, storage, now = Date.now }
     const saved = JSON.parse(storage?.getItem(KEY) || 'null');
     if (saved && Number.isFinite(saved.updatedAt) && valid(saved.products) && now() >= saved.updatedAt && now() - saved.updatedAt < MAX_AGE_MS) {
       updatedAt = saved.updatedAt;
-      state = { ...state, products: saved.products, status: 'ready', stale: now() - updatedAt >= FRESH_MS };
+      state = { ...state, products: currentPhotos(saved.products), status: 'ready', stale: now() - updatedAt >= FRESH_MS };
     }
   } catch { /* Storage can be unavailable or contain an obsolete entry. */ }
   const emit = next => { state = { ...state, ...next }; listeners.forEach(notify => notify()); };
@@ -24,6 +40,7 @@ export function createProductResource({ fetchProducts, storage, now = Date.now }
     emit({ status: state.status === 'ready' ? 'ready' : 'loading', refreshing: true, refreshError: false, stale: true });
     pending = Promise.resolve().then(fetchProducts).then(products => {
       if (!valid(products)) throw new Error('Invalid catalogue response');
+      products = currentPhotos(products);
       updatedAt = now();
       try { storage?.setItem(KEY, JSON.stringify({ products, updatedAt })); } catch { /* Optional cache. */ }
       emit({ products, status: 'ready', refreshError: false, stale: false });

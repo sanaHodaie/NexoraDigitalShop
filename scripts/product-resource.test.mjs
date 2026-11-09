@@ -106,3 +106,28 @@ test('an empty successful catalogue replaces previously cached products', async 
   assert.equal(cache.getSnapshot().status, 'ready');
   assert.deepEqual(cache.getSnapshot().products, []);
 });
+
+test('old API and returning visitor caches resolve exact deal placeholders without changing merchant photos', async () => {
+  const defaults = [
+    ['flash-1', 'collection_smart_home_1790528023441', 'flash-1'],
+    ['flash-2', 'collection_gaming_gear_1790528013982', 'accessory-01'],
+    ['flash-3', 'collection_laptop_pc_1790528088687', 'flash-3'],
+    ['flash-4', 'collection_audio_headphones_1790528002919', 'flash-4'],
+  ];
+  for (const extension of ['jpg', 'webp']) {
+    const legacy = defaults.map(([id, source]) => ({...products[0], id, image: `/assets/${source}.${extension}`}));
+    const expected = defaults.map(([, , photo]) => `/assets/products/${photo}.webp`);
+    const saved = storage();
+    saved.setItem('nexora:catalog:v1', JSON.stringify({products: legacy, updatedAt: 100_000}));
+    const cache = createProductResource({storage: saved, now: () => 100_000, fetchProducts: async () => legacy});
+    assert.deepEqual(cache.getSnapshot().products.map(p => p.image), expected);
+    await cache.load({force: true});
+    assert.deepEqual(cache.getSnapshot().products.map(p => p.image), expected);
+    assert.deepEqual(cache.getSnapshot().products.map(p => p.price), legacy.map(p => p.price));
+    assert.deepEqual(JSON.parse(saved.getItem('nexora:catalog:v1')).products.map(p => p.image), expected);
+  }
+  const custom = [{...products[0], id: 'flash-1', image: '/uploads/my-anker.webp'}];
+  const resource = createProductResource({fetchProducts: async () => custom});
+  await resource.load();
+  assert.deepEqual(resource.getSnapshot().products, custom);
+});
