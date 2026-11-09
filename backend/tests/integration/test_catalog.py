@@ -7,7 +7,7 @@ from conftest import CHECKOUT, register, write
 from sqlalchemy.orm import Session
 
 from app.models import Product
-from app.seed import seed
+from app.seed import DEAL_IMAGE_PLACEHOLDERS, seed
 
 
 def test_retired_drone_is_hidden_without_deleting_order_history(client, engine):
@@ -173,23 +173,25 @@ def test_plus_model_correction_preserves_cart_and_merchant_edits(client, engine,
 
 
 @pytest.mark.parametrize("extension", ["jpg", "webp"])
-def test_deal_photo_upgrade_preserves_merchant_data(engine, extension):
+@pytest.mark.parametrize("product_id", DEAL_IMAGE_PLACEHOLDERS)
+def test_deal_photo_upgrade_preserves_merchant_data(engine, extension, product_id):
     with Session(engine) as db, db.begin():
-        product = db.get(Product, "flash-2")
+        product = db.get(Product, product_id)
         product.payload = {**product.payload,
-                           "image": f"/assets/collection_gaming_gear_1790528013982.{extension}",
+                           "image": f"{DEAL_IMAGE_PLACEHOLDERS[product_id]}.{extension}",
                            "description": "Merchant description"}
         product.price = Decimal("123.45")
         product.stock = 7
     seed(engine)
     seed(engine)
     with Session(engine) as db, db.begin():
-        product = db.get(Product, "flash-2")
-        assert product.payload["image"] == "/assets/products/accessory-01.webp"
+        product = db.get(Product, product_id)
+        expected = "/assets/products/accessory-01.webp" if product_id == "flash-2" else f"/assets/products/{product_id}.webp"
+        assert product.payload["image"] == expected
         assert product.payload["description"] == "Merchant description"
         assert product.price == Decimal("123.45")
         assert product.stock == 7
         product.payload = {**product.payload, "image": "/assets/custom-mouse.webp"}
     seed(engine)
     with Session(engine) as db:
-        assert db.get(Product, "flash-2").payload["image"] == "/assets/custom-mouse.webp"
+        assert db.get(Product, product_id).payload["image"] == "/assets/custom-mouse.webp"

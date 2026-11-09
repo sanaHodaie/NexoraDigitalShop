@@ -17,6 +17,10 @@ PHOTO_PRODUCT_IDS.update(f"{prefix}-{i:02d}" for prefix in ("accessory", "camera
 PHOTO_PRODUCT_IDS.update(f"drone-{i:02d}" for i in range(1, 10))
 PHOTO_PRODUCT_IDS.update(f"extra-{i:02d}" for i in range(1, 11))
 DEAL_IMAGE_PLACEHOLDERS = {
+    "flash-1": "/assets/collection_smart_home_1790528023441",
+    "flash-3": "/assets/collection_laptop_pc_1790528088687",
+    "flash-4": "/assets/collection_audio_headphones_1790528002919",
+
     "flash-2": "/assets/collection_gaming_gear_1790528013982",
 }
 

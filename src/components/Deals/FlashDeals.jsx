@@ -69,7 +69,7 @@ export const FlashDeals = () => {
                     <img loading="lazy" decoding="async"
                       src={optimizedImage(deal.image)}
                       alt={deal.name}
-                      className="w-full h-full object-contain p-5 group-hover:scale-105 transition-transform duration-500 filter drop-shadow-md"
+                      className="w-full h-full object-contain p-5 group-hover:scale-105 transition-transform duration-500"
                       referrerPolicy="no-referrer"
                     />
 
