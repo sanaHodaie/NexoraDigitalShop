@@ -63,8 +63,9 @@ export default function InvoiceView({ id, admin = false, onUpdate, version = 0 }
         </div>
         <div className="invoice-totals"><p><span>جمع کالاها</span><b>{money(invoice.subtotalRial)}</b></p><p><span>هزینهٔ ارسال</span><b>{invoice.shippingRial ? money(invoice.shippingRial) : 'رایگان'}</b></p><p className="invoice-grand"><span>جمع فاکتور</span><b>{number(invoice.totalRial)} <small>ریال</small></b></p></div>
       </div>
+      <section className="invoice-delivery-warranty"><h3>راهنمای ارسال و گارانتی</h3><p>روش و زمان ارسال پس از هماهنگی با خریدار تعیین می‌شود؛ پیش از ارسال، نشانی و شماره تماس تأیید شود. هزینه مطابق مبلغ درج‌شده در فاکتور است.</p><p>گارانتی هر کالا مطابق شرایط اعلام‌شده برای همان کالا است؛ نام شرکت گارانتی و مدت پوشش پیش از تحویل بررسی شود. فاکتور و شناسهٔ کالا را برای پیگیری نگه دارید.</p></section>
       {admin && invoice.paymentReference && <p>شناسهٔ تراکنش: <bdi>{invoice.paymentReference}</bdi></p>}
-      {admin && <div className="invoice-signatures"><div><span>تأیید فروشنده</span><b>محل مهر و امضا</b><small>تاریخ: ........................</small></div><div><span>تأیید تحویل‌گیرنده</span><b>محل امضا</b><small>تاریخ تحویل: ........................</small></div></div>}
+      {admin && <div className="invoice-signatures"><div><span>تأیید تحویل‌گیرنده</span><b>محل امضا</b><small>تاریخ تحویل: ........................</small></div><div><span>مهر و امضای مدیریت</span><b>محل مهر و امضا</b><small>تاریخ: ........................</small></div></div>}
       <footer className="invoice-footer"><span className="invoice-footer-brand">NEXORA</span><p className="invoice-footnote">نسخهٔ دانلودشده وضعیت زمان دریافت را نشان می‌دهد؛ برای وضعیت جدید دوباره دانلود کنید. این سند جایگزین صورتحساب رسمی مالیاتی نیست.</p></footer>
     </div>
   </section>;

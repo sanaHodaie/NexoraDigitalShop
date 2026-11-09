@@ -147,3 +147,4 @@
 
 .invoice-loading { padding: 30px; font-size: 13px; color: var(--invoice-muted); }
 .invoice-loading button { display: block; margin-top: 12px; color: var(--invoice-accent); text-decoration: underline; }
+.invoice-delivery-warranty{margin-top:24px;padding:18px 20px;border-radius:16px;background:#f0f5ff;border:1px solid #dce6f5;color:#526783;font-size:12px;line-height:2;break-inside:avoid}.invoice-delivery-warranty h3{margin:0 0 8px;color:#2856cb;font-size:14px}.invoice-delivery-warranty p{margin:5px 0}

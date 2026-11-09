@@ -140,7 +140,8 @@ def document_response(order, warranty=False, download=True):
     <section class="totals"><p><span>جمع کالاها</span><b>{money(data["subtotalRial"])}</b></p>
     <p><span>هزینهٔ ارسال</span><b>{money(data["shippingRial"]) if data["shippingRial"] else "رایگان"}</b></p>
     <p class="grand"><span>جمع فاکتور</span><b>{number(f'{data["totalRial"]:,}')} <small>ریال</small></b></p></section></div>{warranty_section}
-    <div class="signatures"><div><b class="signature-label">تأیید فروشنده</b><small>محل مهر و امضا</small><span>تاریخ: ........................</span></div><div><b class="signature-label">تأیید تحویل‌گیرنده</b><small>محل امضا</small><span>تاریخ تحویل: ........................</span></div></div>
+    <section class="notes"><h3>راهنمای ارسال و گارانتی</h3><p>روش و زمان ارسال پس از هماهنگی با خریدار تعیین می‌شود. نشانی و شماره تماس پیش از ارسال تأیید شود؛ هزینه مطابق همین فاکتور است.</p><p>گارانتی مطابق شرایط هر کالا است؛ نام شرکت گارانتی و مدت پوشش پیش از تحویل بررسی و فاکتور و شناسهٔ کالا برای پیگیری نگهداری شود.</p></section>
+    <div class="signatures"><div><b class="signature-label">تأیید تحویل‌گیرنده</b><small>محل امضا</small><span>تاریخ تحویل: ........................</span></div><div><b class="signature-label">مهر و امضای مدیریت</b><small>محل مهر و امضا</small><span>تاریخ: ........................</span></div></div>
     <footer class="footer"><b>NEXORA</b><p class="hint">این سند رسید فروشگاه است و جایگزین صورتحساب رسمی مالیاتی نیست. نسخهٔ دانلودشده وضعیت زمان دریافت را نشان می‌دهد؛ وضعیت جاری در حساب کاربری قابل مشاهده است.</p></footer>
     <p class="hint screen-only">برای چاپ یا ذخیره PDF، گزینهٔ Print مرورگر را باز کنید؛ اندازهٔ کاغذ A4 و مقیاس ۱۰۰٪ را انتخاب کنید. برای خروجی تمیزتر، Headers and footers مرورگر را خاموش کنید. برای ذخیره فایل، مقصد را Save as PDF بگذارید.</p></div></main></body></html>"""
     kind = "warranty" if warranty else "invoice"

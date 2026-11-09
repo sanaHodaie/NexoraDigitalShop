@@ -81,7 +81,7 @@ try {
       assert.equal(body.lines[0].unitPriceRial, 25000000);
       assert.equal(body.lines[0].quantity, 10);
       Object.assign(row, { status: 'approved', version: row.version + 1, hasInvoice: true, trackingCode: '12345678', deliveryStatus: 'pending',
-        invoice: { totalRial: '250000000', lines: body.lines, shippingRial: '0', terms: '' } });
+        invoice: { approvedAt: row.updatedAt, subtotalRial: '250000000', totalRial: '250000000', lines: body.lines.map(line=>({...line,unitPriceRial:String(line.unitPriceRial),totalRial:String(BigInt(line.quantity)*BigInt(line.unitPriceRial))})), shippingRial: '0', terms: '' } });
       data = row;
     } else if (path === '/api/admin/products') data = { items: [product, { ...product, id: 'phone-second', name: 'گوشی دوم' }], total: 2, page: 1, pageSize:20 };
     else if (path === '/api/admin/products/filters') data = { categories: [{ id: 'smartphones', title: 'گوشی هوشمند' }, { id: 'audio', title: 'تجهیزات صوتی' }], kinds: { smartphones: ['گوشی'], audio: ['هندزفری'] } };
@@ -107,7 +107,12 @@ try {
     else if (path === '/api/admin/newsletter-notifications/read') { unread = 0; status = 204; }
     else if (path === '/api/admin/subscribers') data = { total: 1, items: [{ id: 2, email: 'newsletter@example.test', fullName: 'عضو جدید', createdAt: row.createdAt }] };
     else if (path === '/api/admin/activity') data = { items: [] };
-    else if (path === '/api/admin/orders') data = { items: [{ id: 7, name: 'خریدار سایت', email: 'buyer@example.test', status: 'paid', createdAt: row.createdAt, total: 100, lines: [] }], total: 1, page: 1 };
+    else if (path === '/api/admin/order-register') {
+      const source=new URL(request.url).searchParams.get('source');
+      const site={id:7,source:'site',name:'خریدار سایت',email:'buyer@example.test',status:'paid',createdAt:row.createdAt,totalRial:'60000000'};
+      const telegram={id:row.id,source:'telegram',name:row.details.name,phone:row.details.phone,status:'approved',trackingCode:row.trackingCode,createdAt:row.updatedAt,totalRial:row.invoice.totalRial};
+      const items=source==='site'?[site]:source==='telegram'?[telegram]:[site,telegram];data={items,total:items.length,page:1,pageSize:24};
+    }
     else if (path === '/api/admin/orders/7') data = { id: 7, status: 'paid', createdAt: row.createdAt, email: 'buyer@example.test',
       shippingAddress: { recipient: 'خریدار سایت', address: 'نشانی کامل سفارش سایت', postalCode: '1234567890', phone: '09123456789' },
       subtotalRial: 60000000, shippingRial: 0, totalRial: 60000000, lines: [{ productId: 'phone-test', name: 'گوشی تست', quantity: 1, unitPriceRial: 60000000, totalRial: 60000000 }] };
@@ -185,8 +190,21 @@ try {
   await wait(400);assert.deepEqual(exports,['xlsx','docx']);
   await navigate('messages','آخرین عضویت‌ها');await until(`document.body.innerText.includes('newsletter@example.test')`);
   await until(`!!document.querySelector('[aria-label="اعلان‌های خبرنامه، 0 خوانده‌نشده"]')`);assert.equal(unread,0);
-  await navigate('orders','خریدار سایت');await click('جزئیات و فاکتور');await until(`document.body.innerText.includes('نشانی کامل سفارش سایت')`);
+  await navigate('orders','خریدار سایت');await until(`document.body.innerText.includes('تلگرام · خرید عمده')`);
+  await writeFile('/tmp/nexora-admin-shots/orders-mixed.png',Buffer.from((await command('Page.captureScreenshot')).data,'base64'));
+  assert.equal(await evaluate(`document.querySelectorAll('a[href$="/customer-requests/42/invoice"]').length`),0);
+  await evaluate(`[...document.querySelectorAll('section')].find(x=>x.textContent.includes('خریدار سایت')&&x.querySelector('button')?.textContent.trim()==='جزئیات و فاکتور').querySelector('button').click()`);
+  await until(`document.body.innerText.includes('نشانی کامل سفارش سایت')`);
   assert.ok(await evaluate(`!!document.querySelector('a[href$="/orders/7/invoice.pdf"]')`));await click('بستن');
+  await click('منبع سفارش');await until(`!!document.querySelector('[role="option"]')`);await evaluate(`[...document.querySelectorAll('[role="option"]')].find(x=>x.textContent.includes('تلگرام · عمده')).click()`);
+  await until(`!document.body.innerText.includes('خریدار سایت')`);
+  for(const width of [320,390,1024,1440]){await command('Emulation.setDeviceMetricsOverride',{width,height:900,deviceScaleFactor:1,mobile:false});await wait(150);assert.ok(await evaluate('document.documentElement.scrollWidth<=innerWidth+1'),`Order register fits ${width}px`);}
+  await click('جزئیات و فاکتور');
+  await until(`document.body.innerText.includes('فاکتور عمدهٔ تلگرام 42')`);
+  await writeFile('/tmp/nexora-admin-shots/telegram-invoice-detail.png',Buffer.from((await command('Page.captureScreenshot')).data,'base64'));
+  assert.ok(await evaluate(`!!document.querySelector('[role="dialog"] a[href$="/customer-requests/42/invoice"]')`));
+  assert.ok(await evaluate(`!document.querySelector('[role="dialog"]').textContent.includes('ثبت پرداخت بررسی‌شده')`));
+  await click('بستن');
   await navigate('content','محتوای صفحه اصلی');await until(`document.body.innerText.includes('ذخیره تغییرات')`);
   await input('عنوان','عنوان تازه');await click('ذخیره تغییرات');await until(`document.body.innerText.includes('تغییرات ذخیره شد')`);assert.equal(contentWrites,1);
   await navigate('articles','مجله فناوری');await click('مقاله جدید');await until(`document.body.innerText.includes('مقاله جدید')`);

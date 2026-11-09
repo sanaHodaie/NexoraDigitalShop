@@ -18,3 +18,11 @@ Checks completed:
 Browser fixtures do not contact real customers, mutate production records or send Telegram messages.
 The actual production login, Vercel/Render deployment completion and Telegram delivery remain operator checks.
 Backend tests used isolated SQLite test databases here; PostgreSQL runs in the existing CI job.
+
+## Unified order register and invoice design
+
+- Approved Telegram wholesale requests now appear alongside site orders in a permission-gated, searchable, paginated register with a source filter. IDs remain source-qualified; approval does not create a paid site order or stock reservation. Site amounts use their stored rial conversion rate; wholesale totals remain exact strings/BigInt.
+- Telegram detail/download uses the existing saved PDF endpoint. Existing PDF bytes, unique tracking codes and approval idempotence are preserved.
+- New PDF layout uses embedded Vazirmatn, a blue brand header, two-column customer information, repeated table headers, totals, delivery/warranty guidance and a blank bottom-left management stamp/signature box on the final page. HTML invoice guidance/signature placement was aligned too. No fixed warranty duration or shipping promise is invented.
+- A Persian sample PDF was rendered and visually inspected. Long 50-line invoices are tested for page bounds and final-page signature placement.
+- Backend: 249 passed, 3 skipped; Ruff passed. Frontend TypeScript, production build, Node tests and fixture browser workflow passed. Browser coverage includes both order sources, Telegram filtering/detail/canonical PDF link, and order layout at 320/390/1024/1440px. Real Telegram delivery and production login were not exercised.

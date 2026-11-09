@@ -24,6 +24,16 @@ def permit(svc, uid, permission):
         raise BusinessError(403, "مجوز این بخش برای حساب شما فعال نیست.", "FORBIDDEN")
 
 
+@router.get("/order-register")
+def order_register(request: Request, page: int = Query(1, ge=1, le=100000),
+                   size: int = Query(24, ge=1, le=100), q: str = Query('', max_length=100),
+                   source: Literal['all', 'site', 'telegram'] = 'all',
+                   user=Depends(current_user), svc=Depends(services)):
+    from app.infrastructure.order_register import listing
+    permit(svc, user.id, 'orders:read')
+    return listing(request.app.state.engine, page, size, q, source)
+
+
 @router.get("/products/filters")
 def filters(request: Request, user=Depends(current_user), svc=Depends(services)):
     permit(svc, user.id, "products:read")
