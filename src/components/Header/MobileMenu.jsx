@@ -211,13 +211,13 @@ export const MobileMenu = ({ isOpen, onClose }) => {
                   <span>مجله تخصصی فناوری</span>
                 </Link>
 
-                <a
-                  href="/#footer"
+                <Link
+                  to="/support"
                   onClick={onClose}
                   className="flex items-center justify-between px-4 py-3 rounded-2xl text-sm font-semibold text-slate-800 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-800/60 transition-colors"
                 >
                   <span>پشتیبانی و ارتباط با ما</span>
-                </a>
+                </Link>
               </nav>
 
               {/* Trust Badge */}
