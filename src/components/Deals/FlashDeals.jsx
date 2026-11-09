@@ -1,5 +1,6 @@
 import { optimizedImage } from '../../data/imageAssets';
 import React from 'react';
+import DealCountdown from './DealCountdown';
 import { Zap, Mail, Star, Heart, ShieldCheck } from 'lucide-react';
 import { useShop } from '../../context/ShopContext';
 import { useContent } from '../../context/ContentContext';
@@ -36,6 +37,8 @@ export const FlashDeals = () => {
                 محصولات منتخب با قیمت درج‌شده در فروشگاه.
               </p>
             </div>
+
+            <DealCountdown />
 
             <div className="text-[11px] text-slate-600 dark:text-slate-300 text-center bg-blue-50/70 dark:bg-slate-800/80 py-2.5 px-3 rounded-xl border border-blue-200/60 dark:border-slate-700 flex items-center justify-center gap-1.5">
               <ShieldCheck className="w-3.5 h-3.5 text-blue-600 dark:text-blue-400" />

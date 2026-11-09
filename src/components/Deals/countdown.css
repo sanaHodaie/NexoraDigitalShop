@@ -1,0 +1,15 @@
+.deal-countdown{margin:22px 0;padding:17px 13px 13px;border-radius:22px;background:linear-gradient(140deg,#edf5ff,#f3f0ff);border:1px solid #dbe7fc;box-shadow:inset 0 1px 0 #fff}
+.deal-countdown-heading{display:flex;align-items:center;justify-content:center;gap:7px;color:#4267ae;font-size:11px;font-weight:700;margin-bottom:15px}
+.deal-countdown-heading i{width:6px;height:6px;border-radius:50%;background:#5589f3;box-shadow:0 0 0 4px #5589f315}
+.deal-countdown-clock{display:flex;align-items:flex-start;justify-content:center;gap:7px}
+.deal-countdown-unit{flex:1;max-width:72px;min-width:0;text-align:center}
+.deal-countdown-digits{position:relative;overflow:hidden;display:grid;place-items:center;height:65px;border-radius:15px;background:linear-gradient(145deg,#387ff5,#2445b3);box-shadow:0 7px 16px #2454c52b,inset 0 1px 0 #ffffff50;color:white;font-size:29px;font-weight:900;font-variant-numeric:tabular-nums}
+.deal-countdown-digits:after{content:'';position:absolute;inset:50% 0 auto;height:1px;background:#ffffff20;pointer-events:none}
+.deal-countdown-digits>span{display:block;animation:deal-digit-in .25s ease-out}
+.deal-countdown-colon{padding-top:14px;color:#6686c8;font-size:24px;font-weight:800}
+.deal-countdown-label{display:block;margin-top:9px;color:#617497;font-size:10px}
+.deal-countdown .deal-countdown-note{font-size:9px;line-height:1.9;text-align:center;color:#6c7c98;margin:13px 0 0}
+.dark .deal-countdown{background:linear-gradient(140deg,#172c50,#252442);border-color:#35476b;box-shadow:inset 0 1px 0 #ffffff08}
+.dark .deal-countdown-heading,.dark .deal-countdown-label{color:#b0c8f6}.dark .deal-countdown .deal-countdown-note{color:#a2b2ce}
+@keyframes deal-digit-in{from{opacity:.5;transform:translateY(-5px)}to{opacity:1;transform:translateY(0)}}
+@media(prefers-reduced-motion:reduce){.deal-countdown-digits>span{animation:none}}
