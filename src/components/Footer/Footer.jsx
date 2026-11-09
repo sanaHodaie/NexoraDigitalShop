@@ -1,8 +1,9 @@
 import React from 'react';
 import {useContent} from '../../context/ContentContext';
 import { Link } from 'react-router-dom';
+import {TELEGRAM_SHOP_BOT} from '../../data/support';
 import { Logo } from '../Header/Logo';
-import { Instagram, Youtube, Twitter, Facebook, Globe, Smartphone, Download } from 'lucide-react';
+import { Instagram, Youtube, Twitter, Facebook, Globe, Send, Headphones } from 'lucide-react';
 
 export const Footer = () => {
   const {settings} = useContent();
@@ -27,12 +28,13 @@ export const Footer = () => {
                 آینده را با ما دنبال کنید
               </h4>
               <p className="text-xs text-slate-400 mt-0.5">
-                به جمع بیش از ۵۰۰ هزار علاقه‌مند فناوری بپیوندید: Nexora.Tech@
+                برای راهنمای خرید، پیگیری و استعلام عمده، با نکسورا در ارتباط باشید.
               </p>
             </div>
 
             {/* Social Icons */}
             <div className="flex items-center justify-center gap-2">
+              <a href={TELEGRAM_SHOP_BOT} target="_blank" rel="noopener noreferrer" aria-label="تلگرام نکسورا؛ خرید عمده و پشتیبانی" title="بات خرید عمده و پشتیبانی نکسورا" className="w-9 h-9 rounded-xl bg-slate-800 hover:bg-sky-500 text-slate-300 hover:text-white flex items-center justify-center transition-colors"><Send className="w-4 h-4"/></a>
               <a
                 href="#"
                 aria-label="اینستاگرام"
@@ -97,29 +99,9 @@ export const Footer = () => {
               مرجع نهایی شما برای تکنولوژی‌های نسل آینده. کاوش کنید، نوآوری را تجربه نمایید و زندگی دیجیتال خود را ارتقا دهید.
             </p>
 
-            {/* App Store & Google Play Badges */}
             <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 pt-2">
-              <button
-                type="button"
-                className="flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white transition-colors cursor-pointer text-right"
-              >
-                <Smartphone className="w-5 h-5 text-blue-400" />
-                <div>
-                  <div className="text-[9px] text-slate-400">دانلود از</div>
-                  <div className="text-xs font-bold font-sans">App Store</div>
-                </div>
-              </button>
-
-              <button
-                type="button"
-                className="flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 border border-slate-700 text-white transition-colors cursor-pointer text-right"
-              >
-                <Download className="w-5 h-5 text-emerald-400" />
-                <div>
-                  <div className="text-[9px] text-slate-400">دریافت از</div>
-                  <div className="text-xs font-bold font-sans">Google Play</div>
-                </div>
-              </button>
+              <a href={TELEGRAM_SHOP_BOT} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-4 py-3 rounded-xl bg-sky-600 hover:bg-sky-500 text-white text-xs font-bold transition-colors"><Send className="w-4 h-4"/>خرید عمده در تلگرام</a>
+              <Link to="/support" className="flex items-center gap-2 px-4 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs transition-colors"><Headphones className="w-4 h-4"/>راهنمای پشتیبانی</Link>
             </div>
           </div>
 
@@ -158,12 +140,14 @@ export const Footer = () => {
               پشتیبانی
             </h5>
             <ul className="space-y-2.5 text-xs text-center md:text-right">
-              <li><a href="#" className="hover:text-blue-400 transition-colors">مرکز راهنمایی و سوالات</a></li>
-              <li><a href="#" className="hover:text-blue-400 transition-colors">رویه ارسال و تحویل</a></li>
-              <li><a href="#" className="hover:text-blue-400 transition-colors">شرایط بازگرداندن کالا</a></li>
-              <li><a href="#" className="hover:text-blue-400 transition-colors">گارانتی و اصالت</a></li>
-              <li><a href="#" className="hover:text-blue-400 transition-colors">پیگیری سفارش</a></li>
-              <li><a href="#" className="hover:text-blue-400 transition-colors">ارتباط با کارشناسان</a></li>
+              <li><Link to="/support#faq" className="hover:text-blue-400 transition-colors">مرکز راهنمایی و سوالات</Link></li>
+              <li><Link to="/support#shipping" className="hover:text-blue-400 transition-colors">رویه ارسال و تحویل</Link></li>
+              <li><Link to="/support#damaged-goods" className="hover:text-blue-400 transition-colors">آسیب‌دیدگی و مغایرت کالا</Link></li>
+              <li><Link to="/support#returns" className="hover:text-blue-400 transition-colors">شرایط بازگرداندن کالا</Link></li>
+              <li><Link to="/support#warranty" className="hover:text-blue-400 transition-colors">گارانتی و اصالت</Link></li>
+              <li><Link to="/support#tracking" className="hover:text-blue-400 transition-colors">پیگیری سفارش</Link></li>
+              <li><a href={TELEGRAM_SHOP_BOT} target="_blank" rel="noopener noreferrer" className="hover:text-blue-400 transition-colors">استعلام خرید عمده در تلگرام</a></li>
+              <li><Link to="/support#contact" className="hover:text-blue-400 transition-colors">ارتباط با کارشناسان</Link></li>
             </ul>
           </div>
 

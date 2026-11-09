@@ -12,7 +12,7 @@ const handler = async (req, res) => {
   try {
     const pathname = decodeURIComponent(new URL(req.url, 'http://localhost').pathname);
     let path = resolve(root, '.' + pathname);
-    if (!path.startsWith(root)) { res.writeHead(403).end(); return; }
+    if (path !== resolve(root) && !path.startsWith(root)) { res.writeHead(403).end(); return; }
     try { if (!(await stat(path)).isFile()) throw new Error(); }
     catch { path = root + (pathname.startsWith('/admin') || pathname.startsWith('/business') ? 'AdminPanel/index.html' : 'index.html'); }
     for (const { key, value } of security) res.setHeader(key, value);

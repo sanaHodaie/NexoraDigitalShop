@@ -13,6 +13,7 @@ import ErrorPage from './pages/ErrorPage';
 import StoreErrorBoundary from './components/StoreErrorBoundary';
 import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom';
 
+const SupportPage = lazy(() => import('./pages/SupportPage'));
 const HomePage = lazy(() => import('./pages/HomePage'));
 const CategoryPage = lazy(() => import('./pages/CategoryPage'));
 const ComparePage = lazy(() => import('./pages/ComparePage'));
@@ -62,6 +63,7 @@ function Storefront() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/category/:categoryId" element={<CategoryPage />} />
+          <Route path="/support" element={<SupportPage />} />
           <Route path="/compare" element={<ComparePage />} />
           <Route path="/magazine" element={<MagazinePage />} />
           <Route path="/magazine/:slug" element={<ArticlePage />} />

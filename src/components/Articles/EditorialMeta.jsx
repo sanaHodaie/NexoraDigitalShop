@@ -1,9 +1,9 @@
 import { useEffect } from 'react';
 
-export default function EditorialMeta({ title, description, path, image, article }) {
+export default function EditorialMeta({ title, description, path, image, article, siteName='مجله نکسورا', pageType='CollectionPage' }) {
   useEffect(() => {
     const previousTitle = document.title;
-    document.title = `${title} | مجله نکسورا`;
+    document.title = `${title} | ${siteName}`;
     const restore = [];
     const url = `${window.location.origin}${path}`;
     for (const [attribute, name, content] of [
@@ -25,9 +25,9 @@ export default function EditorialMeta({ title, description, path, image, article
       image: `${window.location.origin}${image}`, datePublished: article.published,
       dateModified: article.published, inLanguage: 'fa', mainEntityOfPage: url,
       author: { '@type': 'Organization', name: 'مجله نکسورا' },
-    } : { '@context': 'https://schema.org', '@type': 'CollectionPage', name: title, description, url, inLanguage: 'fa' }).replace(/</g, '\\u003c');
+    } : { '@context': 'https://schema.org', '@type': pageType, name: title, description, url, inLanguage: 'fa' }).replace(/</g, '\\u003c');
     document.head.appendChild(schema);
     return () => { document.title = previousTitle; restore.forEach(fn => fn()); canonical.remove(); schema.remove(); };
-  }, [title, description, path, image, article]);
+  }, [title, description, path, image, article, siteName, pageType]);
   return null;
 }
