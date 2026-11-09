@@ -52,3 +52,45 @@ def test_order_register_requires_management_read_permission(client):
     assert client.get('/api/admin/order-register').status_code == 401
     register(client)
     assert client.get('/api/admin/order-register').status_code == 403
+
+
+def test_wholesale_print_uses_site_template_and_preserves_pdf_snapshot(client, app, engine):
+    rid = setup(client, app, engine)
+    url = f'/api/admin/customer-requests/{rid}/invoice.html'
+    assert client.get(url).status_code == 404
+    app.state.settings.telegram_bot_token = SecretStr('fixture-not-sent')
+    result = write(client, 'POST', f'/api/admin/customer-requests/{rid}/approve', json={
+        'version': 1, 'lines': [{'name': '<script>نمونه</script>', 'quantity': 2, 'unitPriceRial': 25000000}],
+        'shippingRial': 0, 'terms': '<script>شرایط توافقی</script>',
+    })
+    assert result.status_code == 200, result.text
+    pdf = client.get(f'/api/admin/customer-requests/{rid}/invoice').content
+    html = client.get(url + '?download=false')
+    assert html.status_code == 200
+    assert html.headers['Cache-Control'] == 'no-store'
+    assert html.headers['Content-Disposition'].startswith('inline;')
+    assert 'class="masthead"' in html.text and 'class="recipient"' in html.text
+    assert 'فاکتور فروش عمده' in html.text and 'مهر و امضای مدیریت' in html.text
+    assert 'پرداخت بررسی نشده' in html.text and result.json()['trackingCode'] in html.text
+    assert '<script>' not in html.text and '&lt;script&gt;' in html.text
+    assert client.get(url).headers['Content-Disposition'].startswith('attachment;')
+    assert client.get(f'/api/admin/customer-requests/{rid}/invoice').content == pdf
+    client.cookies.clear()
+    assert client.get(url).status_code == 401
+    register(client, 'no-permission@example.test')
+    assert client.get(url).status_code == 403
+
+
+def test_telegram_request_pagination_size_and_search(client, app, engine):
+    rid = setup(client, app, engine)
+    for uid in range(1000, 1025):
+        assert submit(client, body(uid)).status_code == 200
+    path = '/api/admin/customer-requests'
+    assert len(client.get(path).json()['items']) == 20
+    result = client.get(path + '?size=50').json()
+    assert result['size'] == 50 and result['total'] == 26 and len(result['items']) == 26
+    result = client.get(path + '?size=20&page=2').json()
+    assert len(result['items']) == 6
+    assert client.get(path + '?q=not-found&size=100').json()['total'] == 0
+    assert client.get(path + f'?q={rid}').json()['total'] > 0
+    assert client.get(path + '?size=101').status_code == 400

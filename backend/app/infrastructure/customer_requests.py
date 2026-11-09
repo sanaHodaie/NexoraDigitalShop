@@ -2,11 +2,12 @@ import secrets
 from datetime import datetime, time, timedelta
 from zoneinfo import ZoneInfo
 
-from sqlalchemy import func, select
+from sqlalchemy import String, cast, func, or_, select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session, defer
 
 from app.domain.errors import BusinessError
+from app.infrastructure.management import search_column, search_text
 from app.infrastructure.models import AuditLog, CustomerDelivery, CustomerRequest, utcnow
 from app.infrastructure.wholesale_pdf import render_invoice
 
@@ -82,15 +83,22 @@ class CustomerRequests:
             )
             return {"items": [output(row) for row in rows]}
 
-    def list(self, page, status=None, kind=None):
+    def list(self, page, status=None, kind=None, size=20, query=''):
+        search = query
         with Session(self.engine) as db:
             query = select(CustomerRequest).options(defer(CustomerRequest.invoice_pdf))
             if status:
                 query = query.where(CustomerRequest.status == status)
             if kind:
                 query = query.where(CustomerRequest.kind == kind)
+            for token in search_text(search).split()[:12]:
+                query = query.where(or_(search_column(CustomerRequest.details['name'].as_string()).contains(token, autoescape=True),
+                                        search_column(CustomerRequest.details['phone'].as_string()).contains(token, autoescape=True),
+                                        search_column(CustomerRequest.details['items'].as_string()).contains(token, autoescape=True),
+                                        CustomerRequest.tracking_code.contains(token, autoescape=True),
+                                        cast(CustomerRequest.id, String).contains(token, autoescape=True)))
             total = db.scalar(select(func.count()).select_from(query.subquery()))
-            rows = db.scalars(query.order_by(CustomerRequest.id.desc()).offset((page - 1) * 20).limit(20))
+            rows = db.scalars(query.order_by(CustomerRequest.id.desc()).offset((page - 1) * size).limit(size))
             items = []
             for row in rows:
                 item = output(row, True)
@@ -105,7 +113,7 @@ class CustomerRequests:
                     else "none"
                 )
                 items.append(item)
-            return {"items": items, "total": total, "page": page, "size": 20}
+            return {"items": items, "total": total, "page": page, "size": size}
 
     def update(self, rid, actor, status, note, version):
         with Session(self.engine) as db, db.begin():

@@ -99,12 +99,14 @@ def listing(
     page: int = Query(1, ge=1, le=100000),
     status: Status | None = None,
     kind: Kind | None = None,
+    size: int = Query(20, ge=1, le=100),
+    q: str = Query('', max_length=100),
     user=Depends(current_user),
     svc=Depends(services),
     store=Depends(storage),
 ):
     permission(svc, user.id, "orders:read")
-    return store.list(page, status, kind)
+    return store.list(page, status, kind, size=size, query=q)
 
 
 @router.patch("/api/admin/customer-requests/{rid}")
@@ -170,6 +172,29 @@ def pdf_response(store, rid, uid=None):
 def invoice(rid: int, user=Depends(current_user), svc=Depends(services), store=Depends(storage)):
     permission(svc, user.id, "orders:read")
     return pdf_response(store, rid)
+
+
+@router.get("/api/admin/customer-requests/{rid}/invoice.html")
+def invoice_html(rid: int, download: bool = True, user=Depends(current_user),
+                 svc=Depends(services), store=Depends(storage)):
+    from datetime import datetime
+
+    from app.infrastructure.invoice_documents import document_response
+    permission(svc, user.id, 'orders:read')
+    item = store.detail(rid)
+    saved = item['invoice']
+    if not saved:
+        raise BusinessError(404, 'فاکتور پیدا نشد.')
+    customer = saved['customer']
+    data = {**saved, 'id': rid, 'source': 'telegram', 'status': 'approved',
+            'createdAt': datetime.fromisoformat(saved['approvedAt']), 'paidAt': None,
+            'reservationExpiresAt': None, 'email': customer.get('email') or '',
+            'shippingAddress': {**customer, 'recipient': customer.get('name')},
+            'subtotalRial': int(saved['subtotalRial']), 'shippingRial': int(saved['shippingRial']),
+            'totalRial': int(saved['totalRial']),
+            'lines': [{**row, 'unitPriceRial': int(row['unitPriceRial']), 'totalRial': int(row['totalRial'])}
+                      for row in saved['lines']]}
+    return document_response(download=download, data=data)
 
 
 @router.get("/internal/telegram/customer-requests/{uid}/{rid}/invoice", dependencies=[Depends(bot_auth)])

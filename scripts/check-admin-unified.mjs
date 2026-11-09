@@ -71,7 +71,7 @@ try {
     else if (path === '/api/admin/me') data=manager;
     else if (path === '/api/admin/dashboard') data = { products: 114, users: 2, orders: 0, revenue: 0, subscribers: 0, lowStock: 1, daily: [], statuses: {} };
     else if (path === '/api/admin/customer-request-stats') data = { total: 1, statuses: { [row.status]: 1 }, daily: [{ day: '2026-11-05', requests: 0 }, { day: '2026-11-06', requests: 1 }] };
-    else if (path === '/api/admin/customer-requests') data = { items: [row], total: 1, page: 1, size: 20 };
+    else if (path === '/api/admin/customer-requests') data = { items: [row, {...row,id:43,status:'new',hasInvoice:false,trackingCode:null,invoice:null,details:{...row.details,name:'فروشگاه نمونه',items:'استعلام قیمت لپ‌تاپ برای خرید عمده'}}, {...row,id:44,kind:'support',status:'reviewing',hasInvoice:false,trackingCode:null,invoice:null,details:{...row.details,name:'مشتری پشتیبانی',items:'پیگیری زمان تحویل سفارش'}}], total: 3, page: 1, size: Number(new URL(request.url).searchParams.get('size')||20) };
     else if (path === '/api/admin/customer-requests/42') {
       if (request.method === 'PATCH') { Object.assign(row, JSON.parse(request.postData), { version: row.version + 1 }); }
       data = row;
@@ -81,7 +81,7 @@ try {
       assert.equal(body.lines[0].unitPriceRial, 25000000);
       assert.equal(body.lines[0].quantity, 10);
       Object.assign(row, { status: 'approved', version: row.version + 1, hasInvoice: true, trackingCode: '12345678', deliveryStatus: 'pending',
-        invoice: { approvedAt: row.updatedAt, subtotalRial: '250000000', totalRial: '250000000', lines: body.lines.map(line=>({...line,unitPriceRial:String(line.unitPriceRial),totalRial:String(BigInt(line.quantity)*BigInt(line.unitPriceRial))})), shippingRial: '0', terms: '' } });
+        invoice: { customer: row.details, approvedAt: row.updatedAt, subtotalRial: '250000000', totalRial: '250000000', lines: body.lines.map(line=>({...line,unitPriceRial:String(line.unitPriceRial),totalRial:String(BigInt(line.quantity)*BigInt(line.unitPriceRial))})), shippingRial: '0', terms: '' } });
       data = row;
     } else if (path === '/api/admin/products') data = { items: [product, { ...product, id: 'phone-second', name: 'گوشی دوم' }], total: 2, page: 1, pageSize:20 };
     else if (path === '/api/admin/products/filters') data = { categories: [{ id: 'smartphones', title: 'گوشی هوشمند' }, { id: 'audio', title: 'تجهیزات صوتی' }], kinds: { smartphones: ['گوشی'], audio: ['هندزفری'] } };
@@ -163,11 +163,21 @@ try {
   await click('نمایش رمز');assert.equal(await evaluate(`document.querySelector('#admin-password').type`),'text');await click('پنهان کردن رمز');
   await input('رمز عبور','test-password-12345');await click('ورود به مرکز مدیریت');await until(`document.body.innerText.includes('داشبورد مدیریت نکسورا')`);
   await until(`!!document.querySelector('[aria-label="اعلان‌های خبرنامه، 2 خوانده‌نشده"]')`);
+  assert.equal(await evaluate(`getComputedStyle(document.querySelector('aside.admin-nav-scroll')).scrollbarWidth`),'none');
   await writeFile('/tmp/nexora-admin-shots/dashboard.png',Buffer.from((await command('Page.captureScreenshot')).data,'base64'));
   await click('بررسی درخواست‌ها');await until(`document.body.innerText.includes('مشتری آزمایشی')`);
+  assert.ok(await evaluate(`!document.querySelector('[role="dialog"]')&&!document.body.innerText.includes('خیابان تست، پلاک ۱۲')`),'Request list stays compact');
+  await writeFile('/tmp/nexora-admin-shots/requests-compact.png',Buffer.from((await command('Page.captureScreenshot')).data,'base64'));
+  await command('Emulation.setDeviceMetricsOverride',{width:390,height:900,deviceScaleFactor:1,mobile:false});await wait(150);
+  assert.ok(await evaluate('document.documentElement.scrollWidth<=innerWidth+1'));
+  await writeFile('/tmp/nexora-admin-shots/requests-compact-mobile.png',Buffer.from((await command('Page.captureScreenshot')).data,'base64'));
+  await command('Emulation.setDeviceMetricsOverride',{width:1440,height:1000,deviceScaleFactor:1,mobile:false});
+  await click('جزئیات سفارش 42');await until(`document.body.innerText.includes('خیابان تست، پلاک ۱۲')`);
   await click('بررسی و صدور فاکتور عمده');await input('قیمت واحد قلم 1','۲۵۰۰۰۰۰۰');await click('بازبینی فاکتور پیش از تأیید');
   await until(`document.body.innerText.includes('بازبینی نهایی فاکتور')`);assert.equal(approved,0);
   await click('تأیید نهایی و ارسال فاکتور در تلگرام');await until(`document.body.innerText.includes('کد رهگیری: 12345678')`);assert.equal(approved,1);
+  await until(`!!document.querySelector('[role="dialog"] .invoice-sheet')`);
+  await writeFile('/tmp/nexora-admin-shots/wholesale-shared-invoice.png',Buffer.from((await command('Page.captureScreenshot')).data,'base64'));
   assert.ok(await evaluate(`!!document.querySelector('a[href$="/customer-requests/42/invoice"]')`));
   console.log('Checked wholesale preview, approval and tracking.');
   await navigate('products','توضیح محصول در سایت');await click('غیرفعال کردن');await until(`[...document.querySelectorAll('button')].some(x=>x.textContent.trim()==='فعال کردن')`);assert.equal(product.isActive,false);
@@ -204,6 +214,7 @@ try {
   await writeFile('/tmp/nexora-admin-shots/telegram-invoice-detail.png',Buffer.from((await command('Page.captureScreenshot')).data,'base64'));
   assert.ok(await evaluate(`!!document.querySelector('[role="dialog"] a[href$="/customer-requests/42/invoice"]')`));
   assert.ok(await evaluate(`!document.querySelector('[role="dialog"]').textContent.includes('ثبت پرداخت بررسی‌شده')`));
+  assert.ok(await evaluate(`!!document.querySelector('[role="dialog"] .invoice-sheet .invoice-lines')&&!!document.querySelector('[role="dialog"] a[href$="/invoice.html"]')`),'Wholesale shares the site invoice sheet and printable HTML actions');
   await click('بستن');
   await navigate('content','محتوای صفحه اصلی');await until(`document.body.innerText.includes('ذخیره تغییرات')`);
   await input('عنوان','عنوان تازه');await click('ذخیره تغییرات');await until(`document.body.innerText.includes('تغییرات ذخیره شد')`);assert.equal(contentWrites,1);

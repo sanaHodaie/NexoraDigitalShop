@@ -81,7 +81,7 @@ export default function Layout({
     <div className="min-h-screen h-screen flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 transition-colors duration-300 overflow-hidden">
       <div className="flex-1 flex flex-row overflow-hidden relative h-full">
         {/* Desktop Glassmorphism Sidebar (Fixed 72 width) */}
-        <aside className="hidden lg:flex flex-col w-72 flex-shrink-0 border-l border-purple-100/70 dark:border-purple-950/40 bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl p-5 justify-between select-none h-full overflow-y-auto">
+        <aside className="admin-nav-scroll hidden lg:flex flex-col w-72 flex-shrink-0 border-l border-purple-100/70 dark:border-purple-950/40 bg-white/70 dark:bg-slate-900/70 backdrop-blur-xl p-5 justify-between select-none h-full overflow-y-auto">
           {/* Brand Logo & Title */}
           <div className="space-y-6">
             <div
@@ -285,7 +285,7 @@ export default function Layout({
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-              className="relative w-72 max-w-[80vw] h-full bg-white dark:bg-slate-900 border-l border-purple-200/80 dark:border-purple-900/40 p-6 flex flex-col justify-between overflow-y-auto shadow-2xl z-10"
+              className="admin-nav-scroll relative w-72 max-w-[80vw] h-full bg-white dark:bg-slate-900 border-l border-purple-200/80 dark:border-purple-900/40 p-6 flex flex-col justify-between overflow-y-auto shadow-2xl z-10"
             >
               <div className="space-y-6">
                 <div className="flex items-center justify-between">

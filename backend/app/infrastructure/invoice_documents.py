@@ -8,6 +8,7 @@ from fastapi.responses import HTMLResponse
 from app.domain.invoices import invoice_data
 
 LABELS = {
+    "approved": "تأییدشده · پرداخت بررسی نشده",
     "draft": "در صف پرداخت · پیش‌فاکتور ثبت‌نشده",
     "pending": "در صف پرداخت",
     "pending_payment": "در صف پرداخت",
@@ -65,8 +66,11 @@ th:nth-child(4),th:nth-child(5){width:23%}tbody tr:nth-child(even){background:#f
 """
 
 
-def document_response(order, warranty=False, download=True):
-    data = invoice_data(order)
+def document_response(order=None, warranty=False, download=True, *, data=None):
+    data = invoice_data(order) if data is None else data
+    status = data['status']
+    identifier = data.get('trackingCode') or data['id']
+    wholesale = data.get('source') == 'telegram'
 
     def safe(value):
         return escape(str(value or "ثبت نشده"))
@@ -80,11 +84,11 @@ def document_response(order, warranty=False, download=True):
     title = (
         "کارت گارانتی — فرم تکمیل توسط فروشنده"
         if warranty
-        else ("پیش‌فاکتور فروش" if order.status == "draft" else "فاکتور فروش")
+        else ("فاکتور فروش عمده" if wholesale else "پیش‌فاکتور فروش" if status == "draft" else "فاکتور فروش")
     )
     addr = data["shippingAddress"] or {}
     rows = "".join(
-        f"<tr><td>{number(i)}</td><td><b>{safe(x['name'])}</b><small>شناسهٔ کالا: <bdi>{safe(x['productId'])}</bdi></small></td>"
+        f"<tr><td>{number(i)}</td><td><b>{safe(x['name'])}</b>{('<small>شناسهٔ کالا: <bdi>' + safe(x['productId']) + '</bdi></small>') if x.get('productId') else ''}</td>"
         f"<td>{number(x['quantity'])}</td><td>{money(x['unitPriceRial'])}</td><td>{money(x['totalRial'])}</td></tr>"
         for i, x in enumerate(data["lines"], 1)
     )
@@ -106,11 +110,13 @@ def document_response(order, warranty=False, download=True):
         <p>شرایط اختصاصی / پیوست ضمانت: ....................................................................</p>"""
     note = (
         "این پیش‌فاکتور موجودی را رزرو نمی‌کند. اعتبار بررسی قیمت ۲۴ ساعت است؛ هنگام ثبت نهایی قیمت و موجودی دوباره کنترل می‌شوند."
-        if order.status == "draft"
+        if status == "draft"
         else ""
     )
-    deadline = data["reservationExpiresAt"]
-    if order.status == "pending_payment" and deadline:
+    if wholesale:
+        note = 'تأیید سفارش عمده به‌معنی تأیید پرداخت نیست. ' + data.get('terms', '')
+    deadline = data['reservationExpiresAt']
+    if status == "pending_payment" and deadline:
         note = "مهلت رزرو برای پرداخت: " + deadline.astimezone(ZoneInfo("Asia/Tehran")).strftime(
             "%Y/%m/%d %H:%M"
         )
@@ -121,24 +127,24 @@ def document_response(order, warranty=False, download=True):
         if data["paidAt"] else ""
     )
     html = f"""<!doctype html><html lang="fa" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>{title} {order.id} | نکسورا</title><style>{DOCUMENT_STYLES}</style></head><body><main>
+    <title>{title} {identifier} | نکسورا</title><style>{DOCUMENT_STYLES}</style></head><body><main>
     <header class="masthead"><div class="brand-row"><b class="brand"><span class="brand-mark">N</span><span>NEXORA<small>فروشگاه دیجیتال نکسورا</small></span></b>
-    <span class="status {safe(order.status)}">{LABELS.get(order.status, safe(order.status))}</span></div>
-    <div class="title-row"><div><span class="eyebrow">جزئیات خرید شما</span><h1>{title}</h1></div><div class="number"><span>شناسهٔ فاکتور / سفارش</span><b>#{number(order.id)}</b></div></div>
+    <span class="status {safe(status)}">{LABELS.get(status, safe(status))}</span></div>
+    <div class="title-row"><div><span class="eyebrow">جزئیات خرید شما</span><h1>{title}</h1></div><div class="number"><span>{'کد رهگیری فاکتور عمده' if wholesale else 'شناسهٔ فاکتور / سفارش'}</span><b>#{number(identifier)}</b></div></div>
     <div class="meta"><p><span>تاریخ صدور</span>{number(data["createdAt"].astimezone(ZoneInfo("Asia/Tehran")).strftime("%Y/%m/%d %H:%M"))}</p>
     <p><span>تعداد کالاها</span>{number(sum(x["quantity"] for x in data["lines"]))} عدد · {number(len(data["lines"]))} ردیف</p>{paid_date}</div></header>
     <div class="content"><div class="recipient"><section><h2><span class="section-index">۰۱</span>مشخصات تحویل‌گیرنده</h2><p class="person">{safe(addr.get("recipient"))}</p>
     <p><span class="label">شماره تماس</span><bdi>{safe(addr.get("phone"))}</bdi></p><p><span class="label">ایمیل حساب</span><bdi>{safe(data["email"])}</bdi></p></section>
-    <section><h2><span class="section-index">۰۲</span>نشانی تحویل</h2><p>{safe(addr.get("province"))}، {safe(addr.get("city"))}، {safe(addr.get("address"))}</p>
+    <section><h2><span class="section-index">۰۲</span>نشانی تحویل</h2><p>{safe("، ".join(str(addr.get(key)) for key in ("province", "city", "address") if addr.get(key)))}</p>
     <p>پلاک: {safe(addr.get("building"))} · واحد: {safe(addr.get("unit"))}</p><p><span class="label">کد پستی</span><bdi>{safe(addr.get("postalCode"))}</bdi></p>
     {f'<p class="hint">توضیحات تحویل: {safe(addr["notes"])}</p>' if addr.get("notes") else ""}</section></div>
     <div class="section-title"><h2><b class="section-index">۰۳</b>اقلام فاکتور</h2><span>تمام مبالغ به ریال</span></div>
     <table><thead><tr><th scope="col">ردیف</th><th scope="col">کالا</th><th scope="col">تعداد</th><th scope="col">قیمت واحد</th><th scope="col">جمع ردیف</th></tr></thead><tbody>{rows}</tbody></table>
     <div class="summary"><section class="notes"><h2>یادداشت فاکتور</h2>
-    {'<p class="free">ارسال رایگان برای این سفارش؛ هزینه‌ای بابت ارسال دریافت نمی‌شود.</p>' if not data["shippingRial"] else ""}
+    {'<p class="free">ارسال رایگان برای این سفارش؛ هزینه‌ای بابت ارسال دریافت نمی‌شود.</p>' if not data["shippingRial"] and not wholesale else ""}
     <p>{safe(note) if note else ""}</p><p>برای پیگیری خرید، شناسهٔ فاکتور را نزد خود نگه دارید.</p></section>
     <section class="totals"><p><span>جمع کالاها</span><b>{money(data["subtotalRial"])}</b></p>
-    <p><span>هزینهٔ ارسال</span><b>{money(data["shippingRial"]) if data["shippingRial"] else "رایگان"}</b></p>
+    <p><span>هزینهٔ ارسال</span><b>{money(data["shippingRial"]) if data["shippingRial"] or wholesale else "رایگان"}</b></p>
     <p class="grand"><span>جمع فاکتور</span><b>{number(f'{data["totalRial"]:,}')} <small>ریال</small></b></p></section></div>{warranty_section}
     <section class="notes"><h3>راهنمای ارسال و گارانتی</h3><p>روش و زمان ارسال پس از هماهنگی با خریدار تعیین می‌شود. نشانی و شماره تماس پیش از ارسال تأیید شود؛ هزینه مطابق همین فاکتور است.</p><p>گارانتی مطابق شرایط هر کالا است؛ نام شرکت گارانتی و مدت پوشش پیش از تحویل بررسی و فاکتور و شناسهٔ کالا برای پیگیری نگهداری شود.</p></section>
     <div class="signatures"><div><b class="signature-label">تأیید تحویل‌گیرنده</b><small>محل امضا</small><span>تاریخ تحویل: ........................</span></div><div><b class="signature-label">مهر و امضای مدیریت</b><small>محل مهر و امضا</small><span>تاریخ: ........................</span></div></div>
@@ -148,7 +154,7 @@ def document_response(order, warranty=False, download=True):
     return HTMLResponse(
         html,
         headers={
-            "Content-Disposition": f'{"attachment" if download else "inline"}; filename="nexora-{kind}-{order.id}.html"',
+            "Content-Disposition": f'{"attachment" if download else "inline"}; filename="nexora-{kind}-{identifier}.html"',
             "Cache-Control": "no-store",
             "X-Robots-Tag": "noindex, nofollow",
             "Content-Security-Policy": "default-src 'none'; style-src 'unsafe-inline'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'",

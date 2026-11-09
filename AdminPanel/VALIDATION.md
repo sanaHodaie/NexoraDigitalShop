@@ -26,3 +26,10 @@ Backend tests used isolated SQLite test databases here; PostgreSQL runs in the e
 - New PDF layout uses embedded Vazirmatn, a blue brand header, two-column customer information, repeated table headers, totals, delivery/warranty guidance and a blank bottom-left management stamp/signature box on the final page. HTML invoice guidance/signature placement was aligned too. No fixed warranty duration or shipping promise is invented.
 - A Persian sample PDF was rendered and visually inspected. Long 50-line invoices are tested for page bounds and final-page signature placement.
 - Backend: 249 passed, 3 skipped; Ruff passed. Frontend TypeScript, production build, Node tests and fixture browser workflow passed. Browser coverage includes both order sources, Telegram filtering/detail/canonical PDF link, and order layout at 320/390/1024/1440px. Real Telegram delivery and production login were not exercised.
+
+## Compact requests and shared invoice sheet
+
+- Site and wholesale invoices share one React InvoiceSheet and the same printable HTML renderer. Wholesale amounts remain exact integers/BigInt; approved status never implies paid, no warranty card or stock reservation is fabricated. Printable wholesale HTML uses saved customer/line/terms snapshots, escapes customer input, requires orders:read and preserves canonical PDF bytes.
+- Telegram requests show compact summary rows; full information, staff actions and the invoice open in a detail modal. Search and bounded 20/50/100-row pagination reduce page navigation. The navigation scrollbar is hidden without disabling scrolling.
+- Backend full suite: 251 passed, 3 skipped. Focused checks cover printable HTML permissions/escaping, PDF byte preservation, request search and page size. Ruff, TypeScript, production build and Node tests passed.
+- Chromium fixture workflow passed: compact multi-request list, full detail/approval, shared invoice sheet/actions, source filtering, desktop/mobile layout and computed hidden-sidebar-scrollbar style. Desktop/mobile request list and shared invoice screenshots visually reviewed. No real customer/Telegram messages were sent.
