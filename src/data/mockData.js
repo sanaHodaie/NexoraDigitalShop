@@ -167,7 +167,7 @@ export const FLASH_DEALS = [
     discountPercent: 35,
     rating: 4.9,
     reviewCount: 1820,
-    image: '/assets/collection_gaming_gear_1790528013982.webp',
+    image: '/assets/products/accessory-01.webp',
     description: 'اسکرول الکترومغناطیسی با دقت ۸۰۰۰ DPI، عملکرد بی‌صدا و ارگونومی ایده‌آل دست.',
     inStock: true,
   },

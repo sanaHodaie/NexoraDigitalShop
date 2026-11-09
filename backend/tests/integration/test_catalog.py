@@ -170,3 +170,26 @@ def test_plus_model_correction_preserves_cart_and_merchant_edits(client, engine,
         assert product.price == Decimal("321.50")
         assert product.stock == 3
     assert client.get("/api/account/cart").json()[0]["product"]["name"] == expected["name"]
+
+
+@pytest.mark.parametrize("extension", ["jpg", "webp"])
+def test_deal_photo_upgrade_preserves_merchant_data(engine, extension):
+    with Session(engine) as db, db.begin():
+        product = db.get(Product, "flash-2")
+        product.payload = {**product.payload,
+                           "image": f"/assets/collection_gaming_gear_1790528013982.{extension}",
+                           "description": "Merchant description"}
+        product.price = Decimal("123.45")
+        product.stock = 7
+    seed(engine)
+    seed(engine)
+    with Session(engine) as db, db.begin():
+        product = db.get(Product, "flash-2")
+        assert product.payload["image"] == "/assets/products/accessory-01.webp"
+        assert product.payload["description"] == "Merchant description"
+        assert product.price == Decimal("123.45")
+        assert product.stock == 7
+        product.payload = {**product.payload, "image": "/assets/custom-mouse.webp"}
+    seed(engine)
+    with Session(engine) as db:
+        assert db.get(Product, "flash-2").payload["image"] == "/assets/custom-mouse.webp"

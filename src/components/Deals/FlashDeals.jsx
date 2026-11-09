@@ -64,12 +64,12 @@ export const FlashDeals = () => {
                   className="group relative rounded-[28px] overflow-hidden bg-white dark:bg-slate-900 border border-slate-200/90 dark:border-slate-800 shadow-2xl hover:-translate-y-2 transition-all duration-300 flex flex-col justify-between cursor-pointer text-right p-3.5"
                 >
                   {/* TOP IMAGE CONTAINER: Squarer aspect ratio */}
-                  <div className="relative w-full h-44 sm:h-48 rounded-[22px] overflow-hidden bg-slate-100 dark:bg-slate-800 flex items-center justify-center">
+                  <div className="relative w-full h-44 sm:h-48 rounded-[22px] overflow-hidden bg-white flex items-center justify-center">
                     {/* Product Image */}
                     <img loading="lazy" decoding="async"
                       src={optimizedImage(deal.image)}
                       alt={deal.name}
-                      className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-500 filter drop-shadow-md"
+                      className="w-full h-full object-contain p-5 group-hover:scale-105 transition-transform duration-500 filter drop-shadow-md"
                       referrerPolicy="no-referrer"
                     />
 

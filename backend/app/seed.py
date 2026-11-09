@@ -16,6 +16,9 @@ PHOTO_PRODUCT_IDS.update(f"{prefix}-{i:02d}" for prefix in ("accessory", "camera
 # EVO Lite+ (drone-10) has been retired from the catalogue.
 PHOTO_PRODUCT_IDS.update(f"drone-{i:02d}" for i in range(1, 10))
 PHOTO_PRODUCT_IDS.update(f"extra-{i:02d}" for i in range(1, 11))
+DEAL_IMAGE_PLACEHOLDERS = {
+    "flash-2": "/assets/collection_gaming_gear_1790528013982",
+}
 
 
 def correct_phone_model(current, product):
@@ -68,6 +71,11 @@ def seed(engine):
             )
             # Upgrade only the original catalogue placeholders, preserving custom images
             # and every other field (including edited prices, stock and descriptions).
+            if product["id"] in DEAL_IMAGE_PLACEHOLDERS:
+                current = db.get(Product, product["id"], with_for_update=True)
+                placeholder = DEAL_IMAGE_PLACEHOLDERS[product["id"]]
+                if current.payload.get("image") in {placeholder + ".jpg", placeholder + ".webp"}:
+                    current.payload = {**current.payload, "image": product["image"]}
             if product["id"] in PHOTO_PRODUCT_IDS:
                 current = db.get(Product, product["id"], with_for_update=True)
                 placeholder = f"/assets/products/{product['id']}.svg"
