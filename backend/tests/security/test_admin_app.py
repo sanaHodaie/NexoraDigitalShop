@@ -140,3 +140,39 @@ def test_operator_password_reset_updates_hash_and_invalidates_sessions(client, e
     provision_admin.main()
     assert client.get('/api/admin/me').status_code == 401
     assert write(client, 'POST', '/api/auth/login', json={'email': 'manager@example.test', 'password': 'new-manager-password-12345'}).status_code == 200
+
+
+def test_operator_can_create_online_admin_without_customer_signup(client, engine, monkeypatch):
+    from types import SimpleNamespace
+
+    from pydantic import SecretStr
+
+    from app import provision_admin
+
+    password = 'operator-created-password-123'
+    monkeypatch.setattr('sys.argv', ['provision_admin', 'new-admin@example.test', '--create', '--set-password'])
+    monkeypatch.setattr(provision_admin, 'Settings', lambda: SimpleNamespace(migration_database_url=SecretStr('sqlite://')))
+    monkeypatch.setattr(provision_admin, 'make_engine', lambda _: engine)
+    monkeypatch.setattr(provision_admin, 'getpass', lambda _: password)
+    provision_admin.main()
+    assert write(client, 'POST', '/api/auth/login', json={'email': 'new-admin@example.test', 'password': password}).status_code == 200
+    assert client.get('/api/admin/me').status_code == 200
+    with Session(engine) as db:
+        user = db.scalar(select(User).where(User.email == 'new-admin@example.test'))
+        assert user.email_verified_at is None
+        assert db.scalar(select(AuditLog).where(AuditLog.event == 'ADMIN_CREATED_BY_OPERATOR')) is not None
+        initial_hash = user.password_hash
+    monkeypatch.setattr(provision_admin, 'getpass', lambda _: 'different-password-123456')
+    with pytest.raises(SystemExit):
+        provision_admin.main()
+    with Session(engine) as db:
+        assert db.scalar(select(User).where(User.email == 'new-admin@example.test')).password_hash == initial_hash
+
+
+@pytest.mark.parametrize('flags', [['--create'], ['--create', '--revoke', '--set-password']])
+def test_operator_creation_requires_explicit_password_and_disallows_revocation(monkeypatch, flags):
+    from app import provision_admin
+
+    monkeypatch.setattr('sys.argv', ['provision_admin', 'new-admin@example.test', *flags])
+    with pytest.raises(SystemExit):
+        provision_admin.main()
