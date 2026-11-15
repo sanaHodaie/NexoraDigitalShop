@@ -286,3 +286,12 @@ Browser scripts under `scripts/check-*.mjs` have individual server/fixture requi
 | Bot webhook hosting | [telegram_bot/DEPLOYMENT.fa.md](telegram_bot/DEPLOYMENT.fa.md) |
 
 Some older component guides describe earlier milestones. Use this README and the saved runbook for the current unified-panel startup flow, and inspect the current code/configuration when deploying.
+
+## Downloadable project handbook
+
+- [Persian PDF — 105 pages](docs/exports/Nexora-Documentation-FA.pdf)
+- [English PDF — 89 pages](docs/exports/Nexora-Documentation-EN.pdf)
+- [Both PDFs in one ZIP](docs/exports/Nexora-Documentation-FA-EN.zip)
+- [Publication sources and validation](docs/documentation/README.md)
+
+These handbooks describe the source baseline recorded on their covers; they include architecture, implemented features, local/online runbooks, API contracts, database dictionary, security, operations and current limitations. They contain no live credentials or customer records.

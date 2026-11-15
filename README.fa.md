@@ -291,3 +291,12 @@ uv run --frozen python preflight.py --telegram
 | میزبانی webhook | [telegram_bot/DEPLOYMENT.fa.md](telegram_bot/DEPLOYMENT.fa.md) |
 
 بعضی راهنماهای قدیمی جزئیات مراحل قبلی توسعه را دارند. برای اجرای فعلی پنل واحد، این README و راهنمای ذخیره‌شدهٔ اجرای محلی را مبنا قرار دهید و هنگام استقرار، کد و تنظیمات جاری را بررسی کنید.
+
+## دریافت مستندات کامل پروژه
+
+- [PDF فارسی — ۱۰۵ صفحه](docs/exports/Nexora-Documentation-FA.pdf)
+- [PDF انگلیسی — ۸۹ صفحه](docs/exports/Nexora-Documentation-EN.pdf)
+- [هر دو PDF در یک ZIP](docs/exports/Nexora-Documentation-FA-EN.zip)
+- [منبع ساخت و گزارش اعتبارسنجی](docs/documentation/README.md)
+
+مبنای این دفترچه‌ها نسخهٔ کد درج‌شده روی جلد است. معماری، قابلیت‌های موجود، اجرای محلی/آنلاین، قرارداد API، فرهنگ دیتابیس، امنیت، عملیات و محدودیت‌ها را پوشش می‌دهند و دادهٔ زندهٔ مشتری یا اعتبار محرمانه ندارند.

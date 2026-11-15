@@ -1,0 +1,30 @@
+[
+  {
+    "language": "FA",
+    "pages": 105,
+    "chapters": 53,
+    "api_operations": 91,
+    "store_tables": 22,
+    "migrations": 12,
+    "bookmarks": 224,
+    "embedded_fonts": 4,
+    "searchable_api_paths": 81,
+    "empty_pages": 0,
+    "overflow_warnings": 0,
+    "file_bytes": 2335872
+  },
+  {
+    "language": "EN",
+    "pages": 89,
+    "chapters": 37,
+    "api_operations": 91,
+    "store_tables": 22,
+    "migrations": 12,
+    "bookmarks": 220,
+    "embedded_fonts": 4,
+    "searchable_api_paths": 81,
+    "empty_pages": 0,
+    "overflow_warnings": 0,
+    "file_bytes": 1933497
+  }
+]
