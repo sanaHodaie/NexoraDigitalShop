@@ -1,3 +1,4 @@
+import Tooltip from './Tooltip';
 import React from 'react';
 import { Sun, Moon } from 'lucide-react';
 import { motion } from 'motion/react';
@@ -7,11 +8,10 @@ export const ThemeToggle = ({ className = '', showLabel = false }) => {
   const { theme, toggleTheme, isDark } = useTheme();
 
   return (
-    <button
+    <Tooltip label={isDark ? 'تغییر ظاهر سایت به حالت روشن' : 'تغییر ظاهر سایت به حالت تیره'}><button
       onClick={toggleTheme}
       type="button"
       aria-label={isDark ? 'تغییر به حالت روشن' : 'تغییر به حالت تاریک'}
-      title={isDark ? 'تغییر به حالت روشن' : 'تغییر به حالت تاریک'}
       className={`relative inline-flex items-center gap-2 p-2 rounded-full cursor-pointer transition-colors duration-300 ${
         isDark
           ? 'bg-slate-800 text-amber-300 hover:bg-slate-700 border border-slate-700/60 shadow-inner'
@@ -38,6 +38,6 @@ export const ThemeToggle = ({ className = '', showLabel = false }) => {
           {isDark ? 'حالت تاریک' : 'حالت روشن'}
         </span>
       )}
-    </button>
+    </button></Tooltip>
   );
 };

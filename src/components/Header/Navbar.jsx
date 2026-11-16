@@ -1,3 +1,4 @@
+import Tooltip from '../Common/Tooltip';
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Heart, ShoppingBag, Search } from 'lucide-react';
@@ -55,10 +56,11 @@ export const Navbar = () => {
     setIsCartOpen,
     setIsWishlistModalOpen,
     isLoggedIn,
-    user,
     toggleLogin,
     toPersianDigits,
   } = useShop();
+
+  const accountHint = isLoggedIn ? 'حساب من؛ سفارش‌ها و اطلاعات شخصی' : 'ورود یا ساخت حساب کاربری';
 
   // Desktop Navigation links - enriched with more items
   const desktopNavLinks = [
@@ -107,11 +109,11 @@ export const Navbar = () => {
             <div ref={desktopSearchRef} className="relative flex items-center" onBlur={event => {
               if (!event.currentTarget.contains(event.relatedTarget)) setDesktopSearchOpen(false);
             }}>
-              <button ref={desktopSearchButton} type="button" onClick={() => setDesktopSearchOpen(open => !open)}
+              <Tooltip label={desktopSearchOpen ? 'بستن جست‌وجوی محصولات' : 'جست‌وجوی نام، مدل یا برند محصول'}><button ref={desktopSearchButton} type="button" onClick={() => setDesktopSearchOpen(open => !open)}
                 aria-label={desktopSearchOpen ? 'بستن جست‌وجو' : 'جستجو'} aria-expanded={desktopSearchOpen}
                 className="w-8 h-8 rounded-full bg-slate-100/90 dark:bg-slate-800/90 flex items-center justify-center text-slate-700 dark:text-slate-200 hover:text-blue-600 cursor-pointer border border-slate-200/60 dark:border-slate-700">
                 <Search className="w-4 h-4" />
-              </button>
+              </button></Tooltip>
               {desktopSearchOpen && <div className="navbar-search-panel"><SearchBar autoFocus
                 onDismiss={() => { setDesktopSearchOpen(false); desktopSearchButton.current?.focus(); }}
                 onSelect={() => setDesktopSearchOpen(false)} /></div>}
@@ -120,11 +122,10 @@ export const Navbar = () => {
             <ThemeToggle />
 
             {/* User Account / Login Button */}
-            <button
+            <Tooltip label={accountHint}><button
               type="button"
               onClick={toggleLogin}
               aria-label={isLoggedIn ? 'حساب کاربری' : 'ورود به حساب کاربری'}
-              title={isLoggedIn ? `${user?.fullName || user?.email || 'حساب کاربری'}` : 'ورود به حساب کاربری'}
               className="w-8 h-8 rounded-full bg-slate-100/90 dark:bg-slate-800/90 border border-slate-200/60 dark:border-slate-700 flex items-center justify-center hover:scale-105 active:scale-95 transition-all cursor-pointer"
             >
               {isLoggedIn ? (
@@ -132,28 +133,26 @@ export const Navbar = () => {
               ) : (
                 <AccountIcon className="w-4 h-4" />
               )}
-            </button>
+            </button></Tooltip>
 
             {/* Wishlist Button with top-left badge */}
-            <button
+            <Tooltip label="کالاهای موردعلاقهٔ شما"><button
               type="button"
               onClick={() => setIsWishlistModalOpen(true)}
               aria-label="علاقه‌مندی‌ها"
-              title="مشاهده نشان‌شده‌ها"
               className="relative flex items-center justify-center w-8 h-8 rounded-full bg-slate-100/90 dark:bg-slate-800/90 hover:bg-rose-50 dark:hover:bg-rose-950/40 text-slate-600 dark:text-slate-300 hover:text-rose-500 transition-all cursor-pointer border border-slate-200/60 dark:border-slate-700"
             >
               <Heart className="w-4 h-4" />
               <span className="absolute -top-1.5 -left-1.5 min-w-[17px] h-[17px] px-0.5 rounded-full bg-rose-500 text-white text-[9px] font-black flex items-center justify-center shadow-md border border-white dark:border-slate-900 font-vazir">
                 {toPersianDigits(totalWishlistCount)}
               </span>
-            </button>
+            </button></Tooltip>
 
             {/* Cart Button with top-left badge */}
-            <button
+            <Tooltip label="مشاهدهٔ سبد و ادامهٔ خرید"><button
               onClick={() => setIsCartOpen(true)}
               type="button"
               aria-label="سبد خرید"
-              title="مشاهده سبد خرید"
               className="relative flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-600 hover:bg-blue-700 text-white transition-all cursor-pointer shadow-md shadow-blue-500/25 active:scale-95 group"
             >
               <span className="absolute -top-1.5 -left-1.5 min-w-[18px] h-[18px] px-1 rounded-full bg-rose-500 text-white text-[10px] font-black flex items-center justify-center shadow-md border border-white dark:border-slate-900 font-vazir">
@@ -161,7 +160,7 @@ export const Navbar = () => {
               </span>
 
               <ShoppingBag className="w-4 h-4 group-hover:-rotate-6 transition-transform" />
-            </button>
+            </button></Tooltip>
           </div>
         </div>
 
@@ -212,13 +211,13 @@ export const Navbar = () => {
               >
                 {/* Right: Hamburger + Brand Name */}
                 <div className="flex items-center gap-2">
-                  <button
+                  <Tooltip label="دسته‌بندی‌ها و منوی فروشگاه"><button
                     onClick={() => setIsMobileMenuOpen(true)}
                     aria-label="منو"
                     className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center p-1.5 cursor-pointer"
                   >
                     <MenuIcon className="w-4 h-4" />
-                  </button>
+                  </button></Tooltip>
                   <Link to="/" className="flex flex-col text-right">
                     <span className="text-sm sm:text-base font-black sm:tracking-wider bg-gradient-to-l from-blue-700 via-indigo-600 to-slate-900 dark:from-sky-400 dark:via-blue-300 dark:to-white bg-clip-text text-transparent font-sans">
                       NEXORA
@@ -228,51 +227,47 @@ export const Navbar = () => {
 
                 {/* Left: Search Icon placed directly beside Dark Mode, Wishlist & Cart */}
                 <div className="mobile-header-actions flex items-center gap-1 sm:gap-2">
-                  <button type="button" onClick={toggleLogin}
-                    title={isLoggedIn ? user?.fullName || user?.email : 'ورود به حساب کاربری'}
+                  <Tooltip label={accountHint}><button type="button" onClick={toggleLogin}
                     aria-label={isLoggedIn ? 'حساب کاربری' : 'ورود به حساب کاربری'}
                     className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center cursor-pointer">
                     {isLoggedIn ? <AccountIcon className="w-4 h-4" /> : <AccountIcon className="w-4 h-4" />}
-                  </button>
+                  </button></Tooltip>
                   {/* Search Icon right beside other icons */}
-                  <button
+                  <Tooltip label="جست‌وجوی نام، مدل یا برند محصول"><button
                     type="button"
                     ref={mobileSearchButton}
                     onClick={() => setIsSearchActive(true)}
                     className="w-8 h-8 rounded-full bg-slate-100/90 dark:bg-slate-800/90 flex items-center justify-center text-slate-700 dark:text-slate-200 cursor-pointer border border-slate-200/60 dark:border-slate-700"
-                    title="جستجو"
                   >
                     <Search className="w-4 h-4" />
-                  </button>
+                  </button></Tooltip>
 
                   {/* Dark Mode Beside Search */}
                   <ThemeToggle className="scale-90" />
 
                   {/* Wishlist Button with top-left badge */}
-                  <button
+                  <Tooltip label="کالاهای موردعلاقهٔ شما"><button
                     type="button"
                     onClick={() => setIsWishlistModalOpen(true)}
                     className="relative w-8 h-8 rounded-full bg-slate-100/90 dark:bg-slate-800/90 flex items-center justify-center text-slate-700 dark:text-slate-200 border border-slate-200/60 dark:border-slate-700"
-                    title="علاقه‌مندی‌ها"
                   >
                     <Heart className="w-4 h-4 text-slate-600 dark:text-slate-300" />
                     <span className="absolute -top-1.5 -left-1.5 min-w-[17px] h-[17px] px-0.5 rounded-full bg-rose-500 text-white text-[9px] font-black flex items-center justify-center shadow-md border border-white dark:border-slate-900 font-vazir">
                       {toPersianDigits(totalWishlistCount)}
                     </span>
-                  </button>
+                  </button></Tooltip>
 
                   {/* Cart Button with top-left badge */}
-                  <button
+                  <Tooltip label="مشاهدهٔ سبد و ادامهٔ خرید"><button
                     onClick={() => setIsCartOpen(true)}
                     type="button"
                     className="relative w-8 h-8 rounded-full bg-blue-600 text-white flex items-center justify-center shadow-md cursor-pointer"
-                    title="سبد خرید"
                   >
                     <span className="absolute -top-1.5 -left-1.5 min-w-[17px] h-[17px] px-0.5 rounded-full bg-rose-500 text-white text-[9px] font-black flex items-center justify-center shadow-md border border-white dark:border-slate-900 font-vazir">
                       {toPersianDigits(totalCartCount)}
                     </span>
                     <ShoppingBag className="w-4 h-4" />
-                  </button>
+                  </button></Tooltip>
                 </div>
               </motion.div>
             )}

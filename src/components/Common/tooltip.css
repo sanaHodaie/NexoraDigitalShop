@@ -1,0 +1,5 @@
+.nexora-tooltip-trigger{display:inline-flex;align-items:center;flex-shrink:0}
+.nexora-tooltip{position:fixed;z-index:120;max-width:min(260px,calc(100vw - 16px));padding:9px 13px;border:1px solid #dbe7fc;border-radius:12px;background:#fffffff5;color:#244475;box-shadow:0 8px 24px #183c751c;backdrop-filter:blur(12px);font-family:Vazirmatn,sans-serif;font-size:11px;font-weight:600;line-height:1.9;text-align:center;pointer-events:none;overflow-wrap:anywhere;animation:nexora-tooltip-in .16s ease-out}
+.dark .nexora-tooltip{background:#17253bf5;color:#dbeaff;border-color:#344967;box-shadow:0 8px 24px #0004}
+@keyframes nexora-tooltip-in{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
+@media(prefers-reduced-motion:reduce){.nexora-tooltip{animation:none}}
