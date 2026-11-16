@@ -4,7 +4,7 @@ import { ArrowRight, Columns3, Plus, RefreshCw, Search, ShoppingBag, X } from 'l
 import { useCompare } from '../context/CompareContext';
 import { useShop } from '../context/ShopContext';
 import { useContent } from '../context/ContentContext';
-import { optimizedImage } from '../data/imageAssets';
+import { responsiveImage } from '../data/imageAssets';
 import { buildSearchIndex, suggestProducts } from '../lib/product-search';
 import { comparisonRows } from '../lib/comparison';
 import '../components/Products/compare.css';
@@ -68,7 +68,7 @@ export default function ComparePage() {
       const product = products.find(item => item.id === id);
       return product ? <article className="compare-product" key={id}>
         <button className="compare-remove" onClick={() => remove(id)} aria-label={`حذف ${product.name} از مقایسه`}><X size={18}/></button>
-        <button className="compare-photo" onClick={() => setQuickViewProduct(product)} aria-label={`جزئیات ${product.name}`}><img src={optimizedImage(product.image)} alt={product.name} width="240" height="180" decoding="async"/></button>
+        <button className="compare-photo" onClick={() => setQuickViewProduct(product)} aria-label={`جزئیات ${product.name}`}><img {...responsiveImage(product.image, '(max-width: 640px) 180px, 300px')} alt={product.name} width="240" height="180" decoding="async"/></button>
         <span className="compare-product-brand">{product.brand || categories[product.category]?.title}</span><h2>{product.name}</h2><p className="compare-model" dir="ltr">{product.nameEn}</p>
         <strong className="compare-product-price">{formatPrice(product.price)}</strong>
         <div className="compare-product-actions"><button className="compare-primary" disabled={!product.inStock || Boolean(busy)} onClick={() => cart(product)}><ShoppingBag size={16}/>{!product.inStock ? 'ناموجود' : busy === id ? 'در حال افزودن…' : 'افزودن به سبد'}</button><button onClick={() => startReplace(id)} aria-label={`جایگزینی ${product.name}`}><RefreshCw size={16}/>جایگزینی</button></div>
@@ -82,7 +82,7 @@ export default function ComparePage() {
         {!products.some(product => product.id !== replaceId) ? <label className="compare-category-label">دسته‌بندی<select value={category} onChange={event => { setCategory(event.target.value); setQuery(''); }}><option value="">همه دسته‌ها</option>{Object.entries(categories).map(([id, item]) => <option key={id} value={id}>{item.title}</option>)}</select></label>
           : <span className="compare-category-tag">{categories[activeCategory]?.title || 'هم‌دسته با محصول انتخاب‌شده'}</span>}
       </div>
-      <div className="compare-picker-results">{suggestions.map(product => <button key={product.id} onClick={() => choose(product)} aria-label={`انتخاب ${product.name} برای مقایسه`}><img src={optimizedImage(product.image)} alt="" width="48" height="48" loading="lazy"/><span><b>{product.name}</b><small>{formatPrice(product.price)}{product.inStock === false ? ' · ناموجود' : ''}</small></span><Plus size={18}/></button>)}</div>
+      <div className="compare-picker-results">{suggestions.map(product => <button key={product.id} onClick={() => choose(product)} aria-label={`انتخاب ${product.name} برای مقایسه`}><img {...responsiveImage(product.image, '48px')} alt="" width="48" height="48" loading="lazy"/><span><b>{product.name}</b><small>{formatPrice(product.price)}{product.inStock === false ? ' · ناموجود' : ''}</small></span><Plus size={18}/></button>)}</div>
       {!suggestions.length && productsStatus === 'ready' && <p role="status" className="compare-disclaimer">محصول دیگری پیدا نشد؛ عبارت جست‌وجو را تغییر بده.</p>}
     </section>}
 

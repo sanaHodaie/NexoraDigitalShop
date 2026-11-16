@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { Columns3, X } from 'lucide-react';
 import { useCompare } from '../../context/CompareContext';
 import { useShop } from '../../context/ShopContext';
-import { optimizedImage } from '../../data/imageAssets';
+import { responsiveImage } from '../../data/imageAssets';
 import './compare.css';
 
 export default function CompareTray() {
@@ -18,7 +18,7 @@ export default function CompareTray() {
       <div className="compare-tray-title"><Columns3 size={20}/><span>{toPersianDigits(ids.length)} از ۳ محصول</span></div>
       <div className="compare-tray-products">{ids.map(id => {
         const product = products.find(item => item.id === id);
-        return <div key={id}>{product && <img src={optimizedImage(product.image)} alt={product.name} width="40" height="40"/>}
+        return <div key={id}>{product && <img {...responsiveImage(product.image, '40px')} alt={product.name} width="40" height="40"/>}
           <button onClick={() => remove(id)} aria-label={`حذف از مقایسه: ${product?.name || id}`}><X size={13}/></button>
         </div>;
       })}</div>

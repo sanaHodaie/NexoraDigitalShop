@@ -1,3 +1,4 @@
+import {responsiveImage} from '../../data/imageAssets';
 import React from 'react';
 import { motion } from 'motion/react';
 import { ArrowLeft, ChevronLeft } from 'lucide-react';
@@ -10,7 +11,7 @@ export const HeroSection = () => {
       {/* Background Image: Positioned to keep laptop & gadgets clearly visible across devices */}
       <div className="absolute inset-0 w-full h-full">
         <img
-          src={hero.image}
+          {...responsiveImage(hero.image, '100vw', true)}
           fetchPriority="high" decoding="async" width="1536" height="1024"
           alt="نسل جدید تجهیزات الکترونیک نکسورا"
           className="w-full h-full object-cover object-[70%_center] sm:object-left lg:object-center select-none"

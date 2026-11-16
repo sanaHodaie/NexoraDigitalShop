@@ -1,3 +1,4 @@
+import {responsiveImage} from '../../data/imageAssets';
 import React from 'react';
 import {useContent} from '../../context/ContentContext';
 import { Link } from 'react-router-dom';
@@ -74,7 +75,8 @@ export const Footer = () => {
                 className="h-20 sm:h-24 rounded-xl overflow-hidden bg-slate-800 group relative cursor-pointer"
               >
                 <img
-                  src={thumb}
+                  {...responsiveImage(thumb, '(max-width: 640px) 30vw, 190px')}
+                  loading="lazy" decoding="async" width="240" height="160"
                   alt="Tech setup snapshot"
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300 opacity-80 group-hover:opacity-100"
                   referrerPolicy="no-referrer"

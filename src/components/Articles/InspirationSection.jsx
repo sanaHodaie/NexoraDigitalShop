@@ -1,3 +1,4 @@
+import {responsiveImage} from '../../data/imageAssets';
 import React from 'react';
 import { ArrowLeft, BookOpen, Clock } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -39,7 +40,7 @@ export const InspirationSection = () => {
           >
             {/* Background Image with Scrim Gradient */}
             <img loading="lazy" decoding="async"
-              src={article.image}
+              {...responsiveImage(article.image, '(max-width: 640px) 90vw, 300px')}
               alt={article.imageAlt}
               width="600" height="400"
               className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-70 group-hover:opacity-60"

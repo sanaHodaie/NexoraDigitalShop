@@ -48,3 +48,11 @@ test('content-addressed admin thumbnails retain immutable public caching',()=>{
  const rule=config.headers.find(row=>row.source==='/assets/admin/catalogue/:path*');
  assert.ok(rule.headers.some(h=>h.key==='Cache-Control'&&h.value.includes('immutable')));
 });
+
+test('responsive images have immutable hashed caching without caching private APIs',()=>{
+ const images=config.headers.find(row=>row.source==='/assets/store-images/:path*');
+ assert.ok(images.headers.some(h=>h.key==='Cache-Control'&&h.value.includes('immutable')));
+ const fonts=config.headers.find(row=>row.source==='/assets/fonts/:path*');
+ assert.ok(fonts.headers.some(h=>h.key==='Cache-Control'&&h.value.includes('max-age=')));
+ assert.ok(!config.headers.some(row=>row.source==='/api/:path*'&&row.headers.some(h=>h.key==='Cache-Control'&&h.value.includes('public'))));
+});

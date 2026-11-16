@@ -1,3 +1,4 @@
+import {responsiveImage} from '../../data/imageAssets';
 import React from 'react';
 import { ArrowLeft } from 'lucide-react';
 import { useContent } from '../../context/ContentContext';
@@ -38,7 +39,7 @@ export const FeaturedCollections = () => {
           >
             {/* Full Card Image Background */}
             <img loading="lazy" decoding="async"
-              src={col.image}
+              {...responsiveImage(col.image, '(max-width: 640px) 85vw, 420px')}
               alt={col.title}
               className="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
               referrerPolicy="no-referrer"

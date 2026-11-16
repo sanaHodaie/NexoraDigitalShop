@@ -75,8 +75,9 @@ try {
   await evaluate(`document.documentElement.classList.add('dark')`);
   await wait(400); // Let the site's theme transition finish before the visual capture.
   await writeFile(join(output,'comparison-dark.png'),Buffer.from((await command('Page.captureScreenshot',{format:'png',captureBeyondViewport:true})).data,'base64'));
+  await evaluate('window.__comparisonBeforeReload = true');
   await command('Page.reload');
-  await until(`document.querySelectorAll('.compare-product').length===3`);
+  await until(`!window.__comparisonBeforeReload && document.querySelectorAll('.compare-product').length===3`);
   const oldIds=await evaluate(`JSON.parse(localStorage.getItem('nexora:compare:v1'))`);
   await evaluate(`document.querySelector('.compare-product-actions button:last-child').click()`);
   await until(`Boolean(document.querySelector('.compare-picker-results button'))`);

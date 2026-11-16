@@ -1,4 +1,4 @@
-import { optimizedImage } from '../../data/imageAssets';
+import { responsiveImage } from '../../data/imageAssets';
 import React, { useState } from 'react';
 import { Heart, Plus, Users, Award, Flame } from 'lucide-react';
 import { useShop } from '../../context/ShopContext';
@@ -91,7 +91,7 @@ export const TrendingSection = () => {
               <CompareButton product={product} className="absolute top-14 right-3.5 z-20" />
               {/* Full Image Background */}
               <img loading="lazy" decoding="async"
-                src={optimizedImage(product.image)}
+                {...responsiveImage(product.image, '(max-width: 640px) calc(100vw - 40px), (max-width: 768px) 50vw, 300px')}
                 alt={product.name}
                 className="absolute inset-0 w-full h-full object-cover"
                 referrerPolicy="no-referrer"

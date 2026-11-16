@@ -5,12 +5,14 @@ import { spawn } from 'node:child_process';
 import { mkdtemp, readFile, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
+import { responsiveImage } from '../src/data/imageAssets.js';
 import { CATALOG_CATEGORIES } from '../src/data/catalog.js';
 const base = process.env.NEXORA_UI_URL || 'http://127.0.0.1:3002';
 assert.ok(['localhost', '127.0.0.1'].includes(new URL(base).hostname));
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 const output = await mkdtemp(join(tmpdir(), 'nexora-catalog-'));
 const browser = spawn(process.env.NEXORA_CHROME || 'C:/Program Files/Google/Chrome/Application/chrome.exe', [
+  ...(process.env.NEXORA_CHROME_NO_SANDBOX==='1'?['--no-sandbox']:[]),
   '--headless=new', '--remote-debugging-port=0', `--user-data-dir=${output}`, '--no-first-run',
   '--no-default-browser-check', '--disable-extensions', '--no-proxy-server', 'about:blank',
 ], { windowsHide: true, stdio: 'ignore' });
@@ -79,7 +81,7 @@ try {
       await wait(100);
       const metrics = await evaluate(`({width: innerWidth, scroll: document.documentElement.scrollWidth, overflowing: [...document.querySelectorAll('.catalog-page *')].filter(el => { const r = el.getBoundingClientRect(); return r.width > 0 && (r.right > innerWidth + 1 || r.left < -1) && !el.closest('.catalog-hero-art'); }).map(el => el.className)})`);
       assert.ok(metrics.scroll <= width && !metrics.overflowing.length, `Overflow at ${width}: ${JSON.stringify(metrics)}`);
-      await evaluate("document.querySelector('.catalog-search input').focus()");
+      await evaluate("document.querySelector('.catalog-autocomplete input').focus()");
     }
   }
   await command('Emulation.setDeviceMetricsOverride', { width: 1440, height: 1100, deviceScaleFactor: 1, mobile: false });
@@ -155,7 +157,7 @@ try {
   await until('location.pathname === "/category/gaming" && document.querySelectorAll(".catalog-card").length === 10');
   for (const category of Object.keys(CATALOG_CATEGORIES)) {
     await command('Page.navigate', { url: `${base}/category/${category}` });
-    await until(`document.querySelector('.catalog-hero-art img')?.getAttribute('src') === ${JSON.stringify(CATALOG_CATEGORIES[category].image)} && document.querySelector('.catalog-hero-art img').naturalWidth > 0`);
+    await until(`document.querySelector('.catalog-hero-art img')?.getAttribute('src') === ${JSON.stringify(responsiveImage(CATALOG_CATEGORIES[category].image).src)} && document.querySelector('.catalog-hero-art img').naturalWidth > 0`);
     await until(`document.querySelectorAll(".catalog-card").length === ${CATALOG_CATEGORIES[category].productIds.length}`);
     await evaluate('[...document.querySelectorAll(".catalog-card img")].forEach(img => img.loading = "eager")');
     if (category === 'drones') {
@@ -172,7 +174,7 @@ try {
     if (category === 'accessories') {
       for (const id of ['02', '07', '08', '09']) {
         assert.ok(await evaluate(`(() => {
-          const img = [...document.querySelectorAll('.catalog-card img')].find(i => i.src.endsWith('accessory-${id}.webp'));
+          const img = [...document.querySelectorAll('.catalog-card img')].find(i => i.getAttribute('src') === ${JSON.stringify(responsiveImage('/assets/products/accessory-'+id+'.webp').src)});
           const canvas = document.createElement('canvas'); canvas.width = img.naturalWidth; canvas.height = img.naturalHeight;
           const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0);
           const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;

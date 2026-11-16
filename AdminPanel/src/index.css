@@ -1,7 +1,7 @@
 @import "tailwindcss" source("./");
 
-@font-face{font-family:'Vazirmatn';src:url('/assets/admin/Vazirmatn-Regular.ttf') format('truetype');font-display:swap;font-weight:100 600;}
-@font-face{font-family:'Vazirmatn';src:url('/assets/admin/Vazirmatn-Bold.ttf') format('truetype');font-display:swap;font-weight:700 900;}
+@font-face{font-family:'Vazirmatn';src:url('/assets/fonts/Vazirmatn-Regular.woff2') format('woff2');font-display:swap;font-weight:100 600;}
+@font-face{font-family:'Vazirmatn';src:url('/assets/fonts/Vazirmatn-Bold.woff2') format('woff2');font-display:swap;font-weight:700 900;}
 
 @custom-variant dark (&:where(.dark, .dark *));
 

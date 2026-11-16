@@ -1,0 +1,151 @@
+{
+  "date": "2026-11-16",
+  "baselineRevision": "3ecfeab",
+  "scope": "Local fixture benchmark, not live Vercel/Render or Lighthouse. Two cold-cache runs per viewport; only GET requests.",
+  "conditions": {
+    "apiDelayMs": 750,
+    "latencyMs": 100,
+    "downloadKiBps": 180,
+    "cpuSlowdown": 4
+  },
+  "before": [
+    {
+      "viewport": "mobile",
+      "run": 1,
+      "cardsMs": 2772,
+      "first4Ms": 22657,
+      "all10Ms": 27268,
+      "imageBytes": 4653783,
+      "totalBytes": 4859342,
+      "catalogueRequests": 1
+    },
+    {
+      "viewport": "mobile",
+      "run": 2,
+      "cardsMs": 2833,
+      "first4Ms": 22649,
+      "all10Ms": 27281,
+      "imageBytes": 4653783,
+      "totalBytes": 4858614,
+      "catalogueRequests": 1
+    },
+    {
+      "viewport": "desktop",
+      "run": 1,
+      "cardsMs": 2809,
+      "first4Ms": 23274,
+      "all10Ms": 27262,
+      "imageBytes": 4653783,
+      "totalBytes": 4858614,
+      "catalogueRequests": 1
+    },
+    {
+      "viewport": "desktop",
+      "run": 2,
+      "cardsMs": 2692,
+      "first4Ms": 23244,
+      "all10Ms": 27260,
+      "imageBytes": 4653783,
+      "totalBytes": 4858614,
+      "catalogueRequests": 1
+    }
+  ],
+  "after": [
+    {
+      "viewport": "mobile",
+      "run": 1,
+      "cardsMs": 2808,
+      "first4Ms": 3929,
+      "all10Ms": 6507,
+      "imageBytes": 669319,
+      "totalBytes": 987663,
+      "catalogueRequests": 1
+    },
+    {
+      "viewport": "mobile",
+      "run": 2,
+      "cardsMs": 2786,
+      "first4Ms": 3877,
+      "all10Ms": 6466,
+      "imageBytes": 669319,
+      "totalBytes": 986935,
+      "catalogueRequests": 1
+    },
+    {
+      "viewport": "desktop",
+      "run": 1,
+      "cardsMs": 2878,
+      "first4Ms": 3276,
+      "all10Ms": 3693,
+      "imageBytes": 158420,
+      "totalBytes": 476036,
+      "catalogueRequests": 1
+    },
+    {
+      "viewport": "desktop",
+      "run": 2,
+      "cardsMs": 2788,
+      "first4Ms": 3210,
+      "all10Ms": 3627,
+      "imageBytes": 158420,
+      "totalBytes": 476036,
+      "catalogueRequests": 1
+    }
+  ],
+  "summary": {
+    "mobile": {
+      "cardsMs": {
+        "before": 2802,
+        "after": 2797,
+        "reductionPercent": 0.2
+      },
+      "first4Ms": {
+        "before": 22653,
+        "after": 3903,
+        "reductionPercent": 82.8
+      },
+      "all10Ms": {
+        "before": 27274,
+        "after": 6486,
+        "reductionPercent": 76.2
+      },
+      "imageBytes": {
+        "before": 4653783,
+        "after": 669319,
+        "reductionPercent": 85.6
+      },
+      "totalBytes": {
+        "before": 4858978,
+        "after": 987299,
+        "reductionPercent": 79.7
+      }
+    },
+    "desktop": {
+      "cardsMs": {
+        "before": 2750,
+        "after": 2833,
+        "reductionPercent": -3.0
+      },
+      "first4Ms": {
+        "before": 23259,
+        "after": 3243,
+        "reductionPercent": 86.1
+      },
+      "all10Ms": {
+        "before": 27261,
+        "after": 3660,
+        "reductionPercent": 86.6
+      },
+      "imageBytes": {
+        "before": 4653783,
+        "after": 158420,
+        "reductionPercent": 96.6
+      },
+      "totalBytes": {
+        "before": 4858614,
+        "after": 476036,
+        "reductionPercent": 90.2
+      }
+    }
+  }
+}

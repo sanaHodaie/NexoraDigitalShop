@@ -1,3 +1,4 @@
+import {responsiveImage} from '../../data/imageAssets';
 import React, { useEffect, useRef, useState } from 'react';
 import { motion, useInView, useReducedMotion, useSpring } from 'motion/react';
 
@@ -27,7 +28,7 @@ export default function CategoryHeroArt({ category }) {
     <span className="catalog-device-shadow" />
     <motion.div className="catalog-device-tilt" style={{ rotateX: reducedMotion ? 0 : rotateX, rotateY: reducedMotion ? 0 : rotateY }}>
       <div className="catalog-device-float">
-        <img src={failed ? category.fallbackImage : category.image} alt="" width="640" height="480" decoding="async" fetchPriority="high" onError={() => setFailed(true)} />
+        <img {...responsiveImage(failed ? category.fallbackImage : category.image, '(max-width: 760px) 80vw, 560px')} alt="" width="640" height="480" decoding="async" fetchPriority="high" onError={() => setFailed(true)} />
       </div>
     </motion.div>
   </div>;

@@ -1,4 +1,4 @@
-import { optimizedImage } from '../../data/imageAssets';
+import { responsiveImage } from '../../data/imageAssets';
 import React from 'react';
 import DealCountdown from './DealCountdown';
 import { Zap, Mail, Star, Heart, ShieldCheck } from 'lucide-react';
@@ -67,7 +67,7 @@ export const FlashDeals = () => {
                   <div className="relative w-full h-44 sm:h-48 rounded-[22px] overflow-hidden bg-white flex items-center justify-center">
                     {/* Product Image */}
                     <img loading="lazy" decoding="async"
-                      src={optimizedImage(deal.image)}
+                      {...responsiveImage(deal.image, '(max-width: 640px) calc(100vw - 80px), 270px')}
                       alt={deal.name}
                       className="w-full h-full object-contain p-5 group-hover:scale-105 transition-transform duration-500"
                       referrerPolicy="no-referrer"

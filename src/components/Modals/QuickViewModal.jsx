@@ -1,4 +1,4 @@
-import { optimizedImage } from '../../data/imageAssets';
+import { responsiveImage } from '../../data/imageAssets';
 import React, { useLayoutEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
@@ -105,7 +105,7 @@ function QuickViewDialog({ quickViewProduct }) {
             {/* PRODUCT IMAGE: Occupies the FULL RIGHT SIDE (in RTL) */}
             <div className="quick-view-image relative w-full md:w-1/2 md:min-h-[460px] bg-white overflow-hidden flex items-center justify-center">
               <img
-                src={optimizedImage(quickViewProduct.image)}
+                {...responsiveImage(quickViewProduct.image, '(max-width: 640px) 90vw, 550px', true)}
                 alt={quickViewProduct.name}
                 className="absolute inset-0 w-full h-full object-contain select-none"
                 referrerPolicy="no-referrer"

@@ -1,4 +1,4 @@
-import { optimizedImage } from '../../data/imageAssets';
+import { responsiveImage } from '../../data/imageAssets';
 import React from 'react';
 import { Heart, Plus } from 'lucide-react';
 import { useShop } from '../../context/ShopContext';
@@ -36,7 +36,7 @@ export const RecommendedSection = () => {
               <CompareButton product={product} className="absolute top-4 right-4 z-20" />
               {/* Full Background Product Photo */}
               <img loading="lazy" decoding="async"
-                src={optimizedImage(product.image)}
+                {...responsiveImage(product.image, '(max-width: 640px) calc(100vw - 40px), 320px')}
                 alt={product.name}
                 className="absolute inset-0 w-full h-full object-cover"
                 referrerPolicy="no-referrer"

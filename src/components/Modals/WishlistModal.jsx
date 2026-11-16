@@ -1,4 +1,4 @@
-import { optimizedImage } from '../../data/imageAssets';
+import { responsiveImage } from '../../data/imageAssets';
 import React from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Heart, ShoppingBag, Trash2, ArrowLeft } from 'lucide-react';
@@ -84,7 +84,7 @@ export const WishlistModal = () => {
                       className="w-14 h-14 rounded-xl bg-white dark:bg-slate-800 p-1 shrink-0 overflow-hidden border border-slate-200/50 dark:border-slate-700/50 cursor-pointer"
                     >
                       <img
-                        src={optimizedImage(item.image)}
+                        {...responsiveImage(item.image, '96px')}
                         alt={item.name}
                         className="w-full h-full object-contain"
                         referrerPolicy="no-referrer"

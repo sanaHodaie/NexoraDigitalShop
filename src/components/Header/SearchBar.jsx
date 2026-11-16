@@ -1,6 +1,6 @@
 import React, { useEffect, useId, useMemo, useRef, useState } from 'react';
 import { Search, X, ArrowUpLeft } from 'lucide-react';
-import { optimizedImage } from '../../data/imageAssets';
+import { responsiveImage } from '../../data/imageAssets';
 import { useShop } from '../../context/ShopContext';
 import { buildSearchIndex, normalizeSearch, suggestProducts } from '../../lib/product-search';
 import './search.css';
@@ -75,7 +75,7 @@ export const SearchBar = ({ className = '', products, value, onChange, onSelect,
         {suggestions.map((product, position) => <button key={product.id} type="button" role="option"
           id={`${id}-${product.id}`} aria-selected={position === active} tabIndex={-1}
           onMouseDown={event => event.preventDefault()} onPointerMove={() => setActive(position)} onClick={() => select(product)}>
-          <img src={optimizedImage(product.image)} alt="" width="48" height="48" loading="lazy" decoding="async" referrerPolicy="no-referrer" />
+          <img {...responsiveImage(product.image, '48px')} alt="" width="48" height="48" loading="lazy" decoding="async" referrerPolicy="no-referrer" />
           <span className="product-search-copy"><strong>{product.name}</strong><small>{product.categoryFa || product.brand}</small><b>{product.inStock === false ? 'ناموجود' : formatPrice(product.price)}</b></span>
           <ArrowUpLeft size={15} aria-hidden="true" />
         </button>)}

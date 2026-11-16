@@ -123,7 +123,12 @@ try {
       { name: 'Content-Type', value: mime }, { name: 'Access-Control-Allow-Origin', value: new URL(ui).origin },
       { name: 'Access-Control-Allow-Headers', value: 'Authorization, Content-Type' },
       { name: 'Access-Control-Allow-Methods', value: 'GET, POST, PUT, PATCH, DELETE, OPTIONS' },
-    ], ...(status === 204 ? {} : { body: (binary||Buffer.from(JSON.stringify(data))).toString('base64') }) }).catch(e => errors.push(e.message));
+    ], ...(status === 204 ? {} : { body: (binary||Buffer.from(JSON.stringify(data))).toString('base64') }) }).catch(e => {
+      // Reload can abort a paused polling GET before the fixture fulfils it.
+      // Keep mutation failures and every other protocol/application error visible.
+      if (request.method === 'GET' && e.message.includes('Invalid InterceptionId')) return;
+      errors.push(e.message);
+    });
   };
   async function evaluate(expression) {
     const result = await command('Runtime.evaluate', { expression, returnByValue: true, awaitPromise: true });
@@ -227,7 +232,8 @@ try {
   }
   await navigate('account','حساب مدیریت');await click('حالت نمایش حساب');await until(`!!document.querySelector('[role="option"]')`);await evaluate(`[...document.querySelectorAll('[role="option"]')].find(x=>x.textContent.trim()==='تیره').click()`);
   await until(`document.documentElement.classList.contains('dark')`);
-  await command('Page.reload');await until(`document.body?.innerText.includes('حساب مدیریت')&&document.documentElement.classList.contains('dark')`);
+  await evaluate('window.__adminBeforeReload=true');
+  await command('Page.reload');await until(`!window.__adminBeforeReload&&document.body?.innerText.includes('حساب مدیریت')&&document.documentElement.classList.contains('dark')`);
   await click('خروج از حساب');await until(`document.body.innerText.includes('ورود مدیران')`);
   await command('Emulation.setDeviceMetricsOverride',{width:390,height:900,deviceScaleFactor:1,mobile:false});
   await writeFile('/tmp/nexora-admin-shots/login-mobile.png',Buffer.from((await command('Page.captureScreenshot')).data,'base64'));
